@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier de Crédit Immobilier - Wallonie (Avancé)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0ea5e9;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+
+        input[type=range].crisis-slider::-webkit-slider-thumb {
+            background: #f43f5e;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 350px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0ea5e9;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #0ea5e9;
+        }
+
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+
+        .toggle-circle {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+            top: 0.125rem;
+            left: 0.125rem;
+            position: absolute;
+        }
+
+        .toggle-checkbox:checked~.toggle-circle {
+            transform: translateX(1.5rem);
+        }
+
+        .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px border-dashed border-slate-200;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Accordion transition */
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .accordion-content.open {
+            max-height: 1000px;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .open .chevron {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-12">
+
+    <header class="bg-slate-900 text-white p-6 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-sky-400">MasterImmo Wallonie PRO</h1>
+                <p class="text-slate-300 text-sm">Crédit Social, Frais 110% & Plan de Financement</p>
+            </div>
+            <div class="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700 text-sm">
+                Région : <strong class="text-white">Wallonie</strong>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- LEFT COLUMN : INPUTS -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- Section 1: Profil -->
+                <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
+                        <span class="text-xl">👥</span>
+                        <h2 class="text-lg font-bold text-slate-800">1. Votre Profil</h2>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Revenus nets mensuels
+                                (Ménage)</label>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="inIncomeSlider" min="1500" max="10000" step="100" value="4400"
+                                    class="flex-grow">
+                                <div class="relative w-32">
+                                    <input type="number" id="inIncomeNum" value="4400"
+                                        class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700">
+                                    <span class="absolute right-3 top-2 text-slate-500">€</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Enfants à charge</label>
+                            <select id="inChildren"
+                                class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4 ou +</option>
+                            </select>
+                            <p class="text-xs text-slate-500 mt-1">Nécessaire pour calculer l'éligibilité au crédit
+                                social.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Autres crédits en cours
+                                (Auto, prêts perso...)</label>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="inChargesSlider" min="0" max="3000" step="50" value="0"
+                                    class="flex-grow">
+                                <div class="relative w-32">
+                                    <input type="number" id="inChargesNum" value="0"
+                                        class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700">
+                                    <span class="absolute right-3 top-2 text-slate-500">€</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Le Bien -->
+                <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
+                        <span class="text-xl">🏡</span>
+                        <h2 class="text-lg font-bold text-slate-800">2. Le Projet Immobilier</h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Prix d'achat du bien</label>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="inPriceSlider" min="50000" max="1000000" step="5000"
+                                    value="439000" class="flex-grow">
+                                <div class="relative w-36">
+                                    <input type="number" id="inPriceNum" value="439000"
+                                        class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-sky-700">
+                                    <span class="absolute right-3 top-2 text-slate-500">€</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-sky-50 p-4 rounded-lg border border-sky-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-sky-900">Premier achat propre et unique ?</h4>
+                                <p class="text-xs text-sky-700 mt-1">Donne droit au taux réduit de 3% en Wallonie.</p>
+                            </div>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                <input type="checkbox" id="inFirstHome"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                    checked />
+                                <label for="inFirstHome"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                <div class="toggle-circle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Financement -->
+                <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
+                        <span class="text-xl">💰</span>
+                        <h2 class="text-lg font-bold text-slate-800">3. Le Financement</h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Votre Apport Personnel
+                                (Épargne sur compte)</label>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="inSavingsSlider" min="0" max="300000" step="5000" value="50000"
+                                    class="flex-grow">
+                                <div class="relative w-36">
+                                    <input type="number" id="inSavingsNum" value="50000"
+                                        class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700">
+                                    <span class="absolute right-3 top-2 text-slate-500">€</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Taux estimé (%)</label>
+                                <input type="number" id="inRateNum" value="3.5" step="0.1"
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Durée (Années)</label>
+                                <select id="inYears"
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white">
+                                    <option value="20">20 ans</option>
+                                    <option value="25" selected>25 ans</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE DE CRISE -->
+                <section class="bg-rose-50 p-6 rounded-xl shadow-sm border border-rose-200">
+                    <div class="flex items-center gap-2 mb-4 border-b border-rose-200 pb-2">
+                        <span class="text-xl">🚨</span>
+                        <h2 class="text-lg font-bold text-rose-900">Module de Crise</h2>
+                    </div>
+                    <p class="text-sm text-rose-700 mb-4">Simulez une perte d'emploi. Nouveaux revenus nets du ménage :
+                    </p>
+                    <div class="flex items-center gap-4 mb-4">
+                        <input type="range" id="inCrisisSlider" min="1000" max="10000" step="100" value="4400"
+                            class="flex-grow crisis-slider">
+                        <div class="relative w-32">
+                            <input type="number" id="inCrisisNum" value="4400"
+                                class="w-full pl-3 pr-8 py-2 border border-rose-300 rounded-md focus:ring-rose-500 focus:border-rose-500 text-right font-bold text-rose-700 bg-white">
+                            <span class="absolute right-3 top-2 text-rose-500">€</span>
+                        </div>
+                    </div>
+                    <div id="crisisResultBlock" class="p-4 bg-white rounded border border-rose-200 text-sm"></div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN : RESULTS & ADVICE -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- TOP KPIs & SOCIAL CREDIT -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Mensualité -->
+                    <div class="bg-slate-900 text-white p-5 rounded-xl shadow-sm flex flex-col justify-center">
+                        <h4 class="text-xs text-sky-300 uppercase tracking-wider font-semibold">Mensualité Estimée</h4>
+                        <p class="text-3xl font-bold mt-1" id="outPayment">-- €</p>
+                        <p class="text-xs text-slate-400 mt-1">Pendant <span id="outYearsText">25</span> ans</p>
+                    </div>
+
+                    <!-- Endettement -->
+                    <div id="cardDebt"
+                        class="bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center">
+                        <h4 class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Endettement</h4>
+                        <p class="text-3xl font-bold text-slate-800 mt-1" id="outDebtRatio">-- %</p>
+                        <p id="outDebtStatus" class="text-xs font-medium mt-1">Évaluation...</p>
+                    </div>
+
+                    <!-- Crédit Social Check -->
+                    <div id="cardSocial"
+                        class="bg-indigo-50 p-5 rounded-xl shadow-sm border border-indigo-200 flex flex-col justify-center">
+                        <h4 class="text-xs text-indigo-800 uppercase tracking-wider font-semibold mb-1">Éligibilité
+                            Crédit Social</h4>
+                        <div id="socialStatusContent">
+                            <!-- Injecté par JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LE TICKET DE CAISSE & PLAN DE FINANCEMENT (CE QUI SORT DE VOTRE POCHE) -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-100 border-b border-slate-200 px-6 py-4 flex items-center gap-2">
+                        <span class="text-xl">🧾</span>
+                        <h3 class="font-bold text-slate-800">Plan de Financement : Ce qui sort de votre poche</h3>
+                    </div>
+
+                    <!-- EXPLICATION 110% -->
+                    <div class="bg-amber-50 p-4 border-b border-amber-200 text-sm text-amber-900">
+                        <h4 class="font-bold flex items-center gap-2 mb-1"><span>💡</span> Puis-je emprunter les frais
+                            de notaire (Crédit à 110%) ?</h4>
+                        <p><strong>En règle générale, NON.</strong> La Banque Nationale de Belgique interdit aux banques
+                            traditionnelles de financer les frais d'achat. Vous <strong class="underline">devez</strong>
+                            payer les frais de votre poche. Seules exceptions rares : prêts sociaux (SWCS), mise en
+                            hypothèque de la maison de vos parents, ou courtiers spécialisés (Credissimo) combinant prêt
+                            immo + prêt personnel à taux très élevé.</p>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-8">
+
+                        <!-- Le Ticket -->
+                        <div class="text-sm font-mono text-slate-700 bg-slate-50 p-4 rounded border border-slate-200">
+                            <p class="font-bold font-sans text-slate-500 uppercase mb-3 text-xs tracking-wider">Le Vrai
+                                Coût de l'Achat</p>
+                            <div class="receipt-line font-bold text-slate-900">
+                                <span>1. Prix de la maison</span><span id="fPrix">439 000 €</span>
+                            </div>
+                            <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais obligatoires (Non
+                                finançables) ---</div>
+                            <div class="receipt-line">
+                                <span>2a. Droits enregistrement (<span id="fTauxEnreg">3%</span>)</span><span
+                                    id="fEnreg">13 170 €</span>
+                            </div>
+                            <div class="receipt-line">
+                                <span>2b. Notaire (honoraires, actes)</span><span id="fNotaire">~4 200 €</span>
+                            </div>
+                            <div class="receipt-line">
+                                <span>2c. Frais d'acte de crédit</span><span id="fCredit">~5 500 €</span>
+                            </div>
+                            <div
+                                class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
+                                <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
+                            </div>
+                        </div>
+
+                        <!-- Qui paie quoi -->
+                        <div class="text-sm flex flex-col justify-center">
+
+                            <!-- Ce qui sort de la poche -->
+                            <div
+                                class="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-lg mb-4 relative overflow-hidden">
+                                <div
+                                    class="absolute right-0 top-0 bottom-0 bg-emerald-500 text-white w-12 flex items-center justify-center font-bold text-xl">
+                                    💳</div>
+                                <div class="pr-14">
+                                    <span class="font-bold text-emerald-900 text-base block mb-1">À payer de votre poche
+                                        :</span>
+                                    <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
+                                    <p class="text-xs text-emerald-800 mt-1">C'est l'apport <strong>minimum
+                                            obligatoire</strong> (Frais 2a+2b+2c). Cet argent part chez le notaire et
+                                        l'État.</p>
+                                </div>
+                            </div>
+
+                            <!-- L'argent de la banque -->
+                            <div class="p-4 bg-sky-50 border border-sky-300 rounded-lg relative overflow-hidden">
+                                <div
+                                    class="absolute right-0 top-0 bottom-0 bg-sky-200 text-sky-700 w-12 flex items-center justify-center font-bold text-xl">
+                                    🏦</div>
+                                <div class="pr-14">
+                                    <span class="font-bold text-sky-900 text-base block mb-1">Montant du Crédit (La
+                                        Banque) :</span>
+                                    <span class="font-bold text-sky-700 text-2xl" id="fCreditDemande">-- €</span>
+                                    <p class="text-xs text-sky-800 mt-1" id="fLtvText">Financement à XX% du prix de la
+                                        maison. Cet argent va au vendeur.</p>
+                                </div>
+                            </div>
+
+                            <div id="alertApport"
+                                class="hidden mt-4 p-3 bg-rose-100 border border-rose-300 text-rose-900 text-sm rounded font-medium flex gap-2 items-start">
+                                <span class="text-xl">🛑</span>
+                                <div>
+                                    <strong>Votre épargne actuelle est insuffisante.</strong>
+                                    <br>Vous avez déclaré <span id="alertApportVal" class="underline"></span> d'épargne.
+                                    Or les frais s'élèvent à <span id="alertFraisVal" class="underline"></span>. Le
+                                    dossier sera bloqué par la banque.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ANALYSE DU PREMIER MOIS -->
+                <div class="bg-indigo-50 p-6 rounded-xl shadow-sm border border-indigo-100">
+                    <h3 class="font-bold text-indigo-900 mb-2 flex items-center gap-2"><span class="text-xl">🔍</span>
+                        Que se passe-t-il le 1er mois ?</h3>
+
+                    <p class="text-sm text-indigo-800 mb-4">Sur votre première mensualité de <strong id="mMensualite">--
+                            €</strong>, voici où va votre argent. <br><em>Note : Au fil des années, la part de capital
+                            augmentera et celle des intérêts diminuera.</em></p>
+
+                    <div class="flex items-center gap-4 h-8 bg-slate-200 rounded-full overflow-hidden mb-2 mt-4">
+                        <div id="barInterets"
+                            class="h-full bg-rose-400 flex items-center justify-center text-xs font-bold text-white transition-all duration-500"
+                            style="width: 50%;">Intérêts</div>
+                        <div id="barCapital"
+                            class="h-full bg-emerald-500 flex items-center justify-center text-xs font-bold text-white transition-all duration-500"
+                            style="width: 50%;">Capital ("Épargne")</div>
+                    </div>
+                    <div class="flex justify-between text-xs mt-1 text-indigo-700 font-medium">
+                        <span id="tInterets">Perdu (Coût du crédit) : -- €</span>
+                        <span id="tCapital">Réinjecté dans votre patrimoine : -- €</span>
+                    </div>
+                </div>
+
+                <!-- ANNUAIRE DES BANQUES EXHAUSTIF AVEC RECHERCHE -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" id="annuaireSection">
+                    <div
+                        class="bg-slate-800 text-white border-b border-slate-700 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🏛️</span>
+                            <h3 class="font-bold">Annuaire & Priorités (Wallonie)</h3>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                            <input type="text" id="bankSearch" placeholder="Rechercher (ex: crédit social, KBC...)"
+                                class="w-full pl-9 pr-3 py-2 bg-slate-700 border-slate-600 text-white rounded-md focus:ring-sky-500 focus:border-sky-500 text-sm placeholder-slate-400">
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <p class="text-sm text-slate-600 mb-4">Ces institutions sont classées selon votre profil (2 CDI,
+                            Jeunes, revenus moyens/hauts).</p>
+
+                        <div id="bankListContainer" class="space-y-3">
+                            <!-- Les banques seront injectées ici par JavaScript -->
+                        </div>
+                        <div id="noBankResult" class="hidden text-center py-8 text-slate-500">
+                            Aucune banque ne correspond à votre recherche.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Évolution du Remboursement
+                        (Capital vs Intérêts)</h3>
+                    <div class="chart-container">
+                        <canvas id="loanChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- UTILITY FUNCTIONS ---
+        // Defensive helpers to prevent "Cannot set properties of null"
+        function setText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
+
+        function setHTML(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
+
+        function getValue(id, isInt = false) {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            const val = isInt ? parseInt(el.value) : parseFloat(el.value);
+            return isNaN(val) ? 0 : val;
+        }
+
+        function syncInputsSafe(sliderId, numId, callback) {
+            const slider = document.getElementById(sliderId);
+            const num = document.getElementById(numId);
+            if (slider && num) {
+                slider.addEventListener('input', () => { num.value = slider.value; callback(); });
+                num.addEventListener('input', () => { slider.value = num.value; callback(); });
+            }
+        }
+
+        // --- DONNEES DES BANQUES (INCLUANT CREDIT SOCIAL & COURTIERS) ---
+        const banksData = [
+            {
+                name: "Keytrade Bank",
+                rank: 1,
+                category: "Top Choix / Challenger",
+                badgeColor: "bg-sky-100 text-sky-800",
+                description: "Banque 100% en ligne filiale du groupe Crédit Mutuel Arkéa. Idéale pour fixer une base de négociation.",
+                pros: ["Taux fixe souvent le plus bas du marché", "ZÉRO frais de dossier (économie de ~500€)", "Simulation en ligne donnant droit à une offre ferme", "Pas d'obligation de prendre leurs assurances (incendie/décès)", "Pas d'obligation de domicilier les salaires"],
+                cons: ["Aucun conseiller physique (tout se fait par mail/téléphone)", "Dossier doit être très standard (les cas complexes sont souvent refusés automatiquement)"],
+                address: "100% Digital (Siège: Bruxelles)",
+                url: "https://www.keytradebank.be"
+            },
+            {
+                name: "Argenta",
+                rank: 2,
+                category: "Top Choix / Agences",
+                badgeColor: "bg-sky-100 text-sky-800",
+                description: "Banque familiale belge avec un grand réseau d'agences indépendantes en Wallonie.",
+                pros: ["Excellente réputation humaine", "Taux très compétitifs pour les jeunes acheteurs", "Leurs assurances obligatoires (Incendie et Solde Restant Dû) sont parmi les moins chères du marché", "Comptes gratuits"],
+                cons: ["Gérants indépendants : la qualité du service dépend fortement de l'agence locale", "App bancaire un peu moins moderne que les grands groupes"],
+                address: "Réseau d'agences locales",
+                url: "https://www.argenta.be"
+            },
+            {
+                name: "Immotheker Finotheker (Courtier)",
+                rank: 3,
+                category: "Le Filet de Sécurité",
+                badgeColor: "bg-purple-100 text-purple-800",
+                description: "Le plus grand réseau de courtiers indépendants. Ils ne prêtent pas leur argent mais cherchent pour vous.",
+                pros: ["Comparent plus de 15 banques et caisses de crédit en un rendez-vous", "Accès à des prêteurs inaccessibles au public (Elantis, Credimo, Demetris)", "Essentiel si vous avez peu d'apport ou si la quotité dépasse 90%"],
+                cons: ["Ils se rémunèrent souvent via les assurances : si vous refusez de prendre l'assurance décès/incendie chez eux, ils peuvent vous facturer des frais de mandat."],
+                address: "Réseau d'agences",
+                url: "https://www.immothekerfinotheker.be"
+            },
+            {
+                name: "Credissimo / Hypo Connect", rank: 4, category: "Courtier Prêts Difficiles", badgeColor: "bg-purple-100 text-purple-800",
+                description: "Courtiers spécialisés dans les dossiers compliqués ou le financement total.",
+                pros: ["Peuvent parfois monter des dossiers à 110% (financement des frais) en combinant hypothèque et prêt à tempérament", "Regroupement de crédits possible"],
+                cons: ["Les taux finaux sont souvent beaucoup plus élevés", "Frais de courtage parfois appliqués"],
+                address: "Agences / Téléphone", url: "https://www.credissimo.be"
+            },
+            {
+                name: "SWCS (Société Wallonne du Crédit Social)", rank: 5, category: "Crédit Social Wallon", badgeColor: "bg-pink-100 text-pink-800",
+                description: "Prêts publics à taux réduits pour familles modestes ou nombreuses en Wallonie.",
+                pros: ["Taux très bas (souvent autour de 2%)", "Peut parfois financer une partie des frais (100%+) ou les travaux"],
+                cons: ["Conditions de revenus très strictes (Plafond de revenus imposables)", "Lenteur administrative importante (plusieurs mois d'attente)"],
+                address: "Guichets locaux (ex: Le Petit Propriétaire, Crédit Ouvrier...)", url: "https://www.swcs.be"
+            },
+            {
+                name: "Fonds du Logement de Wallonie (FLW)", rank: 6, category: "Crédit Social Wallon", badgeColor: "bg-pink-100 text-pink-800",
+                description: "Prêts sociaux destinés spécifiquement aux familles nombreuses (3 enfants ou plus).",
+                pros: ["Taux excessivement avantageux pour les familles nombreuses", "Accompagnement personnalisé"],
+                cons: ["Plafonds de revenus", "Procédure longue", "Le bien doit respecter des normes de salubrité strictes"],
+                address: "Bureaux régionaux (Charleroi, Liège, Namur...)", url: "https://www.flw.be"
+            },
+            {
+                name: "Belfius",
+                rank: 7,
+                category: "Grande Banque",
+                badgeColor: "bg-emerald-100 text-emerald-800",
+                description: "Banque 100% belge appartenant à l'État.",
+                pros: ["Ouverture d'esprit pour les jeunes primo-acquérents (2 CDI)", "Excellente app mobile", "Directeurs d'agence avec une belle marge de manœuvre pour s'aligner sur la concurrence si vous amenez l'offre d'une autre banque"],
+                cons: ["Leurs assurances associées (spécialement le Solde Restant Dû) peuvent être hors de prix"],
+                address: "Réseau d'agences",
+                url: "https://www.belfius.be"
+            },
+            {
+                name: "AXA Banque / Crelan",
+                rank: 8,
+                category: "Alternative Solide",
+                badgeColor: "bg-amber-100 text-amber-800",
+                description: "Crelan a racheté AXA Banque en Belgique. Réseau d'agents bancaires indépendants.",
+                pros: ["Souvent plus flexibles sur le taux d'endettement si le reste à vivre est important", "Bonnes assurances (héritage AXA)"],
+                cons: ["En pleine fusion informatique, l'administration peut parfois être un peu lente ou complexe"],
+                address: "Réseau d'agences",
+                url: "https://www.crelan.be"
+            },
+            {
+                name: "Beobank",
+                rank: 9,
+                category: "Alternative",
+                badgeColor: "bg-amber-100 text-amber-800",
+                description: "Anciennement Citibank Belgique, rachetée par le Crédit Mutuel Nord Europe.",
+                pros: ["Étaient réputés pour accepter de financer à 100% (plus rare aujourd'hui mais possible selon le dossier)"],
+                cons: ["Taux de base souvent un peu plus élevés que la moyenne des challengers", "Poussent fortement au crédit à la consommation en parallèle"],
+                address: "Réseau d'agences",
+                url: "https://www.beobank.be"
+            },
+            {
+                name: "CPH Banque",
+                rank: 10,
+                category: "Banque Locale",
+                badgeColor: "bg-amber-100 text-amber-800",
+                description: "Banque coopérative 100% wallonne (siège à Tournai).",
+                pros: ["Approche ultra locale et humaine", "L'argent reste dans l'économie régionale"],
+                cons: ["Taux d'intérêts rarement compétitifs face aux gros acteurs", "Outils digitaux vieillissants"],
+                address: "Réseau limité (Hainaut, Namur, Brabant Wallon)",
+                url: "https://www.cph.be"
+            },
+            {
+                name: "Fintro",
+                rank: 11,
+                category: "Réseau Indépendant",
+                badgeColor: "bg-rose-100 text-rose-800",
+                description: "Réseau d'agents bancaires et courtiers en assurances rattaché à BNP Paribas Fortis.",
+                pros: ["Service client souvent meilleur et plus personnalisé que dans les grandes agences BNP"],
+                cons: ["Utilisent les mêmes taux et conditions (strictes et chères) que BNP Paribas Fortis en arrière-plan"],
+                address: "Réseau d'agences",
+                url: "https://www.fintro.be"
+            },
+            {
+                name: "BNP Paribas Fortis",
+                rank: 12,
+                category: "À Éviter (sauf négociation)",
+                badgeColor: "bg-rose-100 text-rose-800",
+                description: "Leader du marché en Belgique.",
+                pros: ["Sont partout. Si vos parents y sont depuis 30 ans, ils peuvent faire un geste (rabais 'family')."],
+                cons: ["Taux catalogues très élevés. Impossible d'avoir un bon taux sans devoir pleurer. Exigent la domiciliation et facturent leurs assurances au prix fort."],
+                address: "Réseau d'agences",
+                url: "https://www.bnpparibasfortis.be"
+            },
+            {
+                name: "ING Belgique",
+                rank: 13,
+                category: "À Éviter (sauf négociation)",
+                badgeColor: "bg-rose-100 text-rose-800",
+                description: "Grande banque d'origine néerlandaise.",
+                pros: ["Bon environnement digital"],
+                cons: ["Politique d'octroi très stricte (algorithmique). Taux rarement intéressants pour les petits apports. Forte pression sur le cross-selling."],
+                address: "Réseau d'agences",
+                url: "https://www.ing.be"
+            },
+            {
+                name: "Triodos",
+                rank: 14,
+                category: "Niche Écologique",
+                badgeColor: "bg-slate-200 text-slate-800",
+                description: "La banque de référence pour la durabilité et l'éthique.",
+                pros: ["Votre argent ne finance pas les énergies fossiles", "Bons taux si la maison est très écologique"],
+                cons: ["Critères d'acceptation extrêmement stricts : ils refusent de financer les passoires énergétiques (PEB E, F, G) sauf si vous intégrez un lourd budget de rénovation écologique au prêt."],
+                address: "Principalement digital / Agences limitées",
+                url: "https://www.triodos.be"
+            }
+        ];
+
+        // --- RENDER BANKS LOGIC ---
+        function renderBanks(filterText = "") {
+            const bankListContainer = document.getElementById('bankListContainer');
+            const noBankResult = document.getElementById('noBankResult');
+
+            if (!bankListContainer || !noBankResult) return;
+
+            bankListContainer.innerHTML = '';
+
+            const normalizedFilter = filterText.toLowerCase().trim();
+            const filteredBanks = banksData.filter(bank =>
+                bank.name.toLowerCase().includes(normalizedFilter) ||
+                bank.category.toLowerCase().includes(normalizedFilter) ||
+                bank.description.toLowerCase().includes(normalizedFilter)
+            );
+
+            if (filteredBanks.length === 0) {
+                noBankResult.classList.remove('hidden');
+            } else {
+                noBankResult.classList.add('hidden');
+
+                filteredBanks.forEach(bank => {
+                    const item = document.createElement('div');
+                    item.className = 'border border-slate-200 rounded-lg bg-white overflow-hidden';
+
+                    const header = document.createElement('button');
+                    header.className = 'w-full px-5 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors';
+                    header.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 border border-slate-200 shadow-sm">${bank.rank}</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base leading-tight">${bank.name}</h4>
+                                <span class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${bank.badgeColor} font-medium">${bank.category}</span>
+                            </div>
+                        </div>
+                        <span class="chevron text-slate-400 text-xl transform transition-transform">▼</span>
+                    `;
+
+                    const content = document.createElement('div');
+                    content.className = 'accordion-content bg-slate-50 border-t border-slate-100';
+
+                    let prosHtml = bank.pros.map(p => `<li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> <span>${p}</span></li>`).join('');
+                    let consHtml = bank.cons.map(c => `<li class="flex items-start gap-2"><span class="text-rose-500">✗</span> <span>${c}</span></li>`).join('');
+
+                    content.innerHTML = `
+                        <div class="p-5 space-y-4">
+                            <p class="text-sm text-slate-700 italic border-l-4 border-slate-300 pl-3">${bank.description}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div><h5 class="font-bold text-emerald-800 mb-2">Pour</h5><ul class="space-y-1 text-slate-600">${prosHtml}</ul></div>
+                                <div><h5 class="font-bold text-rose-800 mb-2">Contre / Attention</h5><ul class="space-y-1 text-slate-600">${consHtml}</ul></div>
+                            </div>
+                            <div class="pt-3 mt-3 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm">
+                                <span class="text-slate-500">📍 ${bank.address}</span>
+                                <a href="${bank.url}" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 font-bold bg-sky-100 px-3 py-1.5 rounded-md transition-colors">Visiter le site ↗</a>
+                            </div>
+                        </div>
+                    `;
+
+                    header.addEventListener('click', () => {
+                        const isOpen = item.classList.contains('open');
+                        if (!isOpen) {
+                            item.classList.add('open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        } else {
+                            item.classList.remove('open');
+                            content.style.maxHeight = null;
+                        }
+                    });
+
+                    item.appendChild(header);
+                    item.appendChild(content);
+                    bankListContainer.appendChild(item);
+                });
+            }
+        }
+
+        // --- EXISTING CALCULATOR LOGIC ---
+        let loanChart = null;
+        let globalMonthlyPayment = 0;
+        let globalCharges = 0;
+        const fmtMoney = new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+        function checkSocialCreditEligibility(netMonthly, childrenStr) {
+            const estimatedGross = netMonthly * 1.35 * 12;
+            const children = parseInt(childrenStr) || 0;
+
+            let limit = 65400;
+            limit += (children * 3200);
+
+            if (estimatedGross <= limit) {
+                return `<p class="text-xl font-bold text-emerald-600">✅ Probable</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Vos revenus imposables estimés (< ${fmtMoney.format(limit)}) semblent vous donner droit au taux réduit SWCS/FLW. Allez voir un Guichet Local !</p>`;
+            } else {
+                return `<p class="text-xl font-bold text-rose-500">❌ Peu probable</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Vos revenus estimés (${fmtMoney.format(estimatedGross)}/an imposable) dépassent le plafond SWCS (max ~${fmtMoney.format(limit)}€ pour ${children} enf). Dirigez-vous vers les banques classiques.</p>`;
+            }
+        }
+
+        function calculateAll() {
+            const price = getValue('inPriceNum');
+            const savings = getValue('inSavingsNum');
+            const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
+            const rate = getValue('inRateNum');
+            const years = getValue('inYears', true) || 25;
+            const income = getValue('inIncomeNum');
+            const childrenCount = document.getElementById('inChildren')?.value || "0";
+
+            globalCharges = getValue('inChargesNum');
+
+            // Update Social Credit
+            setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount));
+
+            // Fees Logic
+            const regTaxRate = isFirstHome ? 0.03 : 0.125;
+            const registrationCosts = price * regTaxRate;
+            const notaryPurchaseCosts = (price * 0.009) + 1200;
+
+            let estimatedTotalFees = registrationCosts + notaryPurchaseCosts + (price * 0.012);
+            let totalCost = price + estimatedTotalFees;
+            let loanAmount = totalCost - savings;
+            if (loanAmount < 0) loanAmount = 0;
+
+            const creditActCosts = loanAmount > 0 ? (loanAmount * 0.012) + 800 : 0;
+            const exactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts;
+            totalCost = price + exactMandatoryFees;
+            loanAmount = totalCost - savings;
+            if (loanAmount < 0) loanAmount = 0;
+
+            // Receipts UI (Safe DOM updates)
+            setText('fPrix', fmtMoney.format(price));
+            setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
+            setText('fEnreg', fmtMoney.format(registrationCosts));
+            setText('fNotaire', fmtMoney.format(notaryPurchaseCosts));
+            setText('fCredit', fmtMoney.format(creditActCosts));
+            setText('fTotal', fmtMoney.format(totalCost));
+
+            // Funding UI
+            setText('fMinimumLegal', fmtMoney.format(exactMandatoryFees));
+            setText('fApportVal', fmtMoney.format(savings));
+            setText('fCreditDemande', fmtMoney.format(loanAmount));
+
+            let ltv = price > 0 ? (loanAmount / price) * 100 : 0;
+            setText('fLtvText', `Emprunt à ${ltv.toFixed(0)}% du prix de la maison.`);
+
+            const alertApport = document.getElementById('alertApport');
+            if (alertApport) {
+                if (savings < exactMandatoryFees) {
+                    alertApport.classList.remove('hidden');
+                    document.getElementById('fCreditDemande')?.classList.add('text-rose-600');
+                    document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
+                    setText('alertApportVal', fmtMoney.format(savings));
+                    setText('alertFraisVal', fmtMoney.format(exactMandatoryFees));
+                } else {
+                    alertApport.classList.add('hidden');
+                    document.getElementById('fCreditDemande')?.classList.remove('text-rose-600');
+                    document.getElementById('fMinimumLegal')?.classList.remove('text-rose-600');
+                }
+            }
+
+            // Monthly Payment
+            const monthlyRate = (rate / 100) / 12;
+            const numPayments = years * 12;
+
+            if (loanAmount > 0 && monthlyRate > 0) {
+                globalMonthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            } else {
+                globalMonthlyPayment = loanAmount > 0 ? loanAmount / numPayments : 0;
+            }
+
+            setText('outPayment', fmtMoney.format(globalMonthlyPayment));
+            setText('outYearsText', years);
+
+            // KPIs
+            const debtRatio = income > 0 ? ((globalMonthlyPayment + globalCharges) / income) * 100 : 0;
+            setText('outDebtRatio', debtRatio.toFixed(1) + ' %');
+
+            const cardDebt = document.getElementById('cardDebt');
+            const outDebtRatioEl = document.getElementById('outDebtRatio');
+
+            if (cardDebt && outDebtRatioEl) {
+                cardDebt.className = 'bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center transition-all duration-300';
+                if (debtRatio <= 35) {
+                    cardDebt.classList.add('border-l-emerald-500');
+                    outDebtRatioEl.className = 'text-3xl font-bold text-emerald-600 mt-1';
+                    setText('outDebtStatus', "✅ Vert (Dossier solide)");
+                } else if (debtRatio > 35 && debtRatio <= 42) {
+                    cardDebt.classList.add('border-l-amber-500');
+                    outDebtRatioEl.className = 'text-3xl font-bold text-amber-500 mt-1';
+                    setText('outDebtStatus', "⚠️ Orange (Dépend du reste à vivre)");
+                } else {
+                    cardDebt.classList.add('border-l-rose-500');
+                    outDebtRatioEl.className = 'text-3xl font-bold text-rose-600 mt-1';
+                    setText('outDebtStatus', "❌ Rouge (Refus probable)");
+                }
+            }
+
+            // Analysis First Month
+            const barInterets = document.getElementById('barInterets');
+            const barCapital = document.getElementById('barCapital');
+
+            if (loanAmount > 0 && monthlyRate > 0) {
+                const interestMonth1 = loanAmount * monthlyRate;
+                const capitalMonth1 = globalMonthlyPayment - interestMonth1;
+
+                const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
+                const pctCapital = (capitalMonth1 / globalMonthlyPayment) * 100;
+
+                setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
+
+                if (barInterets) {
+                    barInterets.style.width = `${pctInterest}%`;
+                    barInterets.textContent = `${pctInterest.toFixed(0)}% Intérêts`;
+                }
+                setText('tInterets', `Coût du crédit : ${fmtMoney.format(interestMonth1)}`);
+
+                if (barCapital) {
+                    barCapital.style.width = `${pctCapital}%`;
+                    barCapital.textContent = `${pctCapital.toFixed(0)}% Capital`;
+                }
+                setText('tCapital', `Capital remboursé : ${fmtMoney.format(capitalMonth1)}`);
+            } else {
+                setText('mMensualite', "-- €");
+                if (barInterets) { barInterets.style.width = `50%`; barInterets.textContent = ""; }
+                if (barCapital) { barCapital.style.width = `50%`; barCapital.textContent = ""; }
+                setText('tInterets', "Coût du crédit : -- €");
+                setText('tCapital', "Capital remboursé : -- €");
+            }
+
+            updateChart(loanAmount, monthlyRate, numPayments, globalMonthlyPayment);
+            runCrisisSimulation();
+        }
+
+        function runCrisisSimulation() {
+            const crisisIncome = getValue('inCrisisNum');
+            const resteAvivre = crisisIncome - globalMonthlyPayment - globalCharges;
+
+            let html = `<div class="flex justify-between items-end mb-2">
+                            <span class="text-slate-600">Reste à vivre estimé :</span>
+                            <span class="text-2xl font-bold ${resteAvivre < 1300 ? 'text-rose-600' : 'text-emerald-600'}">${fmtMoney.format(resteAvivre)}</span>
+                        </div>`;
+
+            if (resteAvivre < 0) {
+                html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Faillite budgétaire. Vous devrez puiser dans vos économies chaque mois pour payer le crédit.</div>`;
+            } else if (resteAvivre < 1300) {
+                html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Zone de danger absolu. En dessous du minimum vital pour un couple (env. 1300€).</div>`;
+            } else if (resteAvivre < 1800) {
+                html += `<div class="p-2 bg-amber-100 text-amber-800 rounded text-xs font-bold">Tension budgétaire. Vivable mais attention aux dépenses imprévues.</div>`;
+            } else {
+                html += `<div class="p-2 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">Résilience Ok. Vous conservez un train de vie tout à fait correct.</div>`;
+            }
+
+            setHTML('crisisResultBlock', html);
+        }
+
+        function updateChart(principal, monthlyRate, numPayments, monthlyPayment) {
+            let balance = principal;
+            let labels = [];
+            let interestData = [];
+            let principalData = [];
+
+            if (principal > 0 && numPayments > 0) {
+                for (let year = 1; year <= numPayments / 12; year++) {
+                    labels.push('An ' + year);
+                    let yearlyInterest = 0;
+                    let yearlyPrincipal = 0;
+                    for (let month = 1; month <= 12; month++) {
+                        let interestForMonth = balance * monthlyRate;
+                        let principalForMonth = monthlyPayment - interestForMonth;
+                        yearlyInterest += interestForMonth;
+                        yearlyPrincipal += principalForMonth;
+                        balance -= principalForMonth;
+                    }
+                    interestData.push(yearlyInterest);
+                    principalData.push(yearlyPrincipal);
+                }
+            }
+
+            const canvas = document.getElementById('loanChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            if (loanChart) {
+                loanChart.data.labels = labels;
+                loanChart.data.datasets[0].data = principalData;
+                loanChart.data.datasets[1].data = interestData;
+                loanChart.update();
+            } else {
+                loanChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Capital remboursé', data: principalData, backgroundColor: '#10b981', stack: 'Stack 0' },
+                            { label: 'Intérêts payés', data: interestData, backgroundColor: '#fb7185', stack: 'Stack 0' }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, border: { display: false } } },
+                        plugins: {
+                            tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y); } } },
+                            legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // INIT & LISTENERS
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBanks();
+
+            const bankSearchInput = document.getElementById('bankSearch');
+            if (bankSearchInput) {
+                bankSearchInput.addEventListener('input', (e) => { renderBanks(e.target.value); });
+            }
+
+            syncInputsSafe('inIncomeSlider', 'inIncomeNum', () => {
+                const slider = document.getElementById('inCrisisSlider');
+                const num = document.getElementById('inCrisisNum');
+                const incomeNum = document.getElementById('inIncomeNum');
+                if (slider && num && incomeNum) {
+                    slider.value = incomeNum.value;
+                    num.value = incomeNum.value;
+                }
+                calculateAll();
+            });
+
+            syncInputsSafe('inChargesSlider', 'inChargesNum', calculateAll);
+            syncInputsSafe('inPriceSlider', 'inPriceNum', calculateAll);
+            syncInputsSafe('inSavingsSlider', 'inSavingsNum', calculateAll);
+            syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
+
+            document.getElementById('inChildren')?.addEventListener('change', calculateAll);
+            document.getElementById('inFirstHome')?.addEventListener('change', calculateAll);
+            document.getElementById('inRateNum')?.addEventListener('input', calculateAll);
+            document.getElementById('inYears')?.addEventListener('change', calculateAll);
+
+            // Set initial Crisis values
+            const slider = document.getElementById('inCrisisSlider');
+            const num = document.getElementById('inCrisisNum');
+            const incomeNum = document.getElementById('inIncomeNum');
+            if (slider && num && incomeNum) {
+                slider.value = incomeNum.value;
+                num.value = incomeNum.value;
+            }
+
+            calculateAll();
+        });
+
+    </script>
+</body>
+
+</html>
