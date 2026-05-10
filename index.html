@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +38,10 @@
 
         input[type=range].crisis-slider::-webkit-slider-thumb {
             background: #f43f5e;
+        }
+
+        input[type=range].invest-slider::-webkit-slider-thumb {
+            background: #8b5cf6;
         }
 
         .chart-container {
@@ -104,7 +107,6 @@
             margin-bottom: 0.25rem;
         }
 
-        /* Accordion transition */
         .accordion-content {
             transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
             max-height: 0;
@@ -131,7 +133,7 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-sky-400">MasterImmo Wallonie PRO</h1>
-            <p class="text-slate-300 text-sm">Crédit Social, Frais 110% & Plan de Financement</p>
+            <p class="text-slate-300 text-sm">Chronologie exacte, Trésorerie & Comparatif</p>
         </div>
         <div class="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700 text-sm">
             Région : <strong class="text-white">Wallonie</strong>
@@ -245,8 +247,8 @@
 
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Votre Apport Personnel
-                            (Épargne sur compte)</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Votre Apport Personnel (Épargne
+                            totale dispo)</label>
                         <div class="flex items-center gap-4">
                             <input type="range" id="inSavingsSlider" min="0" max="300000" step="5000" value="50000"
                                    class="flex-grow">
@@ -276,7 +278,7 @@
                 </div>
             </section>
 
-            <!-- NOUVEAU: MODULE ACHAT VS LOCATION (Inputs) -->
+            <!-- MODULE ACHAT VS LOCATION -->
             <section class="bg-purple-50 p-6 rounded-xl shadow-sm border border-purple-200">
                 <div class="flex items-center gap-2 mb-4 border-b border-purple-200 pb-2">
                     <span class="text-xl">⚖️</span>
@@ -287,8 +289,7 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-purple-900 mb-1">Loyer mensuel
-                            équivalent</label>
+                        <label class="block text-sm font-semibold text-purple-900 mb-1">Loyer mensuel équivalent</label>
                         <div class="flex items-center gap-4">
                             <input type="range" id="inRentSlider" min="500" max="2500" step="50" value="1200"
                                    class="flex-grow invest-slider">
@@ -310,9 +311,8 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-purple-900 mb-1"
-                                   title="Si le locataire place son épargne non utilisée pour l'achat en bourse/épargne.">Rendement
-                                épargne locataire</label>
+                            <label class="block text-xs font-semibold text-purple-900 mb-1">Rendement bourse
+                                locataire</label>
                             <div class="relative">
                                 <input type="number" id="inYield" value="4.0" step="0.1"
                                        class="w-full px-3 py-2 border border-purple-300 rounded-md bg-white text-right">
@@ -329,8 +329,7 @@
                     <span class="text-xl">🚨</span>
                     <h2 class="text-lg font-bold text-rose-900">Module de Crise</h2>
                 </div>
-                <p class="text-sm text-rose-700 mb-4">Simulez une perte d'emploi. Nouveaux revenus nets du ménage :
-                </p>
+                <p class="text-sm text-rose-700 mb-4">Simulez une perte d'emploi. Nouveaux revenus nets du ménage :</p>
                 <div class="flex items-center gap-4 mb-4">
                     <input type="range" id="inCrisisSlider" min="1000" max="10000" step="100" value="4400"
                            class="flex-grow crisis-slider">
@@ -345,10 +344,10 @@
 
         </div>
 
-        <!-- RIGHT COLUMN : RESULTS & ADVICE -->
+        <!-- RIGHT COLUMN : RESULTS & TIMELINE -->
         <div class="lg:col-span-7 space-y-6">
 
-            <!-- TOP KPIs & SOCIAL CREDIT -->
+            <!-- TOP KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Mensualité -->
                 <div class="bg-slate-900 text-white p-5 rounded-xl shadow-sm flex flex-col justify-center">
@@ -357,9 +356,7 @@
                     <p class="text-xs text-slate-400 mt-1">Pendant <span id="outYearsText">25</span> ans</p>
                 </div>
 
-                <!-- Endettement -->
-                <div id="cardDebt"
-                     class="bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center">
+                <div id="cardDebt" class="bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center">
                     <h4 class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Endettement</h4>
                     <p class="text-3xl font-bold text-slate-800 mt-1" id="outDebtRatio">-- %</p>
                     <p id="outDebtStatus" class="text-xs font-medium mt-1">Évaluation...</p>
@@ -368,18 +365,240 @@
                 <!-- Crédit Social Check -->
                 <div id="cardSocial"
                      class="bg-indigo-50 p-5 rounded-xl shadow-sm border border-indigo-200 flex flex-col justify-center">
-                    <h4 class="text-xs text-indigo-800 uppercase tracking-wider font-semibold mb-1">Éligibilité
-                        Crédit Social</h4>
-                    <div id="socialStatusContent">
-                        <!-- Injecté par JS -->
+                    <h4 class="text-xs text-indigo-800 uppercase tracking-wider font-semibold mb-1">Crédit Social
+                        (SWCS)</h4>
+                    <div id="socialStatusContent"></div>
+                </div>
+            </div>
+
+            <!-- LE TICKET DE CAISSE -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-100 border-b border-slate-200 px-6 py-4 flex items-center gap-2">
+                    <span class="text-xl">🧾</span>
+                    <h3 class="font-bold text-slate-800">Le Coût Total du Projet</h3>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <!-- Le Ticket -->
+                    <div class="text-sm font-mono text-slate-700 bg-slate-50 p-4 rounded border border-slate-200">
+                        <div class="receipt-line font-bold text-slate-900">
+                            <span>1. Prix de la maison</span><span id="fPrix">439 000 €</span>
+                        </div>
+                        <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais obligatoires ---</div>
+                        <div class="receipt-line">
+                            <span>2a. Droits enregistrement (<span id="fTauxEnreg">3%</span>)</span><span id="fEnreg">13 170 €</span>
+                        </div>
+                        <div class="receipt-line">
+                            <span>2b. Notaire (Actes & Honoraires)</span><span id="fNotaire">~4 200 €</span>
+                        </div>
+                        <div class="receipt-line">
+                            <span>2c. Frais acte de crédit</span><span id="fCredit">~5 500 €</span>
+                        </div>
+                        <div class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
+                            <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
+                        </div>
+                    </div>
+
+                    <!-- L'équation -->
+                    <div class="text-sm flex flex-col justify-center">
+                        <div class="p-4 bg-sky-50 border border-sky-300 rounded-lg relative overflow-hidden mb-3">
+                            <div class="absolute right-0 top-0 bottom-0 bg-sky-200 text-sky-700 w-12 flex items-center justify-center font-bold text-xl">
+                                🏦
+                            </div>
+                            <div class="pr-14">
+                                <span class="font-bold text-sky-900 text-base block mb-1">Montant du Crédit :</span>
+                                <span class="font-bold text-sky-700 text-2xl" id="fCreditDemande">-- €</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-lg relative overflow-hidden">
+                            <div class="absolute right-0 top-0 bottom-0 bg-emerald-500 text-white w-12 flex items-center justify-center font-bold text-xl">
+                                💳
+                            </div>
+                            <div class="pr-14">
+                                <span class="font-bold text-emerald-900 text-base block mb-1">À payer de votre poche :</span>
+                                <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
+                                <p class="text-xs text-emerald-800 mt-1">C'est l'apport <strong>minimum
+                                    obligatoire</strong> (Frais 2a+2b+2c). Cet argent part chez le notaire et
+                                    l'État.</p>
+                            </div>
+                        </div>
+                        <div id="alertApport"
+                             class="hidden mt-3 p-3 bg-rose-100 border border-rose-300 text-rose-900 text-sm rounded font-medium flex gap-2 items-start">
+                            <span class="text-xl">🛑</span>
+                            <div><strong>Épargne insuffisante.</strong> Il vous manque <span id="alertManqueVal"
+                                                                                             class="underline"></span>.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- NOUVEAU : ACHAT VS LOCATION RÉSULTATS -->
+            <!-- LA CHRONOLOGIE EXACTE DES PAIEMENTS -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-indigo-50 border-b border-indigo-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">⏳</span>
+                        <h3 class="font-bold text-indigo-900">Chronologie : Quand l'argent sort-il de votre compte
+                            ?</h3>
+                    </div>
+                    <!-- NEW: Acompte selector -->
+                    <div class="flex items-center gap-2 bg-white px-3 py-1 rounded border border-indigo-200 text-sm">
+                        <label for="inAcompteRate" class="font-bold text-indigo-800">Acompte / Garantie :</label>
+                        <select id="inAcompteRate"
+                                class="bg-transparent text-indigo-900 focus:outline-none font-semibold cursor-pointer">
+                            <option value="0">0% (Négocié)</option>
+                            <option value="0.05" selected>5% (Standard actuel)</option>
+                            <option value="0.10">10% (Classique)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <p class="text-sm text-slate-700 mb-6 font-medium">
+                        Ne vous inquiétez pas : vous ne devez payer les "gros" frais (notaire, enregistrement) qu'à la
+                        toute fin du processus. Modifiez le sélecteur ci-dessus pour ajuster la garantie que vous versez
+                        au compromis.
+                    </p>
+
+                    <div class="relative border-l-2 border-indigo-200 ml-4 space-y-8 pb-4">
+
+                        <!-- Etape 1 : Le Compromis -->
+                        <div class="relative pl-6">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 bg-amber-400 rounded-full ring-4 ring-white"></div>
+                            <h4 class="font-bold text-slate-800 text-base">Jour 1 : Signature du compromis de vente</h4>
+                            <p class="text-sm text-slate-600 mt-1 mb-2">
+                                <strong class="text-amber-600">Note : Un acompte n'est PAS une obligation
+                                    légale.</strong> C'est une coutume pour rassurer le vendeur. Vous avez 7 à 10 jours
+                                pour le virer sur le compte sécurisé du notaire.
+                            </p>
+                            <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 inline-block w-full sm:w-auto">
+                                <div class="flex justify-between items-end gap-6">
+                                    <div>
+                                        <span class="text-xs text-amber-800 font-bold uppercase tracking-wider block mb-1">1. À payer : L'Acompte</span>
+                                        <p class="text-xs text-amber-700 italic">Avance sur le prix, déduite à la
+                                            fin.</p>
+                                    </div>
+                                    <span class="text-xl font-bold text-amber-900" id="tlAcompte">-- €</span>
+                                </div>
+                                <p id="tlAcompteAlert" class="text-xs text-rose-600 font-bold mt-2 hidden">⚠️ Attention
+                                    : Votre épargne actuelle est inférieure à cet acompte.</p>
+                            </div>
+                        </div>
+
+                        <!-- Etape 2 : Le Crédit -->
+                        <div class="relative pl-6">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 bg-sky-400 rounded-full ring-4 ring-white"></div>
+                            <h4 class="font-bold text-slate-800 text-base">Jour 15 à 30 : Contrat de crédit</h4>
+                            <p class="text-sm text-slate-600 mt-1 mb-2">Votre banque valide définitivement le prêt. Elle
+                                vous prélève les frais de gestion du dossier bancaire.</p>
+                            <div class="bg-sky-50 p-3 rounded-lg border border-sky-200 inline-block w-full sm:w-auto">
+                                <div class="flex justify-between items-end gap-6">
+                                    <div>
+                                        <span class="text-xs text-sky-800 font-bold uppercase tracking-wider block mb-1">2. À payer : Frais de banque</span>
+                                        <p class="text-xs text-sky-700 italic">Frais de dossier légaux. Parfois
+                                            gratuits.</p>
+                                    </div>
+                                    <span class="text-xl font-bold text-sky-900">~ 500 €</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Etape 3 : L'Acte -->
+                        <div class="relative pl-6">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 bg-emerald-500 rounded-full ring-4 ring-white"></div>
+                            <h4 class="font-bold text-slate-800 text-base">Jour 90 à 120 (Max 4 mois) : L'Acte Notarié
+                                🔑</h4>
+                            <p class="text-sm text-slate-600 mt-1 mb-3">Remise des clés ! C'est ici que l'argent bouge
+                                réellement.</p>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-xl">🏦</div>
+                                    <div class="text-sm">
+                                        <strong class="text-slate-800">La banque verse le crédit directement au
+                                            notaire</strong>
+                                        <span class="block text-slate-500">Montant versé par la banque : <strong
+                                                id="tlCredit">-- €</strong></span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="text-xl mt-1">💳</div>
+                                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 flex-grow">
+                                        <div class="flex justify-between items-start flex-col sm:flex-row gap-2">
+                                            <div>
+                                                <span class="text-xs text-emerald-800 font-bold uppercase tracking-wider block mb-1">3. À payer : Le Solde Restant</span>
+                                                <p class="text-xs text-emerald-700">Vous devez virer au notaire : Tous
+                                                    les frais (enregistrements, actes) + le reste de la maison non
+                                                    couvert par la banque, <strong>moins l'acompte (étape 1)</strong>.
+                                                </p>
+                                            </div>
+                                            <span class="text-2xl font-bold text-emerald-900 whitespace-nowrap"
+                                                  id="tlSoldeNotaire">-- €</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Etape 4 : Le Remboursement -->
+                        <div class="relative pl-6">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 bg-slate-800 rounded-full ring-4 ring-white"></div>
+                            <h4 class="font-bold text-slate-800 text-base">Mois Suivant : Début du remboursement</h4>
+                            <p class="text-sm text-slate-600 mt-1 mb-2">1 mois après l'acte authentique, votre première
+                                mensualité tombe.</p>
+                            <div class="bg-slate-100 p-3 rounded-lg border border-slate-300 inline-block w-full sm:w-auto">
+                                <div class="flex justify-between items-end gap-6">
+                                    <span class="text-xs text-slate-600 font-bold uppercase tracking-wider block mb-1">4. À payer : Mensualité</span>
+                                    <span class="text-xl font-bold text-slate-900" id="tlMensualite">-- €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion Sources -->
+                    <div class="mt-6 border border-slate-200 rounded-lg overflow-hidden">
+                        <button id="btnSourcesToggle"
+                                class="w-full px-4 py-3 bg-slate-50 text-left text-sm font-bold text-slate-700 flex justify-between items-center focus:outline-none hover:bg-slate-100">
+                            <span>📚 Sources officielles & Explications (Belgique)</span>
+                            <span id="iconSources" class="transform transition-transform">▼</span>
+                        </button>
+                        <div id="contentSources"
+                             class="max-h-0 overflow-hidden transition-all duration-300 bg-white text-xs text-slate-600">
+                            <div class="p-4 space-y-2">
+                                <p>Ce calendrier respecte scrupuleusement la législation belge :</p>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>L'acompte (ou garantie) n'est pas une obligation légale :</strong>
+                                        "Aucune loi ne vous oblige à payer un acompte à la signature du compromis. Mais
+                                        dans la pratique, il est très fréquent." Allez sur <a
+                                                href="https://www.notaire.be" target="_blank"
+                                                class="text-sky-600 underline font-bold">Notaire.be</a> et cherchez "La
+                                        garantie" dans la section Acheter.
+                                    </li>
+                                    <li><strong>Délai maximal de 4 mois :</strong> Le Code des droits d'enregistrement
+                                        belge impose que les droits (les fameux 3% ou 12.5%) soient payés dans les 4
+                                        mois qui suivent le compromis. C'est pourquoi l'acte se signe dans ce délai.
+                                        Retrouvez ces infos sur <a href="https://www.notaire.be" target="_blank"
+                                                                   class="text-sky-600 underline font-bold">Notaire.be</a>.
+                                    </li>
+                                    <li><strong>Frais de dossier bancaire :</strong> Plafonnés légalement à 500 € en
+                                        Belgique. Source officielle : <a href="https://www.wikifin.be/fr"
+                                                                         target="_blank"
+                                                                         class="text-sky-600 underline font-bold">Wikifin.be</a>
+                                        (Portail d'éducation financière de la FSMA - Cherchez "Les coûts liés à
+                                        l'emprunt").
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ACHAT VS LOCATION (CHARTS) -->
             <div class="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-                <div
-                        class="bg-purple-50 border-b border-purple-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="bg-purple-50 border-b border-purple-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-2">
                         <span class="text-xl">📈</span>
                         <h3 class="font-bold text-purple-900">Achat vs Location : L'impact de l'Indexation</h3>
@@ -389,149 +608,44 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                            <h4 class="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Mensualité à
-                                la fin du crédit</h4>
+                            <h4 class="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Mensualité à la
+                                fin du crédit</h4>
                             <div class="flex justify-between items-end mb-1">
-                                    <span class="text-sm text-slate-600">Loyer indexé (Année <span
-                                            class="rvb-year">25</span>) :</span>
+                                <span class="text-sm text-slate-600">Loyer indexé (Année <span
+                                        class="rvb-year">25</span>) :</span>
                                 <span class="text-xl font-bold text-rose-600" id="rvbFinalRent">-- €</span>
                             </div>
                             <div class="flex justify-between items-end border-t border-slate-200 pt-2 mt-2">
-                                    <span class="text-sm text-slate-600">Crédit Immo (Année <span
-                                            class="rvb-year">25</span>) :</span>
+                                <span class="text-sm text-slate-600">Crédit Immo (Année <span class="rvb-year">25</span>) :</span>
                                 <span class="text-xl font-bold text-emerald-600" id="rvbFinalMortgage">-- €</span>
                             </div>
-                            <p class="text-xs text-slate-500 mt-2 italic">Le crédit reste fixe tandis que le loyer
-                                suit l'inflation. Votre salaire, lui, augmentera aussi !</p>
                         </div>
 
-                        <div
-                                class="bg-purple-100 p-4 rounded-lg border border-purple-300 flex flex-col justify-center text-center">
-                            <h4 class="text-xs uppercase tracking-wider font-bold text-purple-800 mb-1">Point de
-                                Bascule Financier</h4>
+                        <div class="bg-purple-100 p-4 rounded-lg border border-purple-300 flex flex-col justify-center text-center">
+                            <h4 class="text-xs uppercase tracking-wider font-bold text-purple-800 mb-1">Point de Bascule
+                                Financier</h4>
                             <p class="text-3xl font-bold text-purple-900 my-1" id="rvbBreakEvenYear">Année --</p>
                             <p class="text-xs text-purple-800" id="rvbBreakEvenText">Moment où l'acheteur devient
                                 mathématiquement plus riche que le locataire.</p>
                         </div>
                     </div>
 
-                    <!-- Tabs for charts -->
                     <div class="flex border-b border-slate-200 mb-4">
                         <button id="btnTabMonthly"
                                 class="px-4 py-2 font-bold text-sm text-purple-700 border-b-2 border-purple-700 focus:outline-none">
-                            Coût
-                            Mensuel
+                            Coût Mensuel
                         </button>
                         <button id="btnTabWealth"
                                 class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-700 focus:outline-none">
-                            Patrimoine
-                            Net (Richesse)
+                            Patrimoine Net
                         </button>
                     </div>
 
-                    <!-- Chart Monthly -->
                     <div id="panelMonthly" class="chart-container block">
                         <canvas id="rentMonthlyChart"></canvas>
                     </div>
-
-                    <!-- Chart Wealth -->
                     <div id="panelWealth" class="chart-container hidden">
                         <canvas id="rentWealthChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LE TICKET DE CAISSE & PLAN DE FINANCEMENT (CE QUI SORT DE VOTRE POCHE) -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-100 border-b border-slate-200 px-6 py-4 flex items-center gap-2">
-                    <span class="text-xl">🧾</span>
-                    <h3 class="font-bold text-slate-800">Plan de Financement : Ce qui sort de votre poche</h3>
-                </div>
-
-                <!-- EXPLICATION 110% -->
-                <div class="bg-amber-50 p-4 border-b border-amber-200 text-sm text-amber-900">
-                    <h4 class="font-bold flex items-center gap-2 mb-1"><span>💡</span> Puis-je emprunter les frais
-                        de notaire (Crédit à 110%) ?</h4>
-                    <p><strong>En règle générale, NON.</strong> La Banque Nationale de Belgique interdit aux banques
-                        traditionnelles de financer les frais d'achat. Vous <strong class="underline">devez</strong>
-                        payer les frais de votre poche. Seules exceptions rares : prêts sociaux (SWCS), mise en
-                        hypothèque de la maison de vos parents, ou courtiers spécialisés (Credissimo) combinant prêt
-                        immo + prêt personnel à taux très élevé.</p>
-                </div>
-
-                <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-8">
-
-                    <!-- Le Ticket -->
-                    <div class="text-sm font-mono text-slate-700 bg-slate-50 p-4 rounded border border-slate-200">
-                        <p class="font-bold font-sans text-slate-500 uppercase mb-3 text-xs tracking-wider">Le Vrai
-                            Coût de l'Achat</p>
-                        <div class="receipt-line font-bold text-slate-900">
-                            <span>1. Prix de la maison</span><span id="fPrix">439 000 €</span>
-                        </div>
-                        <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais obligatoires (Non
-                            finançables) ---
-                        </div>
-                        <div class="receipt-line">
-                            <span>2a. Droits enregistrement (<span id="fTauxEnreg">3%</span>)</span><span
-                                id="fEnreg">13 170 €</span>
-                        </div>
-                        <div class="receipt-line">
-                            <span>2b. Notaire (honoraires, actes)</span><span id="fNotaire">~4 200 €</span>
-                        </div>
-                        <div class="receipt-line">
-                            <span>2c. Frais d'acte de crédit</span><span id="fCredit">~5 500 €</span>
-                        </div>
-                        <div
-                                class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
-                            <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
-                        </div>
-                    </div>
-
-                    <!-- Qui paie quoi -->
-                    <div class="text-sm flex flex-col justify-center">
-
-                        <!-- Ce qui sort de la poche -->
-                        <div
-                                class="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-lg mb-4 relative overflow-hidden">
-                            <div
-                                    class="absolute right-0 top-0 bottom-0 bg-emerald-500 text-white w-12 flex items-center justify-center font-bold text-xl">
-                                💳
-                            </div>
-                            <div class="pr-14">
-                                    <span class="font-bold text-emerald-900 text-base block mb-1">À payer de votre poche
-                                        :</span>
-                                <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
-                                <p class="text-xs text-emerald-800 mt-1">C'est l'apport <strong>minimum
-                                    obligatoire</strong> (Frais 2a+2b+2c). Cet argent part chez le notaire et
-                                    l'État.</p>
-                            </div>
-                        </div>
-
-                        <!-- L'argent de la banque -->
-                        <div class="p-4 bg-sky-50 border border-sky-300 rounded-lg relative overflow-hidden">
-                            <div
-                                    class="absolute right-0 top-0 bottom-0 bg-sky-200 text-sky-700 w-12 flex items-center justify-center font-bold text-xl">
-                                🏦
-                            </div>
-                            <div class="pr-14">
-                                    <span class="font-bold text-sky-900 text-base block mb-1">Montant du Crédit (La
-                                        Banque) :</span>
-                                <span class="font-bold text-sky-700 text-2xl" id="fCreditDemande">-- €</span>
-                                <p class="text-xs text-sky-800 mt-1" id="fLtvText">Financement à XX% du prix de la
-                                    maison. Cet argent va au vendeur.</p>
-                            </div>
-                        </div>
-
-                        <div id="alertApport"
-                             class="hidden mt-4 p-3 bg-rose-100 border border-rose-300 text-rose-900 text-sm rounded font-medium flex gap-2 items-start">
-                            <span class="text-xl">🛑</span>
-                            <div>
-                                <strong>Votre épargne actuelle est insuffisante.</strong>
-                                <br>Vous avez déclaré <span id="alertApportVal" class="underline"></span> d'épargne.
-                                Or les frais s'élèvent à <span id="alertFraisVal" class="underline"></span>. Le
-                                dossier sera bloqué par la banque.
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -598,13 +712,13 @@
                 </div>
             </div>
 
+
         </div>
     </div>
 </main>
 
 <script>
     // --- UTILITY FUNCTIONS ---
-    // Defensive helpers to prevent "Cannot set properties of null"
     function setText(id, text) {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
@@ -633,6 +747,438 @@
             num.addEventListener('input', () => {
                 slider.value = num.value;
                 callback();
+            });
+        }
+    }
+
+    // --- GLOBAL STATE ---
+    let loanChart = null;
+    let rentMonthlyChart = null;
+    let rentWealthChart = null;
+    let globalMonthlyPayment = 0;
+    let globalCharges = 0;
+    let globalExactMandatoryFees = 0;
+    const fmtMoney = new Intl.NumberFormat('fr-BE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
+
+    // --- SOURCES ACCORDION LOGIC ---
+    document.getElementById('btnSourcesToggle')?.addEventListener('click', function () {
+        const content = document.getElementById('contentSources');
+        const icon = document.getElementById('iconSources');
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0px';
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            icon.style.transform = 'rotate(180deg)';
+        }
+    });
+
+    // --- TABS LOGIC ---
+    document.getElementById('btnTabMonthly')?.addEventListener('click', (e) => {
+        document.getElementById('panelMonthly').classList.replace('hidden', 'block');
+        document.getElementById('panelWealth').classList.replace('block', 'hidden');
+        e.target.classList.replace('text-slate-500', 'text-purple-700');
+        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
+        e.target.classList.add('border-purple-700');
+
+        const btnW = document.getElementById('btnTabWealth');
+        btnW.classList.replace('text-purple-700', 'text-slate-500');
+        btnW.classList.remove('border-b-2', 'border-purple-700');
+        btnW.classList.add('hover:text-slate-700');
+    });
+
+    document.getElementById('btnTabWealth')?.addEventListener('click', (e) => {
+        document.getElementById('panelWealth').classList.replace('hidden', 'block');
+        document.getElementById('panelMonthly').classList.replace('block', 'hidden');
+        e.target.classList.replace('text-slate-500', 'text-purple-700');
+        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
+        e.target.classList.add('border-purple-700');
+
+        const btnM = document.getElementById('btnTabMonthly');
+        btnM.classList.replace('text-purple-700', 'text-slate-500');
+        btnM.classList.remove('border-b-2', 'border-purple-700');
+        btnM.classList.add('hover:text-slate-700');
+    });
+
+    function checkSocialCreditEligibility(netMonthly, childrenStr) {
+        const estimatedGross = netMonthly * 1.35 * 12;
+        const children = parseInt(childrenStr) || 0;
+        let limit = 65400 + (children * 3200);
+
+        if (estimatedGross <= limit) {
+            return `<p class="text-xl font-bold text-emerald-600">✅ Probable</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Revenus imposables estimés (< ${fmtMoney.format(limit)}) éligibles au crédit social.</p>`;
+        } else {
+            return `<p class="text-xl font-bold text-rose-500">❌ Peu probable</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Revenus estimés (${fmtMoney.format(estimatedGross)}/an) dépassent le plafond SWCS (~${fmtMoney.format(limit)}€).</p>`;
+        }
+    }
+
+    function calculateAll() {
+        const price = getValue('inPriceNum');
+        const savings = getValue('inSavingsNum');
+        const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
+        const rate = getValue('inRateNum');
+        const years = getValue('inYears', true) || 25;
+        const income = getValue('inIncomeNum');
+        const childrenCount = document.getElementById('inChildren')?.value || "0";
+
+        // New Acompte
+        const acompteRate = parseFloat(document.getElementById('inAcompteRate')?.value || 0.05);
+
+        globalCharges = getValue('inChargesNum');
+
+        // 1. Social status
+        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount));
+
+        // 2. Fees & Loan calculation
+        const regTaxRate = isFirstHome ? 0.03 : 0.125;
+        const registrationCosts = price * regTaxRate;
+        const notaryPurchaseCosts = (price * 0.009) + 1200;
+
+        let estimatedTotalFees = registrationCosts + notaryPurchaseCosts + (price * 0.012);
+        let totalCost = price + estimatedTotalFees;
+        let loanAmount = totalCost - savings;
+        if (loanAmount < 0) loanAmount = 0;
+
+        const creditActCosts = loanAmount > 0 ? (loanAmount * 0.012) + 800 : 0;
+        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts;
+        totalCost = price + globalExactMandatoryFees;
+
+        loanAmount = totalCost - savings;
+        if (loanAmount < 0) loanAmount = 0;
+
+        // Cap loan at 100% of price
+        let actualLoan = loanAmount;
+        if (actualLoan > price) actualLoan = price;
+
+        const requiredPocketCash = globalExactMandatoryFees + (price - actualLoan);
+
+        // 3. UI Receipts
+        setText('fPrix', fmtMoney.format(price));
+        setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
+        setText('fEnreg', fmtMoney.format(registrationCosts));
+        setText('fNotaire', fmtMoney.format(notaryPurchaseCosts));
+        setText('fCredit', fmtMoney.format(creditActCosts));
+        setText('fTotal', fmtMoney.format(totalCost));
+
+        setText('fMinimumLegal', fmtMoney.format(requiredPocketCash));
+        setText('fCreditDemande', fmtMoney.format(actualLoan));
+
+        let ltv = price > 0 ? (actualLoan / price) * 100 : 0;
+        setText('fLtvText', `Financement à ${ltv.toFixed(0)}% du prix.`);
+
+        const alertApport = document.getElementById('alertApport');
+        if (alertApport) {
+            if (savings < requiredPocketCash) {
+                alertApport.classList.remove('hidden');
+                document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
+                setText('alertManqueVal', fmtMoney.format(requiredPocketCash - savings));
+            } else {
+                alertApport.classList.add('hidden');
+                document.getElementById('fMinimumLegal')?.classList.remove('text-rose-600');
+            }
+        }
+
+        // 4. Monthly Payment
+        const monthlyRate = (rate / 100) / 12;
+        const numPayments = years * 12;
+
+        if (actualLoan > 0 && monthlyRate > 0) {
+            globalMonthlyPayment = actualLoan * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        } else {
+            globalMonthlyPayment = actualLoan > 0 ? actualLoan / numPayments : 0;
+        }
+
+        setText('outPayment', fmtMoney.format(globalMonthlyPayment));
+        setText('outYearsText', years);
+        document.querySelectorAll('.rvb-year').forEach(el => el.textContent = years);
+
+        // 5. Debt Ratio
+        const debtRatio = income > 0 ? ((globalMonthlyPayment + globalCharges) / income) * 100 : 0;
+        setText('outDebtRatio', debtRatio.toFixed(1) + ' %');
+
+        const cardDebt = document.getElementById('cardDebt');
+        const outDebtRatioEl = document.getElementById('outDebtRatio');
+
+        if (cardDebt && outDebtRatioEl) {
+            cardDebt.className = 'bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center transition-all duration-300';
+            if (debtRatio <= 35) {
+                cardDebt.classList.add('border-l-emerald-500');
+                outDebtRatioEl.className = 'text-3xl font-bold text-emerald-600 mt-1';
+                setText('outDebtStatus', "✅ Vert (Dossier solide)");
+            } else if (debtRatio > 35 && debtRatio <= 42) {
+                cardDebt.classList.add('border-l-amber-500');
+                outDebtRatioEl.className = 'text-3xl font-bold text-amber-500 mt-1';
+                setText('outDebtStatus', "⚠️ Orange (Dépend du reste à vivre)");
+            } else {
+                cardDebt.classList.add('border-l-rose-500');
+                outDebtRatioEl.className = 'text-3xl font-bold text-rose-600 mt-1';
+                setText('outDebtStatus', "❌ Rouge (Refus probable)");
+            }
+        }
+
+        // 6. TIMELINE DATA
+        const acompte = price * acompteRate;
+        setText('tlAcompte', fmtMoney.format(acompte));
+
+        // Alert if savings are not enough for the acompte
+        const tlAcompteAlert = document.getElementById('tlAcompteAlert');
+        if (tlAcompteAlert) {
+            if (savings < acompte) {
+                tlAcompteAlert.classList.remove('hidden');
+            } else {
+                tlAcompteAlert.classList.add('hidden');
+            }
+        }
+
+        setText('tlCredit', fmtMoney.format(actualLoan));
+
+        // Solde notaire = Ce qu'il reste à payer (Total besoin poche - acompte)
+        let soldeNotaire = requiredPocketCash - acompte;
+        if (soldeNotaire < 0) soldeNotaire = 0; // if negotiated acompte is larger than required pocket cash, notary refunds
+        setText('tlSoldeNotaire', fmtMoney.format(soldeNotaire));
+        setText('tlMensualite', fmtMoney.format(globalMonthlyPayment));
+
+        // Analysis First Month
+        const barInterets = document.getElementById('barInterets');
+        const barCapital = document.getElementById('barCapital');
+
+        if (actualLoan > 0 && monthlyRate > 0) {
+            const interestMonth1 = actualLoan * monthlyRate;
+            const capitalMonth1 = globalMonthlyPayment - interestMonth1;
+
+            const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
+            const pctCapital = (capitalMonth1 / globalMonthlyPayment) * 100;
+
+            setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
+
+            if (barInterets) {
+                barInterets.style.width = `${pctInterest}%`;
+                barInterets.textContent = `${pctInterest.toFixed(0)}% Intérêts`;
+            }
+            setText('tInterets', `Coût du crédit : ${fmtMoney.format(interestMonth1)}`);
+
+            if (barCapital) {
+                barCapital.style.width = `${pctCapital}%`;
+                barCapital.textContent = `${pctCapital.toFixed(0)}% Capital`;
+            }
+            setText('tCapital', `Capital remboursé : ${fmtMoney.format(capitalMonth1)}`);
+        } else {
+            setText('mMensualite', "-- €");
+            if (barInterets) {
+                barInterets.style.width = `50%`;
+                barInterets.textContent = "";
+            }
+            if (barCapital) {
+                barCapital.style.width = `50%`;
+                barCapital.textContent = "";
+            }
+            setText('tInterets', "Coût du crédit : -- €");
+            setText('tCapital', "Capital remboursé : -- €");
+        }
+
+        // Sub-calculations
+        updateAmortizationChart(actualLoan, monthlyRate, numPayments, globalMonthlyPayment);
+        runCrisisSimulation();
+        runRentVsBuySimulation(price, actualLoan, savings, years);
+    }
+
+    function runCrisisSimulation() {
+        const crisisIncome = getValue('inCrisisNum');
+        const resteAvivre = crisisIncome - globalMonthlyPayment - globalCharges;
+
+        let html = `<div class="flex justify-between items-end mb-2">
+                            <span class="text-slate-600">Reste à vivre estimé :</span>
+                            <span class="text-2xl font-bold ${resteAvivre < 1300 ? 'text-rose-600' : 'text-emerald-600'}">${fmtMoney.format(resteAvivre)}</span>
+                        </div>`;
+
+        if (resteAvivre < 0) {
+            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Faillite budgétaire.</div>`;
+        } else if (resteAvivre < 1300) {
+            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Zone de danger (sous ~1300€).</div>`;
+        } else if (resteAvivre < 1800) {
+            html += `<div class="p-2 bg-amber-100 text-amber-800 rounded text-xs font-bold">Tension budgétaire. Attention aux imprévus.</div>`;
+        } else {
+            html += `<div class="p-2 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">Résilience Ok. Vous conservez un bon niveau de vie.</div>`;
+        }
+
+        setHTML('crisisResultBlock', html);
+    }
+
+    function runRentVsBuySimulation(housePrice, loanAmount, savings, years) {
+        const initialRent = getValue('inRentNum');
+        const inflationRate = getValue('inInflation') / 100;
+        const yieldRate = getValue('inYield') / 100;
+        const houseAppreciationRate = 0.02;
+        const propertyTaxAndMaint = housePrice * 0.01;
+
+        let labels = [];
+        let rentMonthlyData = [];
+        let mortgageMonthlyData = [];
+        let renterWealthData = [];
+        let buyerWealthData = [];
+
+        let currentRent = initialRent;
+        let renterCapital = savings;
+
+        let currentHouseValue = housePrice;
+        let buyerRemainingLoan = loanAmount;
+        const monthlyRate = (getValue('inRateNum') / 100) / 12;
+
+        let breakEvenYear = -1;
+
+        for (let year = 1; year <= years; year++) {
+            labels.push('An ' + year);
+            rentMonthlyData.push(currentRent);
+            mortgageMonthlyData.push(globalMonthlyPayment + (propertyTaxAndMaint / 12));
+
+            let yearlyBuyerSavingsAddition = 0;
+
+            for (let month = 1; month <= 12; month++) {
+                let monthlyOwningCost = globalMonthlyPayment + (propertyTaxAndMaint / 12);
+                let diff = monthlyOwningCost - currentRent;
+
+                if (diff > 0) {
+                    renterCapital += diff;
+                } else if (diff < 0) {
+                    yearlyBuyerSavingsAddition += Math.abs(diff);
+                }
+
+                renterCapital = renterCapital * (1 + (yieldRate / 12));
+                let interestForMonth = buyerRemainingLoan * monthlyRate;
+                let principalForMonth = globalMonthlyPayment - interestForMonth;
+                if (buyerRemainingLoan > 0) buyerRemainingLoan -= principalForMonth;
+            }
+
+            currentRent = currentRent * (1 + inflationRate);
+            currentHouseValue = currentHouseValue * (1 + houseAppreciationRate);
+
+            let renterNetWorth = renterCapital;
+            let buyerNetWorth = (currentHouseValue - buyerRemainingLoan) + yearlyBuyerSavingsAddition;
+
+            renterWealthData.push(renterNetWorth);
+            buyerWealthData.push(buyerNetWorth);
+
+            if (breakEvenYear === -1 && buyerNetWorth > renterNetWorth) {
+                breakEvenYear = year;
+            }
+        }
+
+        setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
+        setText('rvbFinalMortgage', fmtMoney.format(globalMonthlyPayment));
+
+        const beText = document.getElementById('rvbBreakEvenText');
+        const beYear = document.getElementById('rvbBreakEvenYear');
+
+        if (breakEvenYear > 0) {
+            setText('rvbBreakEvenYear', `Année ${breakEvenYear}`);
+            beYear.className = "text-3xl font-bold text-purple-900 my-1";
+            beText.innerHTML = `À partir de la <strong>${breakEvenYear}e année</strong>, acheter vous aura enrichi davantage que louer.`;
+        } else {
+            setText('rvbBreakEvenYear', `> ${years} ans`);
+            beYear.className = "text-3xl font-bold text-amber-600 my-1";
+            beText.innerHTML = `Rester locataire et investir votre apport reste plus rentable sur ${years} ans (frais de notaire perdus importants).`;
+        }
+
+        updateRentMonthlyChart(labels, rentMonthlyData, mortgageMonthlyData);
+        updateRentWealthChart(labels, renterWealthData, buyerWealthData);
+    }
+
+    function updateRentMonthlyChart(labels, rentData, mortgageData) {
+        const ctx = document.getElementById('rentMonthlyChart');
+        if (!ctx) return;
+        if (rentMonthlyChart) {
+            rentMonthlyChart.data.labels = labels;
+            rentMonthlyChart.data.datasets[0].data = rentData;
+            rentMonthlyChart.data.datasets[1].data = mortgageData;
+            rentMonthlyChart.update();
+        } else {
+            rentMonthlyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Loyer (Indexé)',
+                            data: rentData,
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Coût Achat',
+                            data: mortgageData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {mode: 'index', intersect: false},
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (c) {
+                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y) + '/mois';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function updateRentWealthChart(labels, renterData, buyerData) {
+        const ctx = document.getElementById('rentWealthChart');
+        if (!ctx) return;
+        if (rentWealthChart) {
+            rentWealthChart.data.labels = labels;
+            rentWealthChart.data.datasets[0].data = renterData;
+            rentWealthChart.data.datasets[1].data = buyerData;
+            rentWealthChart.update();
+        } else {
+            rentWealthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Patrimoine Locataire',
+                            data: renterData,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: '#8b5cf6',
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Patrimoine Acheteur',
+                            data: buyerData,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: '#0ea5e9',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {mode: 'index', intersect: false},
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (c) {
+                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y);
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
     }
@@ -871,397 +1417,6 @@
         }
     }
 
-    // --- EXISTING CALCULATOR LOGIC ---
-    let loanChart = null;
-    let rentMonthlyChart = null;
-    let rentWealthChart = null;
-
-    let globalMonthlyPayment = 0;
-    let globalCharges = 0;
-    let globalExactMandatoryFees = 0;
-    const fmtMoney = new Intl.NumberFormat('fr-BE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
-
-    // --- TABS LOGIC ---
-    document.getElementById('btnTabMonthly')?.addEventListener('click', (e) => {
-        document.getElementById('panelMonthly').classList.replace('hidden', 'block');
-        document.getElementById('panelWealth').classList.replace('block', 'hidden');
-        e.target.classList.replace('text-slate-500', 'text-purple-700');
-        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
-        e.target.classList.add('border-purple-700');
-
-        const btnW = document.getElementById('btnTabWealth');
-        btnW.classList.replace('text-purple-700', 'text-slate-500');
-        btnW.classList.remove('border-b-2', 'border-purple-700');
-        btnW.classList.add('hover:text-slate-700');
-    });
-
-    document.getElementById('btnTabWealth')?.addEventListener('click', (e) => {
-        document.getElementById('panelWealth').classList.replace('hidden', 'block');
-        document.getElementById('panelMonthly').classList.replace('block', 'hidden');
-        e.target.classList.replace('text-slate-500', 'text-purple-700');
-        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
-        e.target.classList.add('border-purple-700');
-
-        const btnM = document.getElementById('btnTabMonthly');
-        btnM.classList.replace('text-purple-700', 'text-slate-500');
-        btnM.classList.remove('border-b-2', 'border-purple-700');
-        btnM.classList.add('hover:text-slate-700');
-    });
-
-    function checkSocialCreditEligibility(netMonthly, childrenStr) {
-        const estimatedGross = netMonthly * 1.35 * 12;
-        const children = parseInt(childrenStr) || 0;
-        let limit = 65400 + (children * 3200);
-
-        if (estimatedGross <= limit) {
-            return `<p class="text-xl font-bold text-emerald-600">✅ Probable</p>
-                        <p class="text-[10px] text-slate-500 mt-1">Vos revenus imposables estimés (< ${fmtMoney.format(limit)}) semblent vous donner droit au taux réduit SWCS/FLW. Allez voir un Guichet Local !</p>`;
-        } else {
-            return `<p class="text-xl font-bold text-rose-500">❌ Peu probable</p>
-                        <p class="text-[10px] text-slate-500 mt-1">Vos revenus estimés (${fmtMoney.format(estimatedGross)}/an imposable) dépassent le plafond SWCS (max ~${fmtMoney.format(limit)}€ pour ${children} enf). Dirigez-vous vers les banques classiques.</p>`;
-        }
-    }
-
-    function calculateAll() {
-        const price = getValue('inPriceNum');
-        const savings = getValue('inSavingsNum');
-        const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
-        const rate = getValue('inRateNum');
-        const years = getValue('inYears', true) || 25;
-        const income = getValue('inIncomeNum');
-        const childrenCount = document.getElementById('inChildren')?.value || "0";
-
-        globalCharges = getValue('inChargesNum');
-
-        // Update Social Credit
-        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount));
-
-        // Fees Logic
-        const regTaxRate = isFirstHome ? 0.03 : 0.125;
-        const registrationCosts = price * regTaxRate;
-        const notaryPurchaseCosts = (price * 0.009) + 1200;
-
-        let estimatedTotalFees = registrationCosts + notaryPurchaseCosts + (price * 0.012);
-        let totalCost = price + estimatedTotalFees;
-        let loanAmount = totalCost - savings;
-        if (loanAmount < 0) loanAmount = 0;
-
-        const creditActCosts = loanAmount > 0 ? (loanAmount * 0.012) + 800 : 0;
-        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts;
-        totalCost = price + globalExactMandatoryFees;
-        loanAmount = totalCost - savings;
-        if (loanAmount < 0) loanAmount = 0;
-
-        // Receipts UI (Safe DOM updates)
-        setText('fPrix', fmtMoney.format(price));
-        setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
-        setText('fEnreg', fmtMoney.format(registrationCosts));
-        setText('fNotaire', fmtMoney.format(notaryPurchaseCosts));
-        setText('fCredit', fmtMoney.format(creditActCosts));
-        setText('fTotal', fmtMoney.format(totalCost));
-
-        // Funding UI
-        setText('fMinimumLegal', fmtMoney.format(globalExactMandatoryFees));
-        setText('fApportVal', fmtMoney.format(savings));
-        setText('fCreditDemande', fmtMoney.format(loanAmount));
-
-        let ltv = price > 0 ? (loanAmount / price) * 100 : 0;
-        setText('fLtvText', `Emprunt à ${ltv.toFixed(0)}% du prix de la maison.`);
-
-        const alertApport = document.getElementById('alertApport');
-        if (alertApport) {
-            if (savings < globalExactMandatoryFees) {
-                alertApport.classList.remove('hidden');
-                document.getElementById('fCreditDemande')?.classList.add('text-rose-600');
-                document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
-                setText('alertApportVal', fmtMoney.format(savings));
-                setText('alertFraisVal', fmtMoney.format(globalExactMandatoryFees));
-            } else {
-                alertApport.classList.add('hidden');
-                document.getElementById('fCreditDemande')?.classList.remove('text-rose-600');
-                document.getElementById('fMinimumLegal')?.classList.remove('text-rose-600');
-            }
-        }
-
-        // Monthly Payment
-        const monthlyRate = (rate / 100) / 12;
-        const numPayments = years * 12;
-
-        if (loanAmount > 0 && monthlyRate > 0) {
-            globalMonthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
-        } else {
-            globalMonthlyPayment = loanAmount > 0 ? loanAmount / numPayments : 0;
-        }
-
-        setText('outPayment', fmtMoney.format(globalMonthlyPayment));
-        setText('outYearsText', years);
-
-        document.querySelectorAll('.rvb-year').forEach(el => el.textContent = years);
-
-        // 5. Debt Ratio Status
-        const debtRatio = income > 0 ? ((globalMonthlyPayment + globalCharges) / income) * 100 : 0;
-        setText('outDebtRatio', debtRatio.toFixed(1) + ' %');
-
-        const cardDebt = document.getElementById('cardDebt');
-        const outDebtRatioEl = document.getElementById('outDebtRatio');
-
-        if (cardDebt && outDebtRatioEl) {
-            cardDebt.className = 'bg-white p-5 rounded-xl shadow-sm border-l-4 flex flex-col justify-center transition-all duration-300';
-            if (debtRatio <= 35) {
-                cardDebt.classList.add('border-l-emerald-500');
-                outDebtRatioEl.className = 'text-3xl font-bold text-emerald-600 mt-1';
-                setText('outDebtStatus', "✅ Vert (Dossier solide)");
-            } else if (debtRatio > 35 && debtRatio <= 42) {
-                cardDebt.classList.add('border-l-amber-500');
-                outDebtRatioEl.className = 'text-3xl font-bold text-amber-500 mt-1';
-                setText('outDebtStatus', "⚠️ Orange (Dépend du reste à vivre)");
-            } else {
-                cardDebt.classList.add('border-l-rose-500');
-                outDebtRatioEl.className = 'text-3xl font-bold text-rose-600 mt-1';
-                setText('outDebtStatus', "❌ Rouge (Refus probable)");
-            }
-        }
-
-        // Analysis First Month
-        const barInterets = document.getElementById('barInterets');
-        const barCapital = document.getElementById('barCapital');
-
-        if (loanAmount > 0 && monthlyRate > 0) {
-            const interestMonth1 = loanAmount * monthlyRate;
-            const capitalMonth1 = globalMonthlyPayment - interestMonth1;
-
-            const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
-            const pctCapital = (capitalMonth1 / globalMonthlyPayment) * 100;
-
-            setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
-
-            if (barInterets) {
-                barInterets.style.width = `${pctInterest}%`;
-                barInterets.textContent = `${pctInterest.toFixed(0)}% Intérêts`;
-            }
-            setText('tInterets', `Coût du crédit : ${fmtMoney.format(interestMonth1)}`);
-
-            if (barCapital) {
-                barCapital.style.width = `${pctCapital}%`;
-                barCapital.textContent = `${pctCapital.toFixed(0)}% Capital`;
-            }
-            setText('tCapital', `Capital remboursé : ${fmtMoney.format(capitalMonth1)}`);
-        } else {
-            setText('mMensualite', "-- €");
-            if (barInterets) {
-                barInterets.style.width = `50%`;
-                barInterets.textContent = "";
-            }
-            if (barCapital) {
-                barCapital.style.width = `50%`;
-                barCapital.textContent = "";
-            }
-            setText('tInterets', "Coût du crédit : -- €");
-            setText('tCapital', "Capital remboursé : -- €");
-        }
-
-        // Sub-calculations
-        updateAmortizationChart(loanAmount, monthlyRate, numPayments, globalMonthlyPayment);
-        runCrisisSimulation();
-        runRentVsBuySimulation(price, loanAmount, savings, years);
-    }
-
-    function runRentVsBuySimulation(housePrice, loanAmount, savings, years) {
-        const initialRent = getValue('inRentNum');
-        const inflationRate = getValue('inInflation') / 100;
-        const yieldRate = getValue('inYield') / 100;
-        const houseAppreciationRate = 0.02; // Fixed conservative 2% per year appreciation in BE
-        const propertyTaxAndMaint = housePrice * 0.01; // Estimate 1% of house value per year for PRECOMPTE + Maintenance
-
-        let labels = [];
-        let rentMonthlyData = [];
-        let mortgageMonthlyData = [];
-
-        let renterWealthData = [];
-        let buyerWealthData = [];
-
-        // State variables tracking month by month
-        let currentRent = initialRent;
-        let renterCapital = savings; // Renter keeps the down payment
-
-        // Buyer state
-        let currentHouseValue = housePrice;
-        let buyerRemainingLoan = loanAmount;
-        const monthlyRate = (getValue('inRateNum') / 100) / 12;
-
-        let breakEvenYear = -1;
-
-        for (let year = 1; year <= years; year++) {
-            labels.push('An ' + year);
-
-            // --- MONTHLY COST CHART DATA ---
-            // For the chart, we show the state at the end of the year
-            rentMonthlyData.push(currentRent);
-            mortgageMonthlyData.push(globalMonthlyPayment + (propertyTaxAndMaint / 12)); // Real cost of owning
-
-            // --- WEALTH SIMULATION (Month by Month for compounding) ---
-            let yearlyRenterSavingsAddition = 0;
-            let yearlyBuyerSavingsAddition = 0;
-
-            for (let month = 1; month <= 12; month++) {
-                // 1. Costs
-                let monthlyOwningCost = globalMonthlyPayment + (propertyTaxAndMaint / 12);
-
-                // 2. Cashflow difference
-                let diff = monthlyOwningCost - currentRent;
-
-                if (diff > 0) {
-                    // Owning is more expensive. Renter saves the difference.
-                    renterCapital += diff;
-                } else if (diff < 0) {
-                    // Renting is more expensive. Buyer saves the difference.
-                    // (Assuming they both have the same lifestyle/budget = monthlyOwningCost)
-                    yearlyBuyerSavingsAddition += Math.abs(diff);
-                }
-
-                // 3. Investment Returns (monthly compound)
-                renterCapital = renterCapital * (1 + (yieldRate / 12));
-
-                // 4. Mortgage amortization
-                let interestForMonth = buyerRemainingLoan * monthlyRate;
-                let principalForMonth = globalMonthlyPayment - interestForMonth;
-                if (buyerRemainingLoan > 0) buyerRemainingLoan -= principalForMonth;
-            }
-
-            // End of year updates
-            currentRent = currentRent * (1 + inflationRate); // Rent indexation annually
-            currentHouseValue = currentHouseValue * (1 + houseAppreciationRate); // House appreciates annually
-
-            // Calculate Net Worth at end of year
-            let renterNetWorth = renterCapital;
-            let buyerNetWorth = (currentHouseValue - buyerRemainingLoan) + yearlyBuyerSavingsAddition; // Simplified
-
-            renterWealthData.push(renterNetWorth);
-            buyerWealthData.push(buyerNetWorth);
-
-            if (breakEvenYear === -1 && buyerNetWorth > renterNetWorth) {
-                breakEvenYear = year;
-            }
-        }
-
-        // Update UI Texts
-        setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
-        setText('rvbFinalMortgage', fmtMoney.format(globalMonthlyPayment)); // Show pure mortgage in UI to highlight fixity
-
-        const beText = document.getElementById('rvbBreakEvenText');
-        const beYear = document.getElementById('rvbBreakEvenYear');
-
-        if (breakEvenYear > 0) {
-            setText('rvbBreakEvenYear', `Année ${breakEvenYear}`);
-            beYear.className = "text-3xl font-bold text-purple-900 my-1";
-            beText.innerHTML = `À partir de la <strong>${breakEvenYear}e année</strong>, acheter vous aura enrichi davantage que louer, car l'inflation du loyer dépasse le coût de votre crédit fixe.`;
-        } else {
-            setText('rvbBreakEvenYear', `> ${years} ans`);
-            beYear.className = "text-3xl font-bold text-amber-600 my-1";
-            beText.innerHTML = `Avec ces paramètres, rester locataire et investir votre apport en bourse reste plus rentable sur ${years} ans (à cause des lourds frais de notaire perdus et du rendement boursier).`;
-        }
-
-        // Update Charts
-        updateRentMonthlyChart(labels, rentMonthlyData, mortgageMonthlyData);
-        updateRentWealthChart(labels, renterWealthData, buyerWealthData);
-    }
-
-    function updateRentMonthlyChart(labels, rentData, mortgageData) {
-        const ctx = document.getElementById('rentMonthlyChart');
-        if (!ctx) return;
-        if (rentMonthlyChart) {
-            rentMonthlyChart.data.labels = labels;
-            rentMonthlyChart.data.datasets[0].data = rentData;
-            rentMonthlyChart.data.datasets[1].data = mortgageData;
-            rentMonthlyChart.update();
-        } else {
-            rentMonthlyChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Loyer (Indexé)',
-                            data: rentData,
-                            borderColor: '#f43f5e',
-                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Coût Achat (Crédit + Entretien)',
-                            data: mortgageData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: {mode: 'index', intersect: false},
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (c) {
-                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y) + '/mois';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    function updateRentWealthChart(labels, renterData, buyerData) {
-        const ctx = document.getElementById('rentWealthChart');
-        if (!ctx) return;
-        if (rentWealthChart) {
-            rentWealthChart.data.labels = labels;
-            rentWealthChart.data.datasets[0].data = renterData;
-            rentWealthChart.data.datasets[1].data = buyerData;
-            rentWealthChart.update();
-        } else {
-            rentWealthChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Patrimoine Locataire (Bourse)',
-                            data: renterData,
-                            borderColor: '#8b5cf6',
-                            backgroundColor: '#8b5cf6',
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Patrimoine Acheteur (Maison)',
-                            data: buyerData,
-                            borderColor: '#0ea5e9',
-                            backgroundColor: '#0ea5e9',
-                            tension: 0.3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: {mode: 'index', intersect: false},
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (c) {
-                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
     function updateAmortizationChart(principal, monthlyRate, numPayments, monthlyPayment) {
         let balance = principal;
         let labels = [];
@@ -1321,88 +1476,7 @@
         }
     }
 
-    function runCrisisSimulation() {
-        const crisisIncome = getValue('inCrisisNum');
-        const resteAvivre = crisisIncome - globalMonthlyPayment - globalCharges;
-
-        let html = `<div class="flex justify-between items-end mb-2">
-                            <span class="text-slate-600">Reste à vivre estimé :</span>
-                            <span class="text-2xl font-bold ${resteAvivre < 1300 ? 'text-rose-600' : 'text-emerald-600'}">${fmtMoney.format(resteAvivre)}</span>
-                        </div>`;
-
-        if (resteAvivre < 0) {
-            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Faillite budgétaire. Vous devrez puiser dans vos économies chaque mois pour payer le crédit.</div>`;
-        } else if (resteAvivre < 1300) {
-            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Zone de danger absolu. En dessous du minimum vital pour un couple (env. 1300€).</div>`;
-        } else if (resteAvivre < 1800) {
-            html += `<div class="p-2 bg-amber-100 text-amber-800 rounded text-xs font-bold">Tension budgétaire. Vivable mais attention aux dépenses imprévues.</div>`;
-        } else {
-            html += `<div class="p-2 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">Résilience Ok. Vous conservez un train de vie tout à fait correct.</div>`;
-        }
-
-        setHTML('crisisResultBlock', html);
-    }
-
-    function updateChart(principal, monthlyRate, numPayments, monthlyPayment) {
-        let balance = principal;
-        let labels = [];
-        let interestData = [];
-        let principalData = [];
-
-        if (principal > 0 && numPayments > 0) {
-            for (let year = 1; year <= numPayments / 12; year++) {
-                labels.push('An ' + year);
-                let yearlyInterest = 0;
-                let yearlyPrincipal = 0;
-                for (let month = 1; month <= 12; month++) {
-                    let interestForMonth = balance * monthlyRate;
-                    let principalForMonth = monthlyPayment - interestForMonth;
-                    yearlyInterest += interestForMonth;
-                    yearlyPrincipal += principalForMonth;
-                    balance -= principalForMonth;
-                }
-                interestData.push(yearlyInterest);
-                principalData.push(yearlyPrincipal);
-            }
-        }
-
-        const canvas = document.getElementById('loanChart');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (loanChart) {
-            loanChart.data.labels = labels;
-            loanChart.data.datasets[0].data = principalData;
-            loanChart.data.datasets[1].data = interestData;
-            loanChart.update();
-        } else {
-            loanChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {label: 'Capital remboursé', data: principalData, backgroundColor: '#10b981', stack: 'Stack 0'},
-                        {label: 'Intérêts payés', data: interestData, backgroundColor: '#fb7185', stack: 'Stack 0'}
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
-                    scales: {x: {stacked: true, grid: {display: false}}, y: {stacked: true, border: {display: false}}},
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (c) {
-                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y);
-                                }
-                            }
-                        },
-                        legend: {position: 'bottom', labels: {boxWidth: 12, usePointStyle: true}}
-                    }
-                }
-            });
-        }
-    }
-
+    
     // INIT & LISTENERS
     document.addEventListener('DOMContentLoaded', () => {
         renderBanks();
@@ -1413,7 +1487,6 @@
                 renderBanks(e.target.value);
             });
         }
-
         syncInputsSafe('inIncomeSlider', 'inIncomeNum', () => {
             const slider = document.getElementById('inCrisisSlider');
             const num = document.getElementById('inCrisisNum');
@@ -1437,8 +1510,8 @@
         document.getElementById('inYears')?.addEventListener('change', calculateAll);
         document.getElementById('inInflation')?.addEventListener('input', calculateAll);
         document.getElementById('inYield')?.addEventListener('input', calculateAll);
+        document.getElementById('inAcompteRate')?.addEventListener('change', calculateAll);
 
-        // Set initial Crisis values
         const slider = document.getElementById('inCrisisSlider');
         const num = document.getElementById('inCrisisNum');
         const incomeNum = document.getElementById('inIncomeNum');
@@ -1452,5 +1525,4 @@
 
 </script>
 </body>
-
 </html>
