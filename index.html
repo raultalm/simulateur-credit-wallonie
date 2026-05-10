@@ -16,10 +16,22 @@
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
 
         input[type=range] {
             -webkit-appearance: none;
@@ -27,7 +39,9 @@
             background: transparent;
         }
 
-        input[type=range]:focus { outline: none; }
+        input[type=range]:focus {
+            outline: none;
+        }
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -41,8 +55,10 @@
             border: 2px solid white;
             transition: transform 0.1s ease;
         }
-        
-        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
 
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
@@ -52,8 +68,13 @@
             border-radius: 3px;
         }
 
-        input[type=range].crisis-slider::-webkit-slider-thumb { background: var(--danger); }
-        input[type=range].invest-slider::-webkit-slider-thumb { background: var(--secondary); }
+        input[type=range].crisis-slider::-webkit-slider-thumb {
+            background: var(--danger);
+        }
+
+        input[type=range].invest-slider::-webkit-slider-thumb {
+            background: var(--secondary);
+        }
 
         .chart-container {
             position: relative;
@@ -61,7 +82,11 @@
             height: 250px;
         }
 
-        @media (min-width: 768px) { .chart-container { height: 300px; } }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
 
         /* Glassmorphism & Depth */
         .glass-card {
@@ -82,7 +107,10 @@
                 overflow-y: auto;
                 scrollbar-width: none; /* Firefox */
             }
-            .sticky-sidebar::-webkit-scrollbar { display: none; }
+
+            .sticky-sidebar::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         /* Toggle Switch */
@@ -113,7 +141,7 @@
             background-color: white;
             border-radius: 50%;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .toggle-checkbox:checked + .toggle-label {
@@ -161,15 +189,29 @@
             padding-bottom: 1.25rem;
         }
 
-        .chevron { transition: transform 0.3s ease; }
-        .item-open .chevron { transform: rotate(180deg); }
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .item-open .chevron {
+            transform: rotate(180deg);
+        }
 
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(244, 63, 94, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+            }
         }
-        .alert-pulse { animation: pulse-red 2s infinite; }
+
+        .alert-pulse {
+            animation: pulse-red 2s infinite;
+        }
     </style>
 </head>
 
@@ -302,7 +344,7 @@
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Votre Apport Personnel (Épargne
                             totale dispo)</label>
                         <div class="flex items-center gap-4">
-                            <input type="range" id="inSavingsSlider" min="0" max="300000" step="5000" value="50000"
+                            <input type="range" id="inSavingsSlider" min="0" max="500000" step="5000" value="50000"
                                    class="flex-grow">
                             <div class="relative w-36">
                                 <input type="number" id="inSavingsNum" value="50000"
@@ -345,7 +387,7 @@
                         <div class="flex items-center gap-4">
                             <input type="range" id="inRentSlider" min="500" max="2500" step="50" value="1200"
                                    class="flex-grow invest-slider">
-                            <div class="relative w-32">
+                            <div class="relative w-36">
                                 <input type="number" id="inRentNum" value="1200"
                                        class="w-full pl-3 pr-8 py-2 border border-purple-300 rounded-md text-right font-bold text-purple-700 bg-white">
                                 <span class="absolute right-3 top-2 text-purple-500">€</span>
@@ -359,7 +401,7 @@
                             <div class="relative">
                                 <input type="number" id="inInflation" value="2.5" step="0.1"
                                        class="w-full px-3 py-2 border border-purple-300 rounded-md bg-white text-right">
-                                <span class="absolute right-3 top-2 text-purple-500">%</span>
+                                <span class="absolute left-3 top-2 text-purple-500">%</span>
                             </div>
                         </div>
                         <div>
@@ -368,7 +410,7 @@
                             <div class="relative">
                                 <input type="number" id="inYield" value="4.0" step="0.1"
                                        class="w-full px-3 py-2 border border-purple-300 rounded-md bg-white text-right">
-                                <span class="absolute right-3 top-2 text-purple-500">%</span>
+                                <span class="absolute left-3 top-2 text-purple-500">%</span>
                             </div>
                         </div>
                     </div>
@@ -757,7 +799,8 @@
 
             <!-- Chart Section -->
             <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow">
-                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Amortissement (Capital vs Intérêts)</h3>
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Amortissement (Capital vs
+                    Intérêts)</h3>
                 <div class="chart-container">
                     <canvas id="loanChart"></canvas>
                 </div>
