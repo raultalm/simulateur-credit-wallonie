@@ -544,19 +544,15 @@
                                 💳
                             </div>
                             <div class="pr-14">
-                                <span class="font-bold text-emerald-900 text-base block mb-1">À payer de votre poche :</span>
+                                <span class="font-bold text-emerald-900 text-base block mb-1">Apport minimum obligatoire :</span>
                                 <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
-                                <p class="text-xs text-emerald-800 mt-1">C'est l'apport <strong>minimum
-                                    obligatoire</strong> (Frais 2a+2b+2c). Cet argent part chez le notaire et
-                                    l'État.</p>
+                                <p class="text-xs text-emerald-800 mt-1">C'est le minimum <strong>légal à sortir de
+                                    votre poche</strong> (Frais 2a+2b+2c calculés pour un prêt à 100%). Cet argent part
+                                    chez le notaire et l'État.</p>
                             </div>
                         </div>
                         <div id="alertApport"
-                             class="hidden mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-900 text-sm rounded-lg font-medium flex gap-2 items-start alert-pulse">
-                            <span class="text-xl">🛑</span>
-                            <div><strong>Épargne insuffisante.</strong> Il vous manque <span id="alertManqueVal"
-                                                                                             class="underline"></span>.
-                            </div>
+                             class="hidden mt-3 p-3 text-sm rounded-lg font-medium flex gap-2 items-start transition-colors duration-300">
                         </div>
                     </div>
                 </div>
@@ -1062,6 +1058,10 @@
         const registrationCosts = price * regTaxRate;
         const notaryPurchaseCosts = (price * 0.009) + 1200;
 
+        // Calcul du minimum légal FIXE (en supposant un emprunt maximal à 100% du prix)
+        const fixedCreditActCosts = (price * 0.012) + 800;
+        const fixedMinimumLegal = registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
+
         let estimatedTotalFees = registrationCosts + notaryPurchaseCosts + (price * 0.012);
         let totalCost = price + estimatedTotalFees;
         let loanAmount = totalCost - savings;
@@ -1088,7 +1088,7 @@
         setText('fCredit', fmtMoney.format(creditActCosts));
         setText('fTotal', fmtMoney.format(totalCost));
 
-        setText('fMinimumLegal', fmtMoney.format(requiredPocketCash));
+        setText('fMinimumLegal', fmtMoney.format(fixedMinimumLegal));
         setText('fCreditDemande', fmtMoney.format(actualLoan));
 
         let ltv = price > 0 ? (actualLoan / price) * 100 : 0;
@@ -1096,13 +1096,21 @@
 
         const alertApport = document.getElementById('alertApport');
         if (alertApport) {
-            if ((savings - requiredPocketCash) < 0) {
-                alertApport.classList.remove('hidden');
+            alertApport.classList.remove('hidden', 'bg-rose-50', 'border-rose-200', 'text-rose-900', 'alert-pulse', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+
+            if (savings < fixedMinimumLegal) {
+                alertApport.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900', 'alert-pulse');
                 document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
-                setText('alertManqueVal', fmtMoney.format(requiredPocketCash - savings));
+                alertApport.innerHTML = `<span class="text-xl">🛑</span><div><strong>Épargne insuffisante.</strong> Il vous manque <span class="underline">${fmtMoney.format(fixedMinimumLegal - savings)}</span> pour couvrir les frais de base obligatoires.</div>`;
             } else {
-                alertApport.classList.add('hidden');
+                alertApport.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
                 document.getElementById('fMinimumLegal')?.classList.remove('text-rose-600');
+                const extra = savings - fixedMinimumLegal;
+                if (extra > 0) {
+                    alertApport.innerHTML = `<span class="text-xl">✅</span><div><strong>Épargne suffisante !</strong> Vous couvrez les frais et injectez <strong>${fmtMoney.format(extra)}</strong> dans le prix de la maison, réduisant votre crédit.</div>`;
+                } else {
+                    alertApport.innerHTML = `<span class="text-xl">✅</span><div><strong>Épargne suffisante !</strong> Vous couvrez exactement les frais obligatoires.</div>`;
+                }
             }
         }
 
