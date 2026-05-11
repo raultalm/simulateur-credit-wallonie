@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horizon Immo - La boussole de votre premier achat en Wallonie</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'%3E%3Cpath d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.84L18.5 12H17v8h-2v-6H9v6H7v-8H5.5L12 5.84z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'%3E%3Cpath d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.84L18.5 12H17v8h-2v-6H9v6H7v-8H5.5L12 5.84z'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -262,6 +263,19 @@
                         </div>
                     </div>
 
+                    <!-- NEW RIG FIELD FOR SWCS -->
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                        <label class="block text-sm font-semibold text-indigo-900 mb-1">Revenu Imposable Globalement
+                            (RIG N-2) <span class="font-normal text-indigo-600">- Optionnel</span></label>
+                        <div class="relative w-full">
+                            <input type="number" id="inRigNum" placeholder="Ex: 75000"
+                                   class="w-full pl-3 pr-8 py-2 border border-indigo-200 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-right font-bold text-indigo-900 bg-white">
+                            <span class="absolute right-3 top-2 text-indigo-500">€</span>
+                        </div>
+                        <p class="text-xs text-indigo-700 mt-1">Le Crédit Social (SWCS) se base sur votre RIG d'il y a 2
+                            ans. Si vide, nous l'estimerons selon vos revenus actuels.</p>
+                    </div>
+
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Enfants à charge</label>
                         <select id="inChildren"
@@ -272,8 +286,8 @@
                             <option value="3">3</option>
                             <option value="4">4 ou +</option>
                         </select>
-                        <p class="text-xs text-slate-500 mt-1">Nécessaire pour calculer l'éligibilité au crédit
-                            social.</p>
+                        <p class="text-xs text-slate-500 mt-1">Déduit 5.000€ par enfant sur le RIG pour le calcul
+                            SWCS.</p>
                     </div>
 
                     <div>
@@ -895,17 +909,43 @@
         btnM.classList.add('hover:text-slate-700');
     });
 
-    function checkSocialCreditEligibility(netMonthly, childrenStr) {
-        const estimatedGross = netMonthly * 1.35 * 12;
+    function checkSocialCreditEligibility(netMonthly, childrenStr, rigInput) {
         const children = parseInt(childrenStr) || 0;
-        let limit = 65400 + (children * 3200);
+        const limitSWCS = 81700; // Updated 2026 Ceiling for Wallonia SWCS
 
-        if (estimatedGross <= limit) {
-            return `<p class="text-xl font-bold text-emerald-600">✅ Probable</p>
-                        <p class="text-[10px] text-slate-500 mt-1">Revenus imposables estimés (< ${fmtMoney.format(limit)}) éligibles au crédit social.</p>`;
+        // Belgian Heuristic: Net Monthly x 16 roughly equals the annual RIG
+        // (accounts for 12 months + holiday pay + 13th month + gross/net tax conversion minus standard deductions)
+        let estimatedRig = netMonthly * 16;
+
+        let isEstimated = false;
+        let baseRig = parseFloat(rigInput);
+
+        // Fallback to estimation if input is empty or invalid
+        if (isNaN(baseRig) || baseRig <= 0) {
+            baseRig = estimatedRig;
+            isEstimated = true;
+        }
+
+        // SWCS rule: deduct 5000€ per dependent child
+        let finalRig = baseRig - (children * 5000);
+
+        if (finalRig <= limitSWCS) {
+            return `<p class="text-xl font-bold text-emerald-600">✅ Éligible au crédit social</p>
+                    <p class="text-xs text-slate-600 mt-1">
+                        Votre RIG calculé est de <strong>${fmtMoney.format(finalRig)}</strong>
+                        ${isEstimated ? ` <em>(Estimation)</em>` : ` <em>(Valeur exacte encodée)</em>`}. <br>
+                        C'est inférieur au plafond légal de ${fmtMoney.format(limitSWCS)}€.
+                    </p>
+                    <div class="mt-2 text-[11px] text-indigo-700 bg-indigo-100 p-2 rounded border border-indigo-200">
+                        💡 <strong>Avantage Jeunes (-35 ans) :</strong> La SWCS offre une réduction de -0,40% sur le taux d'intérêt aux ménages jeunes.
+                    </div>`;
         } else {
-            return `<p class="text-xl font-bold text-rose-500">❌ Peu probable</p>
-                        <p class="text-[10px] text-slate-500 mt-1">Revenus estimés (${fmtMoney.format(estimatedGross)}/an) dépassent le plafond SWCS (~${fmtMoney.format(limit)}€).</p>`;
+            return `<p class="text-xl font-bold text-rose-500">❌ Non Éligible</p>
+                    <p class="text-xs text-slate-600 mt-1">
+                        Votre RIG calculé est de <strong>${fmtMoney.format(finalRig)}</strong>
+                        ${isEstimated ? ` <em>(Estimation)</em>` : ` <em>(Valeur exacte encodée)</em>`}. <br>
+                        Cela dépasse le plafond légal SWCS de ${fmtMoney.format(limitSWCS)}€.
+                    </p>`;
         }
     }
 
@@ -917,14 +957,15 @@
         const years = getValue('inYears', true) || 25;
         const income = getValue('inIncomeNum');
         const childrenCount = document.getElementById('inChildren')?.value || "0";
+        const rigInput = document.getElementById('inRigNum')?.value;
 
         // New Acompte
         const acompteRate = parseFloat(document.getElementById('inAcompteRate')?.value || 0.05);
 
         globalCharges = getValue('inChargesNum');
 
-        // 1. Social status
-        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount));
+        // 1. Social status (Updated with accurate SWCS Logic)
+        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput));
 
         // 2. Fees & Loan calculation
         const regTaxRate = isFirstHome ? 0.03 : 0.125;
@@ -1603,6 +1644,7 @@
         syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
         syncInputsSafe('inRentSlider', 'inRentNum', calculateAll);
 
+        document.getElementById('inRigNum')?.addEventListener('input', calculateAll);
         document.getElementById('inChildren')?.addEventListener('change', calculateAll);
         document.getElementById('inFirstHome')?.addEventListener('change', calculateAll);
         document.getElementById('inRateNum')?.addEventListener('input', calculateAll);
