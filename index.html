@@ -381,7 +381,7 @@
                                    class="flex-grow">
                             <div class="relative w-36">
                                 <input type="number" id="inSavingsNum" value="50000"
-                                       class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700">
+                                       class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700 transition-colors">
                                 <span class="absolute right-3 top-2 text-slate-500">€</span>
                             </div>
                         </div>
@@ -887,7 +887,7 @@
     let globalExactMandatoryFees = 0;
     const fmtMoney = new Intl.NumberFormat('fr-BE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
 
-    // --- NEW: Apply SWCS Rate globally ---
+    // --- APPLY SWCS RATE & 100% LOAN LOGIC ---
     window.applySWCSRate = function (rate) {
         const rateInput = document.getElementById('inRateNum');
         if (rateInput) {
@@ -899,6 +899,37 @@
             }, 800);
             calculateAll();
         }
+    }
+
+    // Calcule le minimum légal absolu pour un prêt à 100% et met à jour le slider d'apport
+    window.applySWCS100 = function (rate) {
+        const price = parseFloat(document.getElementById('inPriceNum')?.value) || 0;
+        const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
+
+        // Calcul exact des frais minimum obligatoires pour un prêt à 100% du prix
+        const regTaxRate = isFirstHome ? 0.03 : 0.125;
+        const registrationCosts = price * regTaxRate;
+        const notaryPurchaseCosts = (price * 0.009) + 1200;
+        const creditActCosts = (price * 0.012) + 800; // Puisque prêt à 100%, l'emprunt = le prix
+
+        const exactMinimumCash = Math.ceil(registrationCosts + notaryPurchaseCosts + creditActCosts);
+
+        const savingsInput = document.getElementById('inSavingsNum');
+        const savingsSlider = document.getElementById('inSavingsSlider');
+
+        if (savingsInput && savingsSlider) {
+            savingsInput.value = exactMinimumCash;
+            savingsSlider.value = exactMinimumCash;
+
+            // Animation de surbrillance pour bien montrer le changement
+            savingsInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+            setTimeout(() => {
+                savingsInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+            }, 800);
+        }
+
+        // On applique ensuite le taux
+        applySWCSRate(rate);
     }
 
     // --- SOURCES ACCORDION LOGIC ---
@@ -988,9 +1019,14 @@
 
                     <div class="mt-3 p-3 bg-white rounded-lg border border-emerald-200 text-center shadow-sm">
                         <span class="block text-sm text-slate-600 mb-2">Votre taux officiel SWCS : <strong class="text-emerald-700 text-lg">${finalSwcsRate.toFixed(2)}%</strong></span>
-                        <button onclick="applySWCSRate(${finalSwcsRate})" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2 px-3 rounded transition-colors shadow-sm">
-                            👉 Utiliser ce taux pour la simulation
-                        </button>
+                        <div class="space-y-2">
+                            <button onclick="applySWCS100(${finalSwcsRate})" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 px-2 rounded transition-colors shadow-sm">
+                                👉 Taux SWCS & Prêt 100% (Apport minimal)
+                            </button>
+                            <button onclick="applySWCSRate(${finalSwcsRate})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold py-2 px-2 rounded transition-colors border border-slate-300">
+                                Appliquer le taux uniquement
+                            </button>
+                        </div>
                     </div>`;
         } else {
             return `<p class="text-xl font-bold text-rose-500">❌ Non Éligible</p>
@@ -1060,7 +1096,7 @@
 
         const alertApport = document.getElementById('alertApport');
         if (alertApport) {
-            if (savings < requiredPocketCash) {
+            if ((savings - requiredPocketCash) < 0) {
                 alertApport.classList.remove('hidden');
                 document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
                 setText('alertManqueVal', fmtMoney.format(requiredPocketCash - savings));
