@@ -373,6 +373,25 @@
                         </div>
                     </div>
 
+                    <!-- NEW: PEB SELECTOR -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Score PEB (Énergie) <span
+                                class="font-normal text-slate-500">- Optionnel</span></label>
+                        <select id="inPeb"
+                                class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white">
+                            <option value="unknown" selected>Inconnu / Pas encore défini</option>
+                            <option value="A">PEB A (Très économe)</option>
+                            <option value="B">PEB B (Économe)</option>
+                            <option value="C">PEB C</option>
+                            <option value="D">PEB D</option>
+                            <option value="E">PEB E</option>
+                            <option value="F">PEB F (Énergivore)</option>
+                            <option value="G">PEB G (Passoire énergétique)</option>
+                        </select>
+                        <div id="pebAdvice"
+                             class="hidden mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300"></div>
+                    </div>
+
                     <div class="bg-sky-50 p-4 rounded-lg border border-sky-100 flex items-center justify-between">
                         <div>
                             <h4 class="text-sm font-bold text-sky-900">Premier achat propre et unique ?</h4>
@@ -1142,10 +1161,31 @@
         const rigInput = document.getElementById('inRigNum')?.value;
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
 
+        // PEB Logic
+        const peb = document.getElementById('inPeb')?.value;
+        const pebAdvice = document.getElementById('pebAdvice');
+
         const acompteRate = parseFloat(document.getElementById('inAcompteRate')?.value || 0.05);
         globalCharges = getValue('inChargesNum');
 
         setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35));
+
+        // Update PEB Advice Box
+        if (pebAdvice) {
+            pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300';
+            if (peb === 'A' || peb === 'B') {
+                pebAdvice.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+                pebAdvice.innerHTML = "🌱 <strong>Avantage Éco-crédit :</strong> Avec un PEB A ou B, la plupart des banques accordent une réduction de taux (environ -0.15%). N'hésitez pas à baisser manuellement le taux estimé à gauche !";
+            } else if (peb === 'F' || peb === 'G') {
+                pebAdvice.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
+                pebAdvice.innerHTML = "⚠️ <strong>Passoire énergétique :</strong> Les banques seront très exigeantes. Prévoyez de devoir emprunter un budget travaux supplémentaire obligatoire pour améliorer ce PEB.";
+            } else if (peb !== 'unknown') {
+                pebAdvice.classList.add('text-slate-700', 'bg-slate-50', 'border-slate-200');
+                pebAdvice.innerHTML = "ℹ️ <strong>PEB Standard :</strong> Pas de pénalité bancaire, mais pas de réduction de taux écologique. Si vous prévoyez d'isoler (viser A ou B), vous pourriez négocier un meilleur taux.";
+            } else {
+                pebAdvice.classList.add('hidden');
+            }
+        }
 
         // 2. Fees & Loan calculation (EXACT BELGIAN MATH)
         const regTaxRate = isFirstHome ? 0.03 : 0.125;
@@ -1851,6 +1891,8 @@
         document.getElementById('inInflation')?.addEventListener('input', calculateAll);
         document.getElementById('inYield')?.addEventListener('input', calculateAll);
         document.getElementById('inAcompteRate')?.addEventListener('change', calculateAll);
+
+        document.getElementById('inPeb')?.addEventListener('change', calculateAll);
 
         const slider = document.getElementById('inCrisisSlider');
         const num = document.getElementById('inCrisisNum');
