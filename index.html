@@ -388,6 +388,24 @@
                             <option value="F">PEB F (Énergivore)</option>
                             <option value="G">PEB G (Passoire énergétique)</option>
                         </select>
+
+                        <!-- Toggle Engagement Rénovation (Caché si A ou B) -->
+                        <div id="divRenovationCommit"
+                             class="hidden mt-3 bg-sky-50 p-3 rounded-lg border border-sky-200 flex items-center justify-between transition-all">
+                            <div>
+                                <h4 class="text-xs font-bold text-sky-900">S'engager à rénover l'énergie ?</h4>
+                                <p class="text-[10px] text-sky-700 mt-0.5">Ouvre le droit à une réduction de taux
+                                    différée.</p>
+                            </div>
+                            <div class="relative w-10 h-5 select-none">
+                                <input type="checkbox" id="inRenoCommit" class="toggle-checkbox"/>
+                                <label for="inRenoCommit" class="toggle-label cursor-pointer"
+                                       style="width: 2.5rem; height: 1.25rem;"></label>
+                                <div class="toggle-circle pointer-events-none"
+                                     style="width: 1rem; height: 1rem; top: 2px; left: 2px;"></div>
+                            </div>
+                        </div>
+
                         <div id="pebAdvice"
                              class="hidden mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300"></div>
                     </div>
@@ -440,9 +458,10 @@
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Durée (Années)</label>
                             <select id="inYears"
-                                    class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white">
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white transition-all">
                                 <option value="20">20 ans</option>
                                 <option value="25" selected>25 ans</option>
+                                <!-- L'option 30 ans est injectée dynamiquement via JS si PEB A/B -->
                             </select>
                         </div>
                     </div>
@@ -1084,7 +1103,7 @@
         btnM.classList.add('hover:text-slate-700');
     });
 
-    function checkSocialCreditEligibility(netMonthly, childrenStr, rigInput, isUnder35) {
+    function checkSocialCreditEligibility(netMonthly, childrenStr, rigInput, isUnder35, peb) {
         const children = parseInt(childrenStr) || 0;
         const limitSWCS = 81700; // Updated 2026 Ceiling for Wallonia SWCS
 
@@ -1117,6 +1136,15 @@
 
             // Apply Youth discount (-0.40%)
             let finalSwcsRate = isUnder35 ? Math.max(0, swcsBaseRate - 0.40) : swcsBaseRate;
+
+            // NEW: Strict SWCS condition for bad PEB
+            let swcsWarningHtml = '';
+            if (peb === 'D' || peb === 'E' || peb === 'F' || peb === 'G' || peb === 'unknown') {
+                swcsWarningHtml = `
+                <div class="mt-2 text-[10px] text-amber-800 font-medium bg-amber-50 p-2 rounded border border-amber-200 text-left">
+                    ⚠️ <strong>Condition stricte SWCS :</strong> La SWCS exige une toiture isolée (R ≥ 5m²K/W). Avec ce score PEB, des travaux d'isolation seront très probablement obligatoires pour obtenir le prêt. Ces travaux devront être intégrés à votre demande (ex: Rénopack à 0%).
+                </div>`;
+            }
 
             return `<div class="flex items-start justify-between">
                         <div>
@@ -1155,37 +1183,71 @@
         const savings = getValue('inSavingsNum');
         const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
         const rate = getValue('inRateNum');
-        const years = getValue('inYears', true) || 25;
         const income = getValue('inIncomeNum');
         const childrenCount = document.getElementById('inChildren')?.value || "0";
         const rigInput = document.getElementById('inRigNum')?.value;
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
 
-        // PEB Logic
+        // PEB Logic Update
         const peb = document.getElementById('inPeb')?.value;
         const pebAdvice = document.getElementById('pebAdvice');
+        const renoCommitContainer = document.getElementById('divRenovationCommit');
+        const isRenoCommitted = document.getElementById('inRenoCommit')?.checked || false;
+        const yearsSelect = document.getElementById('inYears');
+
+        // Dynamically add/remove the 30 years option based on PEB A/B
+        let has30Option = Array.from(yearsSelect.options).some(opt => opt.value === '30');
+        if (peb === 'A' || peb === 'B') {
+            if (!has30Option) {
+                const opt30 = document.createElement('option');
+                opt30.value = '30';
+                opt30.text = '30 ans (Bonus PEB A/B)';
+                yearsSelect.add(opt30);
+            }
+        } else {
+            if (has30Option) {
+                if (yearsSelect.value === '30') yearsSelect.value = '25'; // Force back to 25 if it was 30
+                Array.from(yearsSelect.options).find(opt => opt.value === '30').remove();
+            }
+        }
+
+        // Now safely read the current selected year
+        const years = getValue('inYears', true) || 25;
+
+        // Check SWCS Eligibility (passing PEB state)
+        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35, peb));
+
+        // Update PEB Advice Box & Renovation Toggle
+        if (peb === 'A' || peb === 'B') {
+            renoCommitContainer.classList.add('hidden');
+            if (pebAdvice) {
+                pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300 text-emerald-700 bg-emerald-50 border-emerald-200 block';
+                pebAdvice.innerHTML = "🌱 <strong>Avantage Éco-crédit & Durée :</strong> Avec un PEB A ou B, les banques accordent une réduction de taux d'environ -0.15% ET débloquent la possibilité d'emprunter sur <strong>30 ans</strong> ! N'hésitez pas à modifier le taux et la durée dans le panneau de financement.";
+            }
+        } else if (peb === 'C' || peb === 'D' || peb === 'E' || peb === 'F' || peb === 'G') {
+            renoCommitContainer.classList.remove('hidden');
+            if (pebAdvice) {
+                pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300 block';
+                if (isRenoCommitted) {
+                    pebAdvice.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+                    pebAdvice.innerHTML = "💡 <strong>Réduction différée validée :</strong> En vous engageant à rénover, vous débloquez le taux <strong>Éco-crédit</strong> dès l'achat !<br><br>🔨 <strong>Financement des travaux :</strong> Ne les intégrez pas forcément au prêt principal. Pensez au <strong>Prêt Rénovation Énergie</strong> bancaire (~2.95%) ou au <strong>Rénopack à 0%</strong> (si vous êtes éligible SWCS).";
+                } else {
+                    pebAdvice.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
+                    if (peb === 'F' || peb === 'G') {
+                        pebAdvice.innerHTML = "⚠️ <strong>Passoire énergétique :</strong> Les banques vous pénaliseront avec un taux majoré, et certaines refuseront le prêt sans engagement de rénovation. Activez le bouton ci-dessus pour simuler un engagement de rénovation.";
+                    } else {
+                        pebAdvice.innerHTML = "ℹ️ <strong>PEB Moyen :</strong> Pas de pénalité stricte de la part des banques, mais aucun avantage de taux. Rénover vous permettrait d'obtenir un meilleur taux d'emprunt global.";
+                    }
+                }
+            }
+        } else {
+            renoCommitContainer.classList.add('hidden');
+            if (pebAdvice) pebAdvice.classList.add('hidden');
+        }
+
 
         const acompteRate = parseFloat(document.getElementById('inAcompteRate')?.value || 0.05);
         globalCharges = getValue('inChargesNum');
-
-        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35));
-
-        // Update PEB Advice Box
-        if (pebAdvice) {
-            pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300';
-            if (peb === 'A' || peb === 'B') {
-                pebAdvice.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
-                pebAdvice.innerHTML = "🌱 <strong>Avantage Éco-crédit :</strong> Avec un PEB A ou B, la plupart des banques accordent une réduction de taux (environ -0.15%). N'hésitez pas à baisser manuellement le taux estimé à gauche !";
-            } else if (peb === 'F' || peb === 'G') {
-                pebAdvice.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
-                pebAdvice.innerHTML = "⚠️ <strong>Passoire énergétique :</strong> Les banques seront très exigeantes. Prévoyez de devoir emprunter un budget travaux supplémentaire obligatoire pour améliorer ce PEB.";
-            } else if (peb !== 'unknown') {
-                pebAdvice.classList.add('text-slate-700', 'bg-slate-50', 'border-slate-200');
-                pebAdvice.innerHTML = "ℹ️ <strong>PEB Standard :</strong> Pas de pénalité bancaire, mais pas de réduction de taux écologique. Si vous prévoyez d'isoler (viser A ou B), vous pourriez négocier un meilleur taux.";
-            } else {
-                pebAdvice.classList.add('hidden');
-            }
-        }
 
         // 2. Fees & Loan calculation (EXACT BELGIAN MATH)
         const regTaxRate = isFirstHome ? 0.03 : 0.125;
@@ -1893,6 +1955,7 @@
         document.getElementById('inAcompteRate')?.addEventListener('change', calculateAll);
 
         document.getElementById('inPeb')?.addEventListener('change', calculateAll);
+        document.getElementById('inRenoCommit')?.addEventListener('change', calculateAll);
 
         const slider = document.getElementById('inCrisisSlider');
         const num = document.getElementById('inCrisisNum');
