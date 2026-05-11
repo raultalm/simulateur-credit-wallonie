@@ -803,9 +803,10 @@
                 <h3 class="font-bold text-indigo-900 mb-2 flex items-center gap-2"><span class="text-xl">🔍</span>
                     Décomposition du 1er mois</h3>
 
-                <p class="text-sm text-indigo-800 mb-4">Sur votre première mensualité de <strong id="mMensualite">--
-                    €</strong>, voici où va votre argent. <br><em>Note : Au fil des années, la part de capital
-                    augmentera et celle des intérêts diminuera.</em></p>
+                <p class="text-sm text-indigo-800 mb-4">Sur votre première mensualité (basée sur le <strong
+                        class="underline decoration-indigo-300">taux mensuel équivalent belge</strong>) de <strong
+                        id="mMensualite">--
+                    €</strong>, voici où va votre argent.</p>
 
                 <div class="flex items-center gap-4 h-8 bg-slate-200 rounded-full overflow-hidden mb-2 mt-4">
                     <div id="barInterets"
@@ -866,7 +867,7 @@
 </main>
 
 <script>
-    // --- UTILITY FUNCTIONS ---
+    // --- UTILITY FUNCTIONS & EXACT BELGIAN MATH ---
     function setText(id, text) {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
@@ -899,6 +900,78 @@
         }
     }
 
+    // Barèmes légaux exacts (A.R. 1950 indexé) pour un Acte de Vente (Achat Maison)
+    function calculateExactNotarySaleHonorarium(amount) {
+        let honorarium = 0;
+        let remaining = amount;
+
+        if (remaining > 250095) {
+            honorarium += (remaining - 250095) * 0.00057;
+            remaining = 250095;
+        }
+        if (remaining > 64095) {
+            honorarium += (remaining - 64095) * 0.0057;
+            remaining = 64095;
+        }
+        if (remaining > 45495) {
+            honorarium += (remaining - 45495) * 0.0114;
+            remaining = 45495;
+        }
+        if (remaining > 30000) {
+            honorarium += (remaining - 30000) * 0.0171;
+            remaining = 30000;
+        }
+        if (remaining > 17500) {
+            honorarium += (remaining - 17500) * 0.0228;
+            remaining = 17500;
+        }
+        if (remaining > 7500) {
+            honorarium += (remaining - 7500) * 0.0285;
+            remaining = 7500;
+        }
+        if (remaining > 0) {
+            honorarium += remaining * 0.0456;
+        }
+
+        return honorarium;
+    }
+
+    // Barèmes légaux exacts pour un Acte de Crédit (Ouverture de crédit hypothécaire)
+    function calculateExactNotaryCreditHonorarium(amount) {
+        let honorarium = 0;
+        let remaining = amount;
+
+        if (remaining > 250095) {
+            honorarium += (remaining - 250095) * 0.00057;
+            remaining = 250095;
+        }
+        if (remaining > 64095) {
+            honorarium += (remaining - 64095) * 0.00285;
+            remaining = 64095;
+        }
+        if (remaining > 45495) {
+            honorarium += (remaining - 45495) * 0.0057;
+            remaining = 45495;
+        }
+        if (remaining > 30000) {
+            honorarium += (remaining - 30000) * 0.00684;
+            remaining = 30000;
+        }
+        if (remaining > 17500) {
+            honorarium += (remaining - 17500) * 0.00855;
+            remaining = 17500;
+        }
+        if (remaining > 7500) {
+            honorarium += (remaining - 7500) * 0.0114;
+            remaining = 7500;
+        }
+        if (remaining > 0) {
+            honorarium += remaining * 0.01425;
+        }
+
+        return honorarium;
+    }
+
     // --- GLOBAL STATE ---
     let loanChart = null;
     let rentMonthlyChart = null;
@@ -913,7 +986,6 @@
         const rateInput = document.getElementById('inRateNum');
         if (rateInput) {
             rateInput.value = rate.toFixed(2);
-            // Flash effect to show it was updated
             rateInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
             setTimeout(() => {
                 rateInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
@@ -922,16 +994,18 @@
         }
     }
 
-    // Calcule le minimum légal absolu pour un prêt à 100% et met à jour le slider d'apport
     window.applySWCS100 = function (rate) {
         const price = parseFloat(document.getElementById('inPriceNum')?.value) || 0;
         const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
 
-        // Calcul exact des frais minimum obligatoires pour un prêt à 100% du prix
         const regTaxRate = isFirstHome ? 0.03 : 0.125;
         const registrationCosts = price * regTaxRate;
-        const notaryPurchaseCosts = (price * 0.009) + 1200;
-        const creditActCosts = (price * 0.012) + 800; // Puisque prêt à 100%, l'emprunt = le prix
+
+        // Cacul EXACT des frais pour le Prêt à 100%
+        const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
+        // Inscription hypothécaire sur 110% de la valeur (pratique bancaire belge standard = 1% + 0.3%)
+        const creditRegistrationTax = (price * 1.10) * 0.013;
+        const creditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + creditRegistrationTax + 800;
 
         const exactMinimumCash = Math.ceil(registrationCosts + notaryPurchaseCosts + creditActCosts);
 
@@ -942,14 +1016,12 @@
             savingsInput.value = exactMinimumCash;
             savingsSlider.value = exactMinimumCash;
 
-            // Animation de surbrillance pour bien montrer le changement
             savingsInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
             setTimeout(() => {
                 savingsInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
             }, 800);
         }
 
-        // On applique ensuite le taux
         applySWCSRate(rate);
     }
 
@@ -1070,40 +1142,42 @@
         const rigInput = document.getElementById('inRigNum')?.value;
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
 
-        // New Acompte
         const acompteRate = parseFloat(document.getElementById('inAcompteRate')?.value || 0.05);
-
         globalCharges = getValue('inChargesNum');
 
-        // 1. Social status (Updated with accurate SWCS Logic and Rate Injection)
         setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35));
 
-        // 2. Fees & Loan calculation
+        // 2. Fees & Loan calculation (EXACT BELGIAN MATH)
         const regTaxRate = isFirstHome ? 0.03 : 0.125;
         const registrationCosts = price * regTaxRate;
-        const notaryPurchaseCosts = (price * 0.009) + 1200;
+
+        // Honoraires notaire pour la vente (Honoraires exacts + 21% TVA + Frais administratifs ~1100€)
+        const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
 
         // Calcul du minimum légal FIXE (en supposant un emprunt maximal à 100% du prix)
-        const fixedCreditActCosts = (price * 0.012) + 800;
+        const fixedCreditRegistrationTax = (price * 1.10) * 0.013; // Droits d'inscription sur hypothèque à 110%
+        const fixedCreditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + fixedCreditRegistrationTax + 800;
         const fixedMinimumLegal = registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
 
-        let estimatedTotalFees = registrationCosts + notaryPurchaseCosts + (price * 0.012);
-        let totalCost = price + estimatedTotalFees;
-        let loanAmount = totalCost - savings;
+        // Premier passage pour savoir combien le client emprunte réellement
+        let estimatedTotalCost = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
+        let loanAmount = estimatedTotalCost - savings;
         if (loanAmount < 0) loanAmount = 0;
+        if (loanAmount > price) loanAmount = price; // Capping à 100%
 
-        const creditActCosts = loanAmount > 0 ? (loanAmount * 0.012) + 800 : 0;
+        // Deuxième passage avec le VRAI montant emprunté pour les frais réels de crédit
+        let realCreditRegistrationTax = 0;
+        let creditActCosts = 0;
+        if (loanAmount > 0) {
+            realCreditRegistrationTax = (loanAmount * 1.10) * 0.013;
+            creditActCosts = (calculateExactNotaryCreditHonorarium(loanAmount) * 1.21) + realCreditRegistrationTax + 800;
+        }
+
         globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts;
-        totalCost = price + globalExactMandatoryFees;
-
-        loanAmount = totalCost - savings;
-        if (loanAmount < 0) loanAmount = 0;
-
-        // Cap loan at 100% of price
-        let actualLoan = loanAmount;
+        let totalCost = price + globalExactMandatoryFees;
+        let actualLoan = totalCost - savings;
+        if (actualLoan < 0) actualLoan = 0;
         if (actualLoan > price) actualLoan = price;
-
-        const requiredPocketCash = globalExactMandatoryFees + (price - actualLoan);
 
         // 3. UI Receipts
         setText('fPrix', fmtMoney.format(price));
@@ -1139,12 +1213,14 @@
             }
         }
 
-        // 4. Monthly Payment
-        const monthlyRate = (rate / 100) / 12;
+        // 4. Monthly Payment (EXACT BELGIAN BANK COMPOUNDING)
+        // La loi belge oblige les banques à utiliser le taux mensuel équivalent, et non pas le nominal / 12
+        const annualRate = rate / 100;
+        const equivalentMonthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
         const numPayments = years * 12;
 
-        if (actualLoan > 0 && monthlyRate > 0) {
-            globalMonthlyPayment = actualLoan * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        if (actualLoan > 0 && equivalentMonthlyRate > 0) {
+            globalMonthlyPayment = actualLoan * (equivalentMonthlyRate * Math.pow(1 + equivalentMonthlyRate, numPayments)) / (Math.pow(1 + equivalentMonthlyRate, numPayments) - 1);
         } else {
             globalMonthlyPayment = actualLoan > 0 ? actualLoan / numPayments : 0;
         }
@@ -1181,7 +1257,6 @@
         const acompte = price * acompteRate;
         setText('tlAcompte', fmtMoney.format(acompte));
 
-        // Alert if savings are not enough for the acompte
         const tlAcompteAlert = document.getElementById('tlAcompteAlert');
         if (tlAcompteAlert) {
             if (savings < acompte) {
@@ -1193,9 +1268,8 @@
 
         setText('tlCredit', fmtMoney.format(actualLoan));
 
-        // Solde notaire = Ce qu'il reste à payer (Total besoin poche - acompte)
-        let soldeNotaire = requiredPocketCash - acompte;
-        if (soldeNotaire < 0) soldeNotaire = 0; // if negotiated acompte is larger than required pocket cash, notary refunds
+        let soldeNotaire = (globalExactMandatoryFees + (price - actualLoan)) - acompte;
+        if (soldeNotaire < 0) soldeNotaire = 0;
         setText('tlSoldeNotaire', fmtMoney.format(soldeNotaire));
         setText('tlMensualite', fmtMoney.format(globalMonthlyPayment));
 
@@ -1203,8 +1277,8 @@
         const barInterets = document.getElementById('barInterets');
         const barCapital = document.getElementById('barCapital');
 
-        if (actualLoan > 0 && monthlyRate > 0) {
-            const interestMonth1 = actualLoan * monthlyRate;
+        if (actualLoan > 0 && equivalentMonthlyRate > 0) {
+            const interestMonth1 = actualLoan * equivalentMonthlyRate;
             const capitalMonth1 = globalMonthlyPayment - interestMonth1;
 
             const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
@@ -1216,13 +1290,13 @@
                 barInterets.style.width = `${pctInterest}%`;
                 barInterets.textContent = `${pctInterest.toFixed(0)}% Intérêts`;
             }
-            setText('tInterets', `Coût du crédit : ${fmtMoney.format(interestMonth1)}`);
+            setText('tInterets', `Perdu (Coût du crédit) : ${fmtMoney.format(interestMonth1)}`);
 
             if (barCapital) {
                 barCapital.style.width = `${pctCapital}%`;
                 barCapital.textContent = `${pctCapital.toFixed(0)}% Capital`;
             }
-            setText('tCapital', `Capital remboursé : ${fmtMoney.format(capitalMonth1)}`);
+            setText('tCapital', `Réinjecté dans le patrimoine : ${fmtMoney.format(capitalMonth1)}`);
         } else {
             setText('mMensualite', "-- €");
             if (barInterets) {
@@ -1238,9 +1312,9 @@
         }
 
         // Sub-calculations
-        updateAmortizationChart(actualLoan, monthlyRate, numPayments, globalMonthlyPayment);
+        updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment);
         runCrisisSimulation();
-        runRentVsBuySimulation(price, actualLoan, savings, years);
+        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate);
     }
 
     function runCrisisSimulation() {
@@ -1265,7 +1339,7 @@
         setHTML('crisisResultBlock', html);
     }
 
-    function runRentVsBuySimulation(housePrice, loanAmount, savings, years) {
+    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate) {
         const initialRent = getValue('inRentNum');
         const inflationRate = getValue('inInflation') / 100;
         const yieldRate = getValue('inYield') / 100;
@@ -1283,7 +1357,7 @@
 
         let currentHouseValue = housePrice;
         let buyerRemainingLoan = loanAmount;
-        const monthlyRate = (getValue('inRateNum') / 100) / 12;
+        let buyerLiquidCapital = 0; // L'acheteur génère aussi du cash s'il paye moins que le locataire
 
         let breakEvenYear = -1;
 
@@ -1292,8 +1366,6 @@
             rentMonthlyData.push(currentRent);
             mortgageMonthlyData.push(globalMonthlyPayment + (propertyTaxAndMaint / 12));
 
-            let yearlyBuyerSavingsAddition = 0;
-
             for (let month = 1; month <= 12; month++) {
                 let monthlyOwningCost = globalMonthlyPayment + (propertyTaxAndMaint / 12);
                 let diff = monthlyOwningCost - currentRent;
@@ -1301,11 +1373,14 @@
                 if (diff > 0) {
                     renterCapital += diff;
                 } else if (diff < 0) {
-                    yearlyBuyerSavingsAddition += Math.abs(diff);
+                    buyerLiquidCapital += Math.abs(diff); // Effet correctif : l'acheteur investit la différence
                 }
 
-                renterCapital = renterCapital * (1 + (yieldRate / 12));
-                let interestForMonth = buyerRemainingLoan * monthlyRate;
+                // Intérêts composés mensuels exacts
+                renterCapital = renterCapital * Math.pow(1 + yieldRate, 1 / 12);
+                buyerLiquidCapital = buyerLiquidCapital * Math.pow(1 + yieldRate, 1 / 12);
+
+                let interestForMonth = buyerRemainingLoan * equivalentMonthlyRate;
                 let principalForMonth = globalMonthlyPayment - interestForMonth;
                 if (buyerRemainingLoan > 0) buyerRemainingLoan -= principalForMonth;
             }
@@ -1314,7 +1389,7 @@
             currentHouseValue = currentHouseValue * (1 + houseAppreciationRate);
 
             let renterNetWorth = renterCapital;
-            let buyerNetWorth = (currentHouseValue - buyerRemainingLoan) + yearlyBuyerSavingsAddition;
+            let buyerNetWorth = (currentHouseValue - buyerRemainingLoan) + buyerLiquidCapital;
 
             renterWealthData.push(renterNetWorth);
             buyerWealthData.push(buyerNetWorth);
@@ -1680,7 +1755,7 @@
         }
     }
 
-    function updateAmortizationChart(principal, monthlyRate, numPayments, monthlyPayment) {
+    function updateAmortizationChart(principal, equivalentMonthlyRate, numPayments, monthlyPayment) {
         let balance = principal;
         let labels = [];
         let interestData = [];
@@ -1692,7 +1767,7 @@
                 let yearlyInterest = 0;
                 let yearlyPrincipal = 0;
                 for (let month = 1; month <= 12; month++) {
-                    let interestForMonth = balance * monthlyRate;
+                    let interestForMonth = balance * equivalentMonthlyRate;
                     let principalForMonth = monthlyPayment - interestForMonth;
                     yearlyInterest += interestForMonth;
                     yearlyPrincipal += principalForMonth;
@@ -1769,7 +1844,7 @@
 
         document.getElementById('inRigNum')?.addEventListener('input', calculateAll);
         document.getElementById('inChildren')?.addEventListener('change', calculateAll);
-        document.getElementById('inUnder35')?.addEventListener('change', calculateAll); // New Listener
+        document.getElementById('inUnder35')?.addEventListener('change', calculateAll);
         document.getElementById('inFirstHome')?.addEventListener('change', calculateAll);
         document.getElementById('inRateNum')?.addEventListener('input', calculateAll);
         document.getElementById('inYears')?.addEventListener('change', calculateAll);
