@@ -695,7 +695,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Mensualité -->
                 <div class="bg-slate-900 text-white p-5 rounded-xl shadow-lg flex flex-col justify-center border border-slate-700">
-                    <h4 class="text-xs text-sky-300 uppercase tracking-wider font-semibold">Mensualité Estimée</h4>
+                    <h4 class="text-xs text-sky-300 uppercase tracking-wider font-semibold">Mensualité Globale</h4>
                     <p class="text-3xl font-bold mt-1" id="outPayment">-- €</p>
                     <p class="text-xs text-slate-400 mt-1">Pendant <span id="outYearsText">25</span> ans <span
                             id="outAsrdIncludedNote"></span></p>
@@ -740,7 +740,7 @@
                         <div class="receipt-line font-bold text-slate-900">
                             <span>1. Prix de la maison/appart</span><span id="fPrix">439 000 €</span>
                         </div>
-                        <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais obligatoires ---</div>
+                        <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais liés à l'achat ---</div>
                         <div class="receipt-line">
                             <span>2a. Droits enregistrement (<span id="fTauxEnreg">3%</span>)</span><span id="fEnreg">13 170 €</span>
                         </div>
@@ -1181,10 +1181,12 @@
     let globalMonthlyPayment = 0;
     let globalCharges = 0;
     let globalExactMandatoryFees = 0;
+    let is100PercentMode = false; // Mode collant pour l'apport dynamique
     const fmtMoney = new Intl.NumberFormat('fr-BE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
 
     // --- APPLY SWCS RATE & 100% LOAN LOGIC ---
-    window.applySWCSRate = function (rate) {
+    window.applySWCSRate = function (rate, is100Mode = false) {
+        is100PercentMode = is100Mode;
         const rateInput = document.getElementById('inRateNum');
         if (rateInput) {
             rateInput.value = rate.toFixed(2);
@@ -1197,53 +1199,8 @@
     }
 
     window.applySWCS100 = function (rate) {
-        const price = parseFloat(document.getElementById('inPriceNum')?.value) || 0;
-        const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
-        const etatBien = document.querySelector('input[name="inEtatBien"]:checked').value;
-        const isNeuf = etatBien === 'neuf';
-        const asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
-        const isAsrdUnique = asrdType === 'unique';
-
-        const regTaxRate = isFirstHome && !isNeuf ? 0.03 : 0.125;
-        let registrationCosts = 0;
-        if (isNeuf) {
-            registrationCosts = price * 0.21; // TVA
-        } else {
-            registrationCosts = price * regTaxRate;
-        }
-
-        // Cacul EXACT des frais pour le Prêt à 100%
-        const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
-        // Inscription hypothécaire sur 110% de la valeur (pratique bancaire belge standard = 1% + 0.3%)
-        const creditRegistrationTax = (price * 1.10) * 0.013;
-        const creditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + creditRegistrationTax + 800;
-
-        // Estimation ASRD si prêt à 100%
-        let asrdInput = parseFloat(document.getElementById('inAsrdNum')?.value);
-        let estimatedAsrd = 0;
-        if (isNaN(asrdInput) || asrdInput <= 0) {
-            estimatedAsrd = price * 0.012; // Estimation dynamique jeune couple
-        } else {
-            estimatedAsrd = asrdInput;
-        }
-
-        let fixedUpfrontAsrd100 = isAsrdUnique ? estimatedAsrd : 0;
-        const exactMinimumCash = Math.ceil(registrationCosts + notaryPurchaseCosts + creditActCosts + fixedUpfrontAsrd100);
-
-        const savingsInput = document.getElementById('inSavingsNum');
-        const savingsSlider = document.getElementById('inSavingsSlider');
-
-        if (savingsInput && savingsSlider) {
-            savingsInput.value = exactMinimumCash;
-            savingsSlider.value = exactMinimumCash;
-
-            savingsInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-            setTimeout(() => {
-                savingsInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-            }, 800);
-        }
-
-        applySWCSRate(rate);
+        // Enclenche le mode dynamique 100% et applique le taux
+        applySWCSRate(rate, true);
     }
 
     // --- TABS LOGIC ---
@@ -1354,7 +1311,7 @@
 
     function calculateAll() {
         const price = getValue('inPriceNum');
-        const savings = getValue('inSavingsNum');
+        let savings = getValue('inSavingsNum'); // Rendu modifiable pour le mode sticky
         const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
         const rate = getValue('inRateNum');
         const income = getValue('inIncomeNum');
@@ -1454,15 +1411,15 @@
         const fixedCreditRegistrationTax = (price * 1.10) * 0.013; // Droits d'inscription sur hypothèque à 110%
         const fixedCreditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + fixedCreditRegistrationTax + 800;
 
-        // DEUXIEME PASSAGE : CALCUL DE L'EMPRUNT REEL POUR LES FRAIS D'ACTE ET ASRD
-        let estimatedTotalCostBase = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
-        let tempLoanAmount = estimatedTotalCostBase - savings;
-        if (tempLoanAmount < 0) tempLoanAmount = 0;
-        if (tempLoanAmount > price) tempLoanAmount = price;
-
         // CALCUL ASRD DYNAMIQUE ET TYPE DE PAIEMENT
         const asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
         const isAsrdUnique = asrdType === 'unique';
+
+        // PASSAGE 1: Déterminer le montant d'emprunt temporaire pour estimer l'ASRD
+        let estimatedTotalCostBase = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
+        let tempLoanAmount = is100PercentMode ? price : estimatedTotalCostBase - savings;
+        if (tempLoanAmount < 0) tempLoanAmount = 0;
+        if (tempLoanAmount > price) tempLoanAmount = price;
 
         let asrdInput = parseFloat(document.getElementById('inAsrdNum').value);
         let baseAsrd = 0;
@@ -1482,9 +1439,26 @@
         // LE VRAI COUT TOTAL MANDATOIRE (Taxes + Notaire + Credit + ASRD) calculé sur un prêt 100%
         let fixedAsrd100 = isNaN(asrdInput) || asrdInput <= 0 ? (price * 0.012) : asrdInput;
         let fixedUpfrontAsrd100 = isAsrdUnique ? fixedAsrd100 : 0;
-        const fixedMinimumLegal = registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100;
+        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100);
 
-        // Recalcul des frais réels de crédit basés sur l'emprunt final
+        // --- STICKY 100% MODE LOGIC ---
+        if (is100PercentMode) {
+            savings = fixedMinimumLegal;
+            const savingsInput = document.getElementById('inSavingsNum');
+            const savingsSlider = document.getElementById('inSavingsSlider');
+            if (savingsInput && parseFloat(savingsInput.value) !== fixedMinimumLegal) {
+                savingsInput.value = fixedMinimumLegal;
+                savingsSlider.value = fixedMinimumLegal;
+
+                // Petit effet visuel pour montrer que la valeur s'est auto-ajustée
+                savingsInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                setTimeout(() => {
+                    savingsInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                }, 800);
+            }
+        }
+
+        // PASSAGE 2: Recalcul des frais réels de crédit basés sur l'emprunt final réel (avec l'apport mis à jour)
         let loanAmount = estimatedTotalCostBase + upfrontAsrd - savings;
         if (loanAmount < 0) loanAmount = 0;
         if (loanAmount > price) loanAmount = price;
@@ -1587,7 +1561,7 @@
             }
         }
 
-        // --- NEW: ACCELERATED AMORTIZATION LOGIC ---
+        // --- ACCELERATED AMORTIZATION LOGIC ---
         let standardBalance = actualLoan;
         let standardTotalInterest = 0;
         for (let m = 1; m <= numPayments; m++) {
@@ -1725,14 +1699,12 @@
         let asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
         let monthlyAsrd = 0;
         if (asrdType === 'mensuel') {
-            // rough re-calc for crisis block to avoid global variables mess
             let tmpBaseAsrd = isNaN(asrdInput) || asrdInput <= 0 ? 0 : asrdInput;
             monthlyAsrd = (tmpBaseAsrd * 1.15) / (25 * 12); // Fallback estimate
         }
 
-        let totalCostWithAsrd = globalMonthlyPayment; // Assume globalMonthlyPayment holds loan cost
+        let totalCostWithAsrd = globalMonthlyPayment;
         if (document.getElementById('outPayment').textContent !== '-- €') {
-            // Safer way: extract numbers from the UI text
             let str = document.getElementById('outPayment').textContent;
             totalCostWithAsrd = parseFloat(str.replace(/[^0-9,-]+/g, "").replace(',', '.'));
         }
@@ -1785,7 +1757,7 @@
 
             // Si le crédit est fini plus tôt, l'acheteur ne paye plus la mensualité du prêt !
             let currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
-            let currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0; // ASRD s'arrête souvent avec la fin du prêt
+            let currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0;
 
             mortgageMonthlyData.push(currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12));
 
@@ -2293,7 +2265,13 @@
 
         syncInputsSafe('inChargesSlider', 'inChargesNum', calculateAll);
         syncInputsSafe('inPriceSlider', 'inPriceNum', calculateAll);
-        syncInputsSafe('inSavingsSlider', 'inSavingsNum', calculateAll);
+
+        // C'est ici que l'on désactive le mode dynamique 100% si l'utilisateur change l'apport manuellement
+        syncInputsSafe('inSavingsSlider', 'inSavingsNum', () => {
+            is100PercentMode = false;
+            calculateAll();
+        });
+
         syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
         syncInputsSafe('inRentSlider', 'inRentNum', calculateAll);
 
