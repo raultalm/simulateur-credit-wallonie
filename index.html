@@ -372,6 +372,28 @@
                 </div>
 
                 <div class="space-y-5">
+
+                    <!-- TYPE DE BIEN (NEUF OU EXISTANT) -->
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">État du bien immobilier</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="inEtatBien" value="existant" class="peer sr-only" checked>
+                                <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
+                                    <span class="block text-sm font-bold text-slate-800">🏡 Existant</span>
+                                    <span class="block text-[10px] text-slate-500">Droits d'enreg.</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="inEtatBien" value="neuf" class="peer sr-only">
+                                <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
+                                    <span class="block text-sm font-bold text-slate-800">🏗️ Neuf</span>
+                                    <span class="block text-[10px] text-slate-500">Soumis à la TVA (21%)</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Prix d'achat du bien</label>
                         <div class="flex items-center gap-4">
@@ -422,7 +444,9 @@
                              class="hidden mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300"></div>
                     </div>
 
-                    <div class="bg-sky-50 p-4 rounded-lg border border-sky-100 flex items-center justify-between">
+                    <!-- DYNAMIQUE: PREMIER ACHAT -->
+                    <div id="divFirstHome"
+                         class="bg-sky-50 p-4 rounded-lg border border-sky-100 flex items-center justify-between transition-opacity">
                         <div>
                             <h4 class="text-sm font-bold text-sky-900">Premier achat propre et unique ?</h4>
                             <p class="text-xs text-sky-700 mt-1">Donne droit au taux réduit de 3% en Wallonie.</p>
@@ -477,8 +501,67 @@
                         </div>
                     </div>
 
-                    <!-- NEW: EXTRA ANNUAL PAYMENT (ACCELERATION) & EXPLANATION -->
-                    <div class="col-span-2 mt-2 pt-5 border-t border-slate-100">
+                    <!-- ASSURANCE SOLDE RESTANT DU (ASRD) AVEC METHODE DE PAIEMENT -->
+                    <div class="pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Assurance Solde Restant Dû
+                            (ASRD)</label>
+
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="inAsrdType" value="unique" class="peer sr-only" checked>
+                                <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
+                                    <span class="block text-sm font-bold text-slate-800">Prime unique</span>
+                                    <span class="block text-[10px] text-slate-500">Payé en 1x au début</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="inAsrdType" value="mensuel" class="peer sr-only">
+                                <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
+                                    <span class="block text-sm font-bold text-slate-800">Mensuelle</span>
+                                    <span class="block text-[10px] text-slate-500">Ajouté à la mensualité</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="relative w-full">
+                            <input type="number" id="inAsrdNum" placeholder="Calcul automatique si vide"
+                                   class="w-full pl-3 pr-8 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-slate-700 bg-white placeholder-slate-400">
+                            <span class="absolute right-3 top-2 text-slate-500">€</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1">Coût de base de l'assurance. Si vide, nous
+                            l'estimerons à ~1,2% du montant emprunté.</p>
+
+                        <!-- ACCORDION INFO ASRD -->
+                        <details class="group mt-3 text-xs text-sky-800 bg-sky-50/50 p-2 rounded border border-sky-100">
+                            <summary
+                                    class="font-bold cursor-pointer hover:text-sky-600 transition-colors flex justify-between items-center gap-1">
+                                <span class="flex items-center gap-1"><span>🛡️</span> Qu'est-ce que l'ASRD et son impact ?</span>
+                                <span class="transform transition-transform duration-300 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-3 pl-2 border-l-2 border-sky-300 space-y-3">
+                                <p><strong>Le principe :</strong> C'est une assurance décès exigée par la banque. Si
+                                    l'un de vous décède, l'assurance rembourse sa part du crédit. Cela protège votre
+                                    famille et garantit à la banque d'être payée.</p>
+                                <p><strong>Prime Unique (1x) :</strong> Vous payez tout d'un coup chez le notaire.<br>
+                                    <span class="text-emerald-600 font-semibold">Le + :</span> C'est l'option la moins
+                                    chère au global.<br>
+                                    <span class="text-rose-600 font-semibold">Le - :</span> Vous devez avoir une grosse
+                                    somme d'épargne supplémentaire dès le 1er jour.</p>
+                                <p><strong>Paiement Mensuel :</strong> Le coût est lissé sur vos mensualités.<br>
+                                    <span class="text-emerald-600 font-semibold">Le + :</span> Votre apport de départ
+                                    est beaucoup plus faible.<br>
+                                    <span class="text-rose-600 font-semibold">Le - :</span> À cause des "frais de
+                                    fractionnement" bancaires (inclus dans ce simulateur), cela vous coûtera environ 15%
+                                    plus cher sur la durée de votre prêt.</p>
+                                <p>💡 <em>Astuce :</em> Vous n'êtes <strong>pas obligé</strong> de la prendre dans la
+                                    même banque que votre crédit ! La loi (Partyka) vous protège. Comparer peut faire
+                                    économiser des milliers d'euros.</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- EXTRA ANNUAL PAYMENT (ACCELERATION) & EXPLANATION -->
+                    <div class="pt-4 border-t border-slate-100">
                         <label class="block text-sm font-semibold text-emerald-800 mb-1">Remboursement anticipé annuel
                             <span class="font-normal text-emerald-600">- Optionnel</span></label>
                         <div class="flex items-center gap-4">
@@ -614,7 +697,8 @@
                 <div class="bg-slate-900 text-white p-5 rounded-xl shadow-lg flex flex-col justify-center border border-slate-700">
                     <h4 class="text-xs text-sky-300 uppercase tracking-wider font-semibold">Mensualité Estimée</h4>
                     <p class="text-3xl font-bold mt-1" id="outPayment">-- €</p>
-                    <p class="text-xs text-slate-400 mt-1">Pendant <span id="outYearsText">25</span> ans</p>
+                    <p class="text-xs text-slate-400 mt-1">Pendant <span id="outYearsText">25</span> ans <span
+                            id="outAsrdIncludedNote"></span></p>
                 </div>
 
                 <!-- Endettement -->
@@ -625,7 +709,7 @@
                 </div>
             </div>
 
-            <!-- NEW: ACCELERATION CARD -->
+            <!-- ACCELERATION CARD -->
             <div id="cardAcceleration"
                  class="hidden bg-emerald-50 p-5 rounded-xl border border-emerald-200 flex flex-col justify-center card-shadow mt-4 transition-all">
                 <h4 class="text-xs text-emerald-800 uppercase tracking-wider font-semibold mb-2">🚀 Accélération du
@@ -654,7 +738,7 @@
                     <!-- Le Ticket -->
                     <div class="text-sm font-mono text-slate-700 bg-slate-50 p-4 rounded border border-slate-200">
                         <div class="receipt-line font-bold text-slate-900">
-                            <span>1. Prix de la maison</span><span id="fPrix">439 000 €</span>
+                            <span>1. Prix de la maison/appart</span><span id="fPrix">439 000 €</span>
                         </div>
                         <div class="receipt-line text-xs text-slate-500 italic mt-2">--- Frais obligatoires ---</div>
                         <div class="receipt-line">
@@ -665,6 +749,9 @@
                         </div>
                         <div class="receipt-line">
                             <span>2c. Frais acte de crédit</span><span id="fCredit">~5 500 €</span>
+                        </div>
+                        <div class="receipt-line text-sky-700 font-semibold" id="fAsrdRow">
+                            <span id="fAsrdLabel">2d. Assurance Solde Restant Dû</span><span id="fAsrd">~4 500 €</span>
                         </div>
                         <div class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
                             <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
@@ -689,9 +776,9 @@
                             <div class="pr-14">
                                 <span class="font-bold text-emerald-900 text-base block mb-1">Apport minimum obligatoire :</span>
                                 <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
-                                <p class="text-xs text-emerald-800 mt-1">C'est le minimum <strong>légal à sortir de
-                                    votre poche</strong> (Frais 2a+2b+2c calculés pour un prêt à 100%). Cet argent part
-                                    chez le notaire et l'État.</p>
+                                <p class="text-[11px] text-emerald-800 mt-1">Minimum <strong>légal à sortir de votre
+                                    poche</strong> avant de recevoir les clés (Frais +  Taxes + ASRD unique si
+                                    applicable). Cet argent part chez le notaire et l'État.</p>
                             </div>
                         </div>
                         <div id="alertApport"
@@ -776,7 +863,7 @@
                             <h4 class="font-bold text-slate-800 text-base">Jour 90 à 120 (Max 4 mois) : L'Acte Notarié
                                 🔑</h4>
                             <p class="text-sm text-slate-600 mt-1 mb-3">Remise des clés ! C'est ici que l'argent bouge
-                                réellement.</p>
+                                réellement (Taxes, Notaire, et ASRD si prime unique).</p>
 
                             <div class="space-y-3">
                                 <div class="flex items-center gap-3">
@@ -824,41 +911,38 @@
                     </div>
 
                     <!-- Accordion Sources -->
-                    <div class="mt-6 border border-slate-200 rounded-lg overflow-hidden">
-                        <button id="btnSourcesToggle"
-                                class="w-full px-4 py-3 bg-slate-50 text-left text-sm font-bold text-slate-700 flex justify-between items-center focus:outline-none hover:bg-slate-100">
+                    <details class="group mt-6 border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                        <summary
+                                class="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 flex justify-between items-center cursor-pointer hover:bg-slate-100 transition-colors">
                             <span>📚 Sources officielles & Explications (Belgique)</span>
-                            <span id="iconSources" class="transform transition-transform">▼</span>
-                        </button>
-                        <div id="contentSources"
-                             class="max-h-0 overflow-hidden transition-all duration-300 bg-white text-xs text-slate-600">
-                            <div class="p-4 space-y-2">
-                                <p>Ce calendrier respecte scrupuleusement la législation belge :</p>
-                                <ul class="list-disc pl-5 space-y-1">
-                                    <li><strong>L'acompte (ou garantie) n'est pas une obligation légale :</strong>
-                                        "Aucune loi ne vous oblige à payer un acompte à la signature du compromis. Mais
-                                        dans la pratique, il est très fréquent." Allez sur <a
-                                                href="https://www.notaire.be" target="_blank"
-                                                class="text-sky-600 underline font-bold">Notaire.be</a> et cherchez "La
-                                        garantie" dans la section Acheter.
-                                    </li>
-                                    <li><strong>Délai maximal de 4 mois :</strong> Le Code des droits d'enregistrement
-                                        belge impose que les droits (les fameux 3% ou 12.5%) soient payés dans les 4
-                                        mois qui suivent le compromis. C'est pourquoi l'acte se signe dans ce délai.
-                                        Retrouvez ces infos sur <a href="https://www.notaire.be" target="_blank"
-                                                                   class="text-sky-600 underline font-bold">Notaire.be</a>.
-                                    </li>
-                                    <li><strong>Frais de dossier bancaire :</strong> Plafonnés légalement à 500 € en
-                                        Belgique. Source officielle : <a href="https://www.wikifin.be/fr"
-                                                                         target="_blank"
-                                                                         class="text-sky-600 underline font-bold">Wikifin.be</a>
-                                        (Portail d'éducation financière de la FSMA - Cherchez "Les coûts liés à
-                                        l'emprunt").
-                                    </li>
-                                </ul>
-                            </div>
+                            <span class="transform transition-transform duration-300 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="bg-white text-xs text-slate-600 p-4 space-y-2 border-t border-slate-200">
+                            <p>Ce calendrier respecte scrupuleusement la législation belge :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>L'acompte (ou garantie) n'est pas une obligation légale :</strong>
+                                    "Aucune loi ne vous oblige à payer un acompte à la signature du compromis. Mais
+                                    dans la pratique, il est très fréquent." Allez sur <a
+                                            href="https://www.notaire.be" target="_blank"
+                                            class="text-sky-600 underline font-bold">Notaire.be</a> et cherchez "La
+                                    garantie" dans la section Acheter.
+                                </li>
+                                <li><strong>Délai maximal de 4 mois :</strong> Le Code des droits d'enregistrement
+                                    belge impose que les droits soient payés dans les 4
+                                    mois qui suivent le compromis. C'est pourquoi l'acte se signe dans ce délai.
+                                </li>
+                                <li><strong>Frais de dossier bancaire :</strong> Plafonnés légalement à 500 € en
+                                    Belgique. Source officielle : <a href="https://www.wikifin.be/fr"
+                                                                     target="_blank"
+                                                                     class="text-sky-600 underline font-bold">Wikifin.be</a>.
+                                </li>
+                                <li><strong>TVA sur le neuf (21%) vs Droits (3%) :</strong> Lors de l'achat d'un bien
+                                    neuf (ex: sous loi Breyne), le bien est soumis à la TVA de 21% et non aux droits
+                                    d'enregistrement wallons. L'outil fait automatiquement le calcul selon votre choix.
+                                </li>
+                            </ul>
                         </div>
-                    </div>
+                    </details>
 
                 </div>
             </div>
@@ -1115,9 +1199,18 @@
     window.applySWCS100 = function (rate) {
         const price = parseFloat(document.getElementById('inPriceNum')?.value) || 0;
         const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
+        const etatBien = document.querySelector('input[name="inEtatBien"]:checked').value;
+        const isNeuf = etatBien === 'neuf';
+        const asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
+        const isAsrdUnique = asrdType === 'unique';
 
-        const regTaxRate = isFirstHome ? 0.03 : 0.125;
-        const registrationCosts = price * regTaxRate;
+        const regTaxRate = isFirstHome && !isNeuf ? 0.03 : 0.125;
+        let registrationCosts = 0;
+        if (isNeuf) {
+            registrationCosts = price * 0.21; // TVA
+        } else {
+            registrationCosts = price * regTaxRate;
+        }
 
         // Cacul EXACT des frais pour le Prêt à 100%
         const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
@@ -1125,7 +1218,17 @@
         const creditRegistrationTax = (price * 1.10) * 0.013;
         const creditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + creditRegistrationTax + 800;
 
-        const exactMinimumCash = Math.ceil(registrationCosts + notaryPurchaseCosts + creditActCosts);
+        // Estimation ASRD si prêt à 100%
+        let asrdInput = parseFloat(document.getElementById('inAsrdNum')?.value);
+        let estimatedAsrd = 0;
+        if (isNaN(asrdInput) || asrdInput <= 0) {
+            estimatedAsrd = price * 0.012; // Estimation dynamique jeune couple
+        } else {
+            estimatedAsrd = asrdInput;
+        }
+
+        let fixedUpfrontAsrd100 = isAsrdUnique ? estimatedAsrd : 0;
+        const exactMinimumCash = Math.ceil(registrationCosts + notaryPurchaseCosts + creditActCosts + fixedUpfrontAsrd100);
 
         const savingsInput = document.getElementById('inSavingsNum');
         const savingsSlider = document.getElementById('inSavingsSlider');
@@ -1142,19 +1245,6 @@
 
         applySWCSRate(rate);
     }
-
-    // --- SOURCES ACCORDION LOGIC ---
-    document.getElementById('btnSourcesToggle')?.addEventListener('click', function () {
-        const content = document.getElementById('contentSources');
-        const icon = document.getElementById('iconSources');
-        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-            content.style.maxHeight = '0px';
-            icon.style.transform = 'rotate(0deg)';
-        } else {
-            content.style.maxHeight = content.scrollHeight + 'px';
-            icon.style.transform = 'rotate(180deg)';
-        }
-    });
 
     // --- TABS LOGIC ---
     document.getElementById('btnTabMonthly')?.addEventListener('click', (e) => {
@@ -1273,6 +1363,17 @@
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
         const extraPayment = getValue('inExtraPaymentNum');
 
+        // ETAT BIEN (Neuf vs Existant)
+        const etatBien = document.querySelector('input[name="inEtatBien"]:checked').value;
+        const isNeuf = etatBien === 'neuf';
+        const divFirstHome = document.getElementById('divFirstHome');
+
+        if (isNeuf) {
+            divFirstHome.classList.add('opacity-30', 'pointer-events-none');
+        } else {
+            divFirstHome.classList.remove('opacity-30', 'pointer-events-none');
+        }
+
         // PEB Logic Update
         const peb = document.getElementById('inPeb')?.value;
         const pebAdvice = document.getElementById('pebAdvice');
@@ -1282,11 +1383,11 @@
 
         // Dynamically add/remove the 30 years option based on PEB A/B
         let has30Option = Array.from(yearsSelect.options).some(opt => opt.value === '30');
-        if (peb === 'A' || peb === 'B') {
+        if (peb === 'A' || peb === 'B' || isNeuf) { // Le neuf est d'office PEB A
             if (!has30Option) {
                 const opt30 = document.createElement('option');
                 opt30.value = '30';
-                opt30.text = '30 ans (Bonus PEB A/B)';
+                opt30.text = '30 ans (Bonus PEB A/B ou Neuf)';
                 yearsSelect.add(opt30);
             }
         } else {
@@ -1300,14 +1401,14 @@
         const years = getValue('inYears', true) || 25;
 
         // Check SWCS Eligibility (passing PEB state)
-        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35, peb));
+        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35, isNeuf ? 'A' : peb));
 
         // Update PEB Advice Box & Renovation Toggle
-        if (peb === 'A' || peb === 'B') {
+        if (peb === 'A' || peb === 'B' || isNeuf) {
             renoCommitContainer.classList.add('hidden');
             if (pebAdvice) {
                 pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300 text-emerald-700 bg-emerald-50 border-emerald-200 block';
-                pebAdvice.innerHTML = "🌱 <strong>Avantage Éco-crédit & Durée :</strong> Avec un PEB A ou B, les banques accordent une réduction de taux d'environ -0.15% ET débloquent la possibilité d'emprunter sur <strong>30 ans</strong> ! N'hésitez pas à modifier le taux et la durée dans le panneau de financement.";
+                pebAdvice.innerHTML = "🌱 <strong>Avantage Éco-crédit & Durée :</strong> Avec un bien Neuf ou PEB A/B, les banques accordent une réduction de taux d'environ -0.15% ET débloquent la possibilité d'emprunter sur <strong>30 ans</strong> ! N'hésitez pas à modifier le taux et la durée dans le panneau de financement.";
             }
         } else if (peb === 'C' || peb === 'D' || peb === 'E' || peb === 'F' || peb === 'G') {
             renoCommitContainer.classList.remove('hidden');
@@ -1335,8 +1436,16 @@
         globalCharges = getValue('inChargesNum');
 
         // 2. Fees & Loan calculation (EXACT BELGIAN MATH)
-        const regTaxRate = isFirstHome ? 0.03 : 0.125;
-        const registrationCosts = price * regTaxRate;
+        const regTaxRate = isFirstHome && !isNeuf ? 0.03 : 0.125;
+        let registrationCosts = 0;
+
+        if (isNeuf) {
+            registrationCosts = price * 0.21; // TVA au lieu des droits d'enregistrement
+            setText('fTauxEnreg', '21% - TVA');
+        } else {
+            registrationCosts = price * regTaxRate;
+            setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
+        }
 
         // Honoraires notaire pour la vente (Honoraires exacts + 21% TVA + Frais administratifs ~1100€)
         const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
@@ -1344,15 +1453,42 @@
         // Calcul du minimum légal FIXE (en supposant un emprunt maximal à 100% du prix)
         const fixedCreditRegistrationTax = (price * 1.10) * 0.013; // Droits d'inscription sur hypothèque à 110%
         const fixedCreditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + fixedCreditRegistrationTax + 800;
-        const fixedMinimumLegal = registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
 
-        // Premier passage pour savoir combien le client emprunte réellement
-        let estimatedTotalCost = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
-        let loanAmount = estimatedTotalCost - savings;
+        // DEUXIEME PASSAGE : CALCUL DE L'EMPRUNT REEL POUR LES FRAIS D'ACTE ET ASRD
+        let estimatedTotalCostBase = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
+        let tempLoanAmount = estimatedTotalCostBase - savings;
+        if (tempLoanAmount < 0) tempLoanAmount = 0;
+        if (tempLoanAmount > price) tempLoanAmount = price;
+
+        // CALCUL ASRD DYNAMIQUE ET TYPE DE PAIEMENT
+        const asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
+        const isAsrdUnique = asrdType === 'unique';
+
+        let asrdInput = parseFloat(document.getElementById('inAsrdNum').value);
+        let baseAsrd = 0;
+        if (isNaN(asrdInput) || asrdInput <= 0) {
+            // Estimation : Environ 1.2% du capital pour un jeune couple à 100% de couverture
+            baseAsrd = tempLoanAmount * 0.012;
+            document.getElementById('inAsrdNum').placeholder = fmtMoney.format(baseAsrd) + " (Estimé total)";
+        } else {
+            baseAsrd = asrdInput;
+        }
+
+        // Si paiement mensuel, le coût total est majoré (environ +15% de frais de fractionnement en Belgique)
+        let totalAsrd = isAsrdUnique ? baseAsrd : baseAsrd * 1.15;
+        let upfrontAsrd = isAsrdUnique ? totalAsrd : 0;
+        let monthlyAsrd = isAsrdUnique ? 0 : totalAsrd / (years * 12);
+
+        // LE VRAI COUT TOTAL MANDATOIRE (Taxes + Notaire + Credit + ASRD) calculé sur un prêt 100%
+        let fixedAsrd100 = isNaN(asrdInput) || asrdInput <= 0 ? (price * 0.012) : asrdInput;
+        let fixedUpfrontAsrd100 = isAsrdUnique ? fixedAsrd100 : 0;
+        const fixedMinimumLegal = registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100;
+
+        // Recalcul des frais réels de crédit basés sur l'emprunt final
+        let loanAmount = estimatedTotalCostBase + upfrontAsrd - savings;
         if (loanAmount < 0) loanAmount = 0;
-        if (loanAmount > price) loanAmount = price; // Capping à 100%
+        if (loanAmount > price) loanAmount = price;
 
-        // Deuxième passage avec le VRAI montant emprunté pour les frais réels de crédit
         let realCreditRegistrationTax = 0;
         let creditActCosts = 0;
         if (loanAmount > 0) {
@@ -1360,7 +1496,7 @@
             creditActCosts = (calculateExactNotaryCreditHonorarium(loanAmount) * 1.21) + realCreditRegistrationTax + 800;
         }
 
-        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts;
+        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts + upfrontAsrd;
         let totalCost = price + globalExactMandatoryFees;
         let actualLoan = totalCost - savings;
         if (actualLoan < 0) actualLoan = 0;
@@ -1368,12 +1504,18 @@
 
         // 3. UI Receipts
         setText('fPrix', fmtMoney.format(price));
-        setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
         setText('fEnreg', fmtMoney.format(registrationCosts));
         setText('fNotaire', fmtMoney.format(notaryPurchaseCosts));
         setText('fCredit', fmtMoney.format(creditActCosts));
-        setText('fTotal', fmtMoney.format(totalCost));
 
+        // ASRD affichage conditionnel
+        const fAsrdLabel = document.getElementById('fAsrdLabel');
+        if (fAsrdLabel) {
+            fAsrdLabel.textContent = isAsrdUnique ? "2d. Assurance Solde Restant Dû (1x)" : "2d. Assurance Solde Restant Dû (Mensuel)";
+        }
+        setText('fAsrd', isAsrdUnique ? fmtMoney.format(upfrontAsrd) : `${fmtMoney.format(monthlyAsrd)} /mois`);
+
+        setText('fTotal', fmtMoney.format(totalCost));
         setText('fMinimumLegal', fmtMoney.format(fixedMinimumLegal));
         setText('fCreditDemande', fmtMoney.format(actualLoan));
 
@@ -1387,13 +1529,13 @@
             if (savings < fixedMinimumLegal) {
                 alertApport.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900', 'alert-pulse');
                 document.getElementById('fMinimumLegal')?.classList.add('text-rose-600');
-                alertApport.innerHTML = `<span class="text-xl">🛑</span><div><strong>Épargne insuffisante.</strong> Il vous manque <span class="underline">${fmtMoney.format(fixedMinimumLegal - savings)}</span> pour couvrir les frais de base obligatoires.</div>`;
+                alertApport.innerHTML = `<span class="text-xl">🛑</span><div><strong>Épargne insuffisante.</strong> Il vous manque <span class="underline">${fmtMoney.format(fixedMinimumLegal - savings)}</span> pour couvrir les frais obligatoires.</div>`;
             } else {
                 alertApport.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
                 document.getElementById('fMinimumLegal')?.classList.remove('text-rose-600');
                 const extra = savings - fixedMinimumLegal;
                 if (extra > 0) {
-                    alertApport.innerHTML = `<span class="text-xl">✅</span><div><strong>Épargne suffisante !</strong> Vous couvrez les frais et injectez <strong>${fmtMoney.format(extra)}</strong> dans le prix de la maison, réduisant votre crédit.</div>`;
+                    alertApport.innerHTML = `<span class="text-xl">✅</span><div><strong>Épargne suffisante !</strong> Vous couvrez les frais et injectez <strong>${fmtMoney.format(extra)}</strong> dans le prix du bien, réduisant le crédit.</div>`;
                 } else {
                     alertApport.innerHTML = `<span class="text-xl">✅</span><div><strong>Épargne suffisante !</strong> Vous couvrez exactement les frais obligatoires.</div>`;
                 }
@@ -1412,12 +1554,17 @@
             globalMonthlyPayment = actualLoan > 0 ? actualLoan / numPayments : 0;
         }
 
-        setText('outPayment', fmtMoney.format(globalMonthlyPayment));
+        let totalMonthlyCost = globalMonthlyPayment + monthlyAsrd;
+
+        setText('outPayment', fmtMoney.format(totalMonthlyCost));
         setText('outYearsText', years);
+        if (document.getElementById('outAsrdIncludedNote')) {
+            document.getElementById('outAsrdIncludedNote').textContent = isAsrdUnique ? "" : "(ASRD incluse)";
+        }
         document.querySelectorAll('.rvb-year').forEach(el => el.textContent = years);
 
         // 5. Debt Ratio
-        const debtRatio = income > 0 ? ((globalMonthlyPayment + globalCharges) / income) * 100 : 0;
+        const debtRatio = income > 0 ? ((totalMonthlyCost + globalCharges) / income) * 100 : 0;
         setText('outDebtRatio', debtRatio.toFixed(1) + ' %');
 
         const cardDebt = document.getElementById('cardDebt');
@@ -1521,7 +1668,7 @@
         let soldeNotaire = (globalExactMandatoryFees + (price - actualLoan)) - acompte;
         if (soldeNotaire < 0) soldeNotaire = 0;
         setText('tlSoldeNotaire', fmtMoney.format(soldeNotaire));
-        setText('tlMensualite', fmtMoney.format(globalMonthlyPayment));
+        setText('tlMensualite', fmtMoney.format(totalMonthlyCost));
 
         // Analysis First Month
         const barInterets = document.getElementById('barInterets');
@@ -1534,7 +1681,11 @@
             const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
             const pctCapital = (capitalMonth1 / globalMonthlyPayment) * 100;
 
-            setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
+            if (isAsrdUnique) {
+                setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
+            } else {
+                setText('mMensualite', `${fmtMoney.format(totalMonthlyCost)} (dont ${fmtMoney.format(monthlyAsrd)} d'ASRD)`);
+            }
 
             if (barInterets) {
                 barInterets.style.width = `${pctInterest}%`;
@@ -1564,12 +1715,29 @@
         // Sub-calculations
         updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment, extraPayment);
         runCrisisSimulation();
-        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment);
+        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd);
     }
 
     function runCrisisSimulation() {
         const crisisIncome = getValue('inCrisisNum');
-        const resteAvivre = crisisIncome - globalMonthlyPayment - globalCharges;
+        // Retrieve values, calculate total cost to get the correct global totalMonthlyCost
+        let asrdInput = parseFloat(document.getElementById('inAsrdNum').value);
+        let asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
+        let monthlyAsrd = 0;
+        if (asrdType === 'mensuel') {
+            // rough re-calc for crisis block to avoid global variables mess
+            let tmpBaseAsrd = isNaN(asrdInput) || asrdInput <= 0 ? 0 : asrdInput;
+            monthlyAsrd = (tmpBaseAsrd * 1.15) / (25 * 12); // Fallback estimate
+        }
+
+        let totalCostWithAsrd = globalMonthlyPayment; // Assume globalMonthlyPayment holds loan cost
+        if (document.getElementById('outPayment').textContent !== '-- €') {
+            // Safer way: extract numbers from the UI text
+            let str = document.getElementById('outPayment').textContent;
+            totalCostWithAsrd = parseFloat(str.replace(/[^0-9,-]+/g, "").replace(',', '.'));
+        }
+
+        const resteAvivre = crisisIncome - totalCostWithAsrd - globalCharges;
 
         let html = `<div class="flex justify-between items-end mb-2">
                             <span class="text-slate-600">Reste à vivre estimé :</span>
@@ -1589,7 +1757,7 @@
         setHTML('crisisResultBlock', html);
     }
 
-    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate, extraPayment) {
+    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd) {
         const initialRent = getValue('inRentNum');
         const inflationRate = getValue('inInflation') / 100;
         const yieldRate = getValue('inYield') / 100;
@@ -1617,10 +1785,13 @@
 
             // Si le crédit est fini plus tôt, l'acheteur ne paye plus la mensualité du prêt !
             let currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
-            mortgageMonthlyData.push(currentMortgagePayment + (propertyTaxAndMaint / 12));
+            let currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0; // ASRD s'arrête souvent avec la fin du prêt
+
+            mortgageMonthlyData.push(currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12));
 
             for (let month = 1; month <= 12; month++) {
                 currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
+                currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0;
                 let currentExtraPaymentForMonth = 0;
 
                 if (buyerRemainingLoan > 0) {
@@ -1636,16 +1807,16 @@
                 if (month === 12 && buyerRemainingLoan > 0 && extraPayment > 0) {
                     let actualExtra = Math.min(extraPayment, buyerRemainingLoan);
                     buyerRemainingLoan -= actualExtra;
-                    currentExtraPaymentForMonth = actualExtra; // Pris en compte comme coût cash flow ce mois-ci
+                    currentExtraPaymentForMonth = actualExtra;
                 }
 
-                let monthlyOwningCost = currentMortgagePayment + (propertyTaxAndMaint / 12) + currentExtraPaymentForMonth;
+                let monthlyOwningCost = currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12) + currentExtraPaymentForMonth;
                 let diff = monthlyOwningCost - currentRent;
 
                 if (diff > 0) {
-                    renterCapital += diff; // Le locataire investit la différence (y compris l'argent de l'anticipation de l'acheteur)
+                    renterCapital += diff;
                 } else if (diff < 0) {
-                    buyerLiquidCapital += Math.abs(diff); // Le prêt est fini, l'acheteur investit en masse
+                    buyerLiquidCapital += Math.abs(diff);
                 }
 
                 renterCapital = renterCapital * Math.pow(1 + yieldRate, 1 / 12);
@@ -1667,7 +1838,7 @@
         }
 
         setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
-        setText('rvbFinalMortgage', fmtMoney.format(mortgageMonthlyData[years - 1])); // Updated dynamically if paid off early
+        setText('rvbFinalMortgage', fmtMoney.format(mortgageMonthlyData[years - 1]));
 
         const beText = document.getElementById('rvbBreakEvenText');
         const beYear = document.getElementById('rvbBreakEvenYear');
@@ -2126,12 +2297,23 @@
         syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
         syncInputsSafe('inRentSlider', 'inRentNum', calculateAll);
 
-        syncInputsSafe('inExtraPaymentSlider', 'inExtraPaymentNum', calculateAll); // Nouveau listener pour le remboursement anticipé
+        syncInputsSafe('inExtraPaymentSlider', 'inExtraPaymentNum', calculateAll);
 
         document.getElementById('inRigNum')?.addEventListener('input', calculateAll);
+        document.getElementById('inAsrdNum')?.addEventListener('input', calculateAll);
+
         document.getElementById('inChildren')?.addEventListener('change', calculateAll);
         document.getElementById('inUnder35')?.addEventListener('change', calculateAll);
         document.getElementById('inFirstHome')?.addEventListener('change', calculateAll);
+
+        // Listener pour Neuf vs Existant et Type ASRD
+        document.querySelectorAll('input[name="inEtatBien"]').forEach(radio => {
+            radio.addEventListener('change', calculateAll);
+        });
+        document.querySelectorAll('input[name="inAsrdType"]').forEach(radio => {
+            radio.addEventListener('change', calculateAll);
+        });
+
         document.getElementById('inRateNum')?.addEventListener('input', calculateAll);
         document.getElementById('inYears')?.addEventListener('change', calculateAll);
         document.getElementById('inInflation')?.addEventListener('input', calculateAll);
