@@ -316,7 +316,7 @@
                                 SWCS.</p>
                         </div>
 
-                        <!-- NEW AGE TOGGLE FOR SWCS RATE REDUCTION -->
+                        <!-- AGE TOGGLE FOR SWCS RATE REDUCTION -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Tous moins de 35 ans
                                 ?</label>
@@ -373,7 +373,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW: PEB SELECTOR -->
+                    <!-- PEB SELECTOR -->
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Score PEB (Énergie) <span
                                 class="font-normal text-slate-500">- Optionnel</span></label>
@@ -389,7 +389,7 @@
                             <option value="G">PEB G (Passoire énergétique)</option>
                         </select>
 
-                        <!-- Toggle Engagement Rénovation (Caché si A ou B) -->
+                        <!-- Toggle Engagement Rénovation -->
                         <div id="divRenovationCommit"
                              class="hidden mt-3 bg-sky-50 p-3 rounded-lg border border-sky-200 flex items-center justify-between transition-all">
                             <div>
@@ -461,10 +461,27 @@
                                     class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 bg-white transition-all">
                                 <option value="20">20 ans</option>
                                 <option value="25" selected>25 ans</option>
-                                <!-- L'option 30 ans est injectée dynamiquement via JS si PEB A/B -->
                             </select>
                         </div>
                     </div>
+
+                    <!-- NEW: EXTRA ANNUAL PAYMENT (ACCELERATION) -->
+                    <div class="col-span-2 mt-2 pt-5 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-emerald-800 mb-1">Remboursement anticipé annuel
+                            <span class="font-normal text-emerald-600">- Optionnel</span></label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" id="inExtraPaymentSlider" min="0" max="20000" step="500" value="0"
+                                   class="flex-grow" style="accent-color: #10b981;">
+                            <div class="relative w-36">
+                                <input type="number" id="inExtraPaymentNum" value="0"
+                                       class="w-full pl-3 pr-8 py-2 border border-emerald-300 bg-emerald-50 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-right font-bold text-emerald-800 transition-colors">
+                                <span class="absolute right-3 top-2 text-emerald-600">€</span>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1">Versé 1x par an pour détruire du capital et réduire
+                            la durée de votre crédit.</p>
+                    </div>
+
                 </div>
             </section>
 
@@ -554,6 +571,14 @@
                 </div>
             </div>
 
+            <!-- NEW: ACCELERATION CARD -->
+            <div id="cardAcceleration"
+                 class="hidden bg-emerald-50 p-5 rounded-xl border border-emerald-200 flex flex-col justify-center card-shadow mt-4 transition-all">
+                <h4 class="text-xs text-emerald-800 uppercase tracking-wider font-semibold mb-2">🚀 Accélération du
+                    crédit</h4>
+                <div id="accelerationContent"></div>
+            </div>
+
             <!-- Crédit Social Check -->
             <div id="cardSocial"
                  class="bg-indigo-50 p-5 rounded-xl border border-indigo-200 flex flex-col justify-center card-shadow">
@@ -629,7 +654,7 @@
                         <span class="text-xl">⏳</span>
                         <h3 class="font-bold text-indigo-900">Chronologie : Sorties de Trésorerie</h3>
                     </div>
-                    <!-- NEW: Acompte selector -->
+                    <!-- Acompte selector -->
                     <div class="flex items-center gap-2 bg-white px-3 py-1 rounded border border-indigo-200 text-sm">
                         <label for="inAcompteRate" class="font-bold text-indigo-800">Acompte / Garantie :</label>
                         <select id="inAcompteRate"
@@ -1192,6 +1217,7 @@
         const childrenCount = document.getElementById('inChildren')?.value || "0";
         const rigInput = document.getElementById('inRigNum')?.value;
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
+        const extraPayment = getValue('inExtraPaymentNum');
 
         // PEB Logic Update
         const peb = document.getElementById('inPeb')?.value;
@@ -1360,6 +1386,69 @@
             }
         }
 
+        // --- NEW: ACCELERATED AMORTIZATION LOGIC ---
+        let standardBalance = actualLoan;
+        let standardTotalInterest = 0;
+        for (let m = 1; m <= numPayments; m++) {
+            let interest = standardBalance * equivalentMonthlyRate;
+            let principal = globalMonthlyPayment - interest;
+            standardBalance -= principal;
+            standardTotalInterest += interest;
+        }
+
+        let accBalance = actualLoan;
+        let accTotalInterest = 0;
+        let accMonths = 0;
+
+        if (actualLoan > 0 && equivalentMonthlyRate > 0) {
+            for (let m = 1; m <= numPayments; m++) {
+                if (accBalance <= 0) break;
+
+                let interest = accBalance * equivalentMonthlyRate;
+                let principal = globalMonthlyPayment - interest;
+
+                if (principal > accBalance) principal = accBalance;
+
+                accBalance -= principal;
+                accTotalInterest += interest;
+                accMonths++;
+
+                // Apply extra payment at the end of every 12th month
+                if (m % 12 === 0 && extraPayment > 0 && accBalance > 0) {
+                    let actualExtra = Math.min(extraPayment, accBalance);
+                    accBalance -= actualExtra;
+                }
+            }
+        }
+
+        const cardAcceleration = document.getElementById('cardAcceleration');
+        if (extraPayment > 0 && actualLoan > 0) {
+            cardAcceleration.classList.remove('hidden');
+            let monthsSaved = numPayments - accMonths;
+            let yearsSaved = Math.floor(monthsSaved / 12);
+            let remainingMonths = monthsSaved % 12;
+            let interestSaved = standardTotalInterest - accTotalInterest;
+
+            let timeStr = yearsSaved > 0 ? `${yearsSaved} an(s) et ${remainingMonths} mois` : `${remainingMonths} mois`;
+
+            setHTML('accelerationContent', `
+                <div class="flex justify-between items-end border-b border-emerald-200 pb-2 mb-2">
+                    <span class="text-sm text-emerald-900 font-medium">Temps gagné sur le crédit :</span>
+                    <span class="text-xl font-bold text-emerald-700">-${timeStr}</span>
+                </div>
+                <div class="flex justify-between items-end">
+                    <span class="text-sm text-emerald-900 font-medium">Intérêts évités :</span>
+                    <span class="text-xl font-bold text-emerald-700">+ ${fmtMoney.format(interestSaved)}</span>
+                </div>
+                <div class="mt-3 bg-white p-2 rounded text-[10px] text-emerald-800 border border-emerald-100">
+                    💡 <strong>La loi belge protège ce droit :</strong> Un remboursement anticipé partiel est très souvent autorisé <strong>sans frais</strong> par les banques jusqu'à 10% ou 15% du capital par an. Au-delà, la banque peut réclamer une indemnité (plafonnée légalement à 3 mois d'intérêts sur le montant remboursé).
+                </div>
+            `);
+        } else {
+            cardAcceleration.classList.add('hidden');
+        }
+
+
         // 6. TIMELINE DATA
         const acompte = price * acompteRate;
         setText('tlAcompte', fmtMoney.format(acompte));
@@ -1419,9 +1508,9 @@
         }
 
         // Sub-calculations
-        updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment);
+        updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment, extraPayment);
         runCrisisSimulation();
-        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate);
+        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment);
     }
 
     function runCrisisSimulation() {
@@ -1446,7 +1535,7 @@
         setHTML('crisisResultBlock', html);
     }
 
-    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate) {
+    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate, extraPayment) {
         const initialRent = getValue('inRentNum');
         const inflationRate = getValue('inInflation') / 100;
         const yieldRate = getValue('inYield') / 100;
@@ -1464,32 +1553,49 @@
 
         let currentHouseValue = housePrice;
         let buyerRemainingLoan = loanAmount;
-        let buyerLiquidCapital = 0; // L'acheteur génère aussi du cash s'il paye moins que le locataire
+        let buyerLiquidCapital = 0;
 
         let breakEvenYear = -1;
 
         for (let year = 1; year <= years; year++) {
             labels.push('An ' + year);
             rentMonthlyData.push(currentRent);
-            mortgageMonthlyData.push(globalMonthlyPayment + (propertyTaxAndMaint / 12));
+
+            // Si le crédit est fini plus tôt, l'acheteur ne paye plus la mensualité du prêt !
+            let currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
+            mortgageMonthlyData.push(currentMortgagePayment + (propertyTaxAndMaint / 12));
 
             for (let month = 1; month <= 12; month++) {
-                let monthlyOwningCost = globalMonthlyPayment + (propertyTaxAndMaint / 12);
+                currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
+                let currentExtraPaymentForMonth = 0;
+
+                if (buyerRemainingLoan > 0) {
+                    let interestForMonth = buyerRemainingLoan * equivalentMonthlyRate;
+                    let principalForMonth = currentMortgagePayment - interestForMonth;
+                    if (principalForMonth > buyerRemainingLoan) {
+                        principalForMonth = buyerRemainingLoan;
+                        currentMortgagePayment = principalForMonth + interestForMonth;
+                    }
+                    buyerRemainingLoan -= principalForMonth;
+                }
+
+                if (month === 12 && buyerRemainingLoan > 0 && extraPayment > 0) {
+                    let actualExtra = Math.min(extraPayment, buyerRemainingLoan);
+                    buyerRemainingLoan -= actualExtra;
+                    currentExtraPaymentForMonth = actualExtra; // Pris en compte comme coût cash flow ce mois-ci
+                }
+
+                let monthlyOwningCost = currentMortgagePayment + (propertyTaxAndMaint / 12) + currentExtraPaymentForMonth;
                 let diff = monthlyOwningCost - currentRent;
 
                 if (diff > 0) {
-                    renterCapital += diff;
+                    renterCapital += diff; // Le locataire investit la différence (y compris l'argent de l'anticipation de l'acheteur)
                 } else if (diff < 0) {
-                    buyerLiquidCapital += Math.abs(diff); // Effet correctif : l'acheteur investit la différence
+                    buyerLiquidCapital += Math.abs(diff); // Le prêt est fini, l'acheteur investit en masse
                 }
 
-                // Intérêts composés mensuels exacts
                 renterCapital = renterCapital * Math.pow(1 + yieldRate, 1 / 12);
                 buyerLiquidCapital = buyerLiquidCapital * Math.pow(1 + yieldRate, 1 / 12);
-
-                let interestForMonth = buyerRemainingLoan * equivalentMonthlyRate;
-                let principalForMonth = globalMonthlyPayment - interestForMonth;
-                if (buyerRemainingLoan > 0) buyerRemainingLoan -= principalForMonth;
             }
 
             currentRent = currentRent * (1 + inflationRate);
@@ -1507,7 +1613,7 @@
         }
 
         setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
-        setText('rvbFinalMortgage', fmtMoney.format(globalMonthlyPayment));
+        setText('rvbFinalMortgage', fmtMoney.format(mortgageMonthlyData[years - 1])); // Updated dynamically if paid off early
 
         const beText = document.getElementById('rvbBreakEvenText');
         const beYear = document.getElementById('rvbBreakEvenYear');
@@ -1549,7 +1655,7 @@
                             tension: 0.3
                         },
                         {
-                            label: 'Coût Achat',
+                            label: 'Coût Achat (Taxes incl.)',
                             data: mortgageData,
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1862,7 +1968,7 @@
         }
     }
 
-    function updateAmortizationChart(principal, equivalentMonthlyRate, numPayments, monthlyPayment) {
+    function updateAmortizationChart(principal, equivalentMonthlyRate, numPayments, monthlyPayment, extraPayment) {
         let balance = principal;
         let labels = [];
         let interestData = [];
@@ -1870,15 +1976,32 @@
 
         if (principal > 0 && numPayments > 0) {
             for (let year = 1; year <= numPayments / 12; year++) {
+                if (balance <= 0) break; // Arrêter d'afficher des années si le prêt est remboursé
+
                 labels.push('An ' + year);
                 let yearlyInterest = 0;
                 let yearlyPrincipal = 0;
+
                 for (let month = 1; month <= 12; month++) {
+                    if (balance <= 0) break;
+
                     let interestForMonth = balance * equivalentMonthlyRate;
                     let principalForMonth = monthlyPayment - interestForMonth;
+
+                    if (principalForMonth > balance) {
+                        principalForMonth = balance;
+                    }
+
                     yearlyInterest += interestForMonth;
                     yearlyPrincipal += principalForMonth;
                     balance -= principalForMonth;
+
+                    // Application du versement supplémentaire annuel
+                    if (month === 12 && extraPayment > 0 && balance > 0) {
+                        let actualExtra = Math.min(extraPayment, balance);
+                        balance -= actualExtra;
+                        yearlyPrincipal += actualExtra; // Ajouté au capital remboursé cette année-là
+                    }
                 }
                 interestData.push(yearlyInterest);
                 principalData.push(yearlyPrincipal);
@@ -1948,6 +2071,8 @@
         syncInputsSafe('inSavingsSlider', 'inSavingsNum', calculateAll);
         syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
         syncInputsSafe('inRentSlider', 'inRentNum', calculateAll);
+
+        syncInputsSafe('inExtraPaymentSlider', 'inExtraPaymentNum', calculateAll); // Nouveau listener pour le remboursement anticipé
 
         document.getElementById('inRigNum')?.addEventListener('input', calculateAll);
         document.getElementById('inChildren')?.addEventListener('change', calculateAll);
