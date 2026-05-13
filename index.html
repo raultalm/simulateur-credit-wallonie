@@ -838,6 +838,9 @@
                         <div class="receipt-line text-sky-700 font-semibold" id="fAsrdRow">
                             <span id="fAsrdLabel">2d. Assurance Solde Restant Dû</span><span id="fAsrd">~4 500 €</span>
                         </div>
+                        <div class="receipt-line">
+                            <span>2e. Frais de dossier (Banque/SWCS)</span><span id="fDossier">350 €</span>
+                        </div>
                         <div class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
                             <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
                         </div>
@@ -1621,7 +1624,12 @@
         // LE VRAI COUT TOTAL MANDATOIRE (Taxes + Notaire + Credit + ASRD) calculé sur un prêt 100%
         let fixedAsrd100 = isNaN(asrdInput) || asrdInput <= 0 ? (price * 0.012) : asrdInput;
         let fixedUpfrontAsrd100 = isAsrdUnique ? fixedAsrd100 : 0;
-        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100);
+
+        // NOUVEAU : Déterminer les frais de dossier (40€ si mode SWCS, sinon 350€)
+        const bankDossierFees = is100PercentMode ? 40 : 350;
+
+        // MODIFIÉ : On ajoute + bankDossierFees à la fin du calcul
+        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100 + bankDossierFees);
 
         // --- STICKY 100% MODE LOGIC ---
         if (is100PercentMode) {
@@ -1652,7 +1660,8 @@
             creditActCosts = (calculateExactNotaryCreditHonorarium(loanAmount) * 1.21) + realCreditRegistrationTax + 800;
         }
 
-        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts + upfrontAsrd;
+        // MODIFIÉ : On ajoute + bankDossierFees à la fin du calcul
+        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts + upfrontAsrd + bankDossierFees;
         let totalCost = price + globalExactMandatoryFees;
         let actualLoan = totalCost - savings;
         if (actualLoan < 0) actualLoan = 0;
@@ -1670,6 +1679,9 @@
             fAsrdLabel.textContent = isAsrdUnique ? "2d. Assurance Solde Restant Dû (1x)" : "2d. Assurance Solde Restant Dû (Mensuel)";
         }
         setText('fAsrd', isAsrdUnique ? fmtMoney.format(upfrontAsrd) : `${fmtMoney.format(monthlyAsrd)} /mois`);
+
+        // NOUVELLE LIGNE : Affichage des frais de dossier dans le ticket
+        setText('fDossier', fmtMoney.format(bankDossierFees));
 
         setText('fTotal', fmtMoney.format(totalCost));
         setText('fMinimumLegal', fmtMoney.format(fixedMinimumLegal));
