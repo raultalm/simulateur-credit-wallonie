@@ -393,6 +393,7 @@
                             </label>
                         </div>
 
+                        <!-- ACCORDION: DROITS VS TVA -->
                         <details class="group mt-3 text-xs text-slate-700 bg-white p-2 rounded border border-slate-200">
                             <summary
                                     class="font-bold cursor-pointer hover:text-sky-600 transition-colors flex justify-between items-center gap-1">
@@ -509,6 +510,7 @@
                             </div>
                         </div>
 
+                        <!-- ACCORDION: APPORT PERSONNEL -->
                         <details
                                 class="group mt-3 text-xs text-slate-700 bg-slate-50/50 p-2 rounded border border-slate-200">
                             <summary
@@ -554,6 +556,7 @@
                         </div>
                     </div>
 
+                    <!-- ACCORDION: TAUX & DUREE -->
                     <details
                             class="group mt-1 text-xs text-slate-700 bg-slate-50/50 p-2 rounded border border-slate-200">
                         <summary
@@ -581,6 +584,7 @@
                         </div>
                     </details>
 
+                    <!-- ASSURANCE SOLDE RESTANT DU (ASRD) AVEC METHODE DE PAIEMENT -->
                     <div class="pt-4 border-t border-slate-100">
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Assurance Solde Restant Dû
                             (ASRD)</label>
@@ -727,8 +731,8 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-purple-900 mb-1 h-8">Inflation / Indexation
-                                loyer</label>
+                            <label class="block text-xs font-semibold text-purple-900 mb-1 h-8">Inflation (Loyer &
+                                Salaire)</label>
                             <div class="relative">
                                 <input type="number" id="inInflation" value="2.5" step="0.1"
                                        class="w-full px-3 py-2 border border-purple-300 rounded-md bg-white text-right">
@@ -838,6 +842,7 @@
                             <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
                         </div>
 
+                        <!-- ACCORDION: FRAIS ANNEXES -->
                         <details
                                 class="group mt-4 text-xs font-sans text-slate-700 bg-slate-100 p-3 rounded border border-slate-300">
                             <summary
@@ -952,6 +957,7 @@
                                     : Votre épargne actuelle est inférieure à cet acompte.</p>
                             </div>
 
+                            <!-- ACCORDION: ACOMPTE -->
                             <details
                                     class="group mt-3 text-xs text-slate-700 bg-white p-2 rounded border border-amber-200 w-full sm:w-auto max-w-lg">
                                 <summary
@@ -995,7 +1001,7 @@
                                         <p class="text-xs text-sky-700 italic">Frais de dossier légaux. Parfois
                                             gratuits.</p>
                                     </div>
-                                    <span class="text-xl font-bold text-sky-900">~ 500 €</span>
+                                    <span class="text-xl font-bold text-sky-900">~ 350 €</span>
                                 </div>
                             </div>
                         </div>
@@ -1074,10 +1080,8 @@
                                     belge impose que les droits soient payés dans les 4
                                     mois qui suivent le compromis. C'est pourquoi l'acte se signe dans ce délai.
                                 </li>
-                                <li><strong>Frais de dossier bancaire :</strong> Plafonnés légalement à 500 € en
-                                    Belgique. Source officielle : <a href="https://www.wikifin.be/fr"
-                                                                     target="_blank"
-                                                                     class="text-sky-600 underline font-bold">Wikifin.be</a>.
+                                <li><strong>Frais de dossier bancaire :</strong> Plafonnés légalement à 350 € en
+                                    Belgique (depuis la nouvelle loi de 2024). Souvent négociables à 0€.
                                 </li>
                                 <li><strong>TVA sur le neuf (21%) vs Droits (3%) :</strong> Lors de l'achat d'un bien
                                     neuf (ex: sous loi Breyne), le bien est soumis à la TVA de 21% et non aux droits
@@ -1100,49 +1104,78 @@
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                            <h4 class="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Mensualité à la
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <!-- Box Mensualité -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col justify-center">
+                            <h4 class="text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-2">Mensualité à
+                                la
                                 fin du crédit</h4>
                             <div class="flex justify-between items-end mb-1">
-                                <span class="text-sm text-slate-600">Loyer indexé (Année <span
+                                <span class="text-xs text-slate-600">Loyer (An <span
                                         class="rvb-year">25</span>) :</span>
-                                <span class="text-xl font-bold text-rose-600" id="rvbFinalRent">-- €</span>
+                                <span class="text-lg font-bold text-rose-600" id="rvbFinalRent">-- €</span>
                             </div>
                             <div class="flex justify-between items-end border-t border-slate-200 pt-2 mt-2">
-                                <span class="text-sm text-slate-600">Crédit Immo (Année <span class="rvb-year">25</span>) :</span>
-                                <span class="text-xl font-bold text-emerald-600" id="rvbFinalMortgage">-- €</span>
+                                <span class="text-xs text-slate-600">Crédit (An <span
+                                        class="rvb-year">25</span>) :</span>
+                                <span class="text-lg font-bold text-emerald-600" id="rvbFinalMortgage">-- €</span>
                             </div>
                         </div>
 
+                        <!-- Box Point de Bascule -->
                         <div class="bg-purple-100 p-4 rounded-lg border border-purple-300 flex flex-col justify-center text-center">
-                            <h4 class="text-xs uppercase tracking-wider font-bold text-purple-800 mb-1">Point de Bascule
+                            <h4 class="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-1">Point de
+                                Bascule
                                 Financier</h4>
-                            <p class="text-3xl font-bold text-purple-900 my-1" id="rvbBreakEvenYear">Année --</p>
-                            <p class="text-xs text-purple-800" id="rvbBreakEvenText">Moment où l'acheteur devient
-                                mathématiquement plus riche que le locataire.</p>
+                            <p class="text-2xl font-bold text-purple-900 my-1" id="rvbBreakEvenYear">Année --</p>
+                            <p class="text-[10px] text-purple-800 leading-tight" id="rvbBreakEvenText">Moment où
+                                l'acheteur devient
+                                mathématiquement plus riche.</p>
+                        </div>
+
+                        <!-- NEW: Box Indexation Endettement -->
+                        <div class="bg-sky-50 p-4 rounded-lg border border-sky-200 flex flex-col justify-center text-center">
+                            <h4 class="text-[10px] uppercase tracking-wider font-bold text-sky-800 mb-1">Effort
+                                Financier (Endettement)</h4>
+                            <div class="flex justify-center items-center gap-3 my-1">
+                                <span class="text-xl font-bold text-slate-700" id="rvbInitialDebt">--%</span>
+                                <span class="text-lg">➡️</span>
+                                <span class="text-2xl font-bold text-emerald-600" id="rvbFinalDebt">--%</span>
+                            </div>
+                            <p class="text-[10px] text-sky-700 leading-tight">Le secret belge : votre salaire s'indexe,
+                                votre crédit reste fixe !</p>
                         </div>
                     </div>
 
-                    <div class="flex border-b border-slate-200 mb-4">
+                    <!-- TABS -->
+                    <div class="flex flex-wrap border-b border-slate-200 mb-4 gap-2">
                         <button id="btnTabMonthly"
-                                class="px-4 py-2 font-bold text-sm text-purple-700 border-b-2 border-purple-700 focus:outline-none">
+                                class="px-4 py-2 font-bold text-sm text-purple-700 border-b-2 border-purple-700 focus:outline-none transition-colors">
                             Coût Mensuel
                         </button>
                         <button id="btnTabWealth"
-                                class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-700 focus:outline-none">
+                                class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-700 focus:outline-none transition-colors">
                             Patrimoine Net
+                        </button>
+                        <button id="btnTabDebt"
+                                class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-700 focus:outline-none transition-colors">
+                            📉 Chute Endettement
                         </button>
                     </div>
 
+                    <!-- CHARTS PANELS -->
                     <div id="panelMonthly" class="chart-container block">
                         <canvas id="rentMonthlyChart"></canvas>
                     </div>
                     <div id="panelWealth" class="chart-container hidden">
                         <canvas id="rentWealthChart"></canvas>
                     </div>
+                    <div id="panelDebt" class="chart-container hidden">
+                        <canvas id="rentDebtChart"></canvas>
+                    </div>
                 </div>
             </div>
+
             <!-- ANALYSE DU PREMIER MOIS -->
             <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100 card-shadow">
                 <h3 class="font-bold text-indigo-900 mb-2 flex items-center gap-2"><span class="text-xl">🔍</span>
@@ -1321,6 +1354,7 @@
     let loanChart = null;
     let rentMonthlyChart = null;
     let rentWealthChart = null;
+    let rentDebtChart = null; // NEW: Chart for debt ratio
     let globalMonthlyPayment = 0;
     let globalCharges = 0;
     let globalExactMandatoryFees = 0;
@@ -1346,32 +1380,37 @@
         applySWCSRate(rate, true);
     }
 
-    // --- TABS LOGIC ---
-    document.getElementById('btnTabMonthly')?.addEventListener('click', (e) => {
-        document.getElementById('panelMonthly').classList.replace('hidden', 'block');
-        document.getElementById('panelWealth').classList.replace('block', 'hidden');
-        e.target.classList.replace('text-slate-500', 'text-purple-700');
-        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
-        e.target.classList.add('border-purple-700');
+    // --- TABS LOGIC (Updated for 3 tabs) ---
+    function switchTab(activeBtnId, activePanelId) {
+        ['btnTabMonthly', 'btnTabWealth', 'btnTabDebt'].forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                if (btnId === activeBtnId) {
+                    btn.classList.add('text-purple-700', 'border-b-2', 'border-purple-700');
+                    btn.classList.remove('text-slate-500', 'hover:text-slate-700');
+                } else {
+                    btn.classList.remove('text-purple-700', 'border-b-2', 'border-purple-700');
+                    btn.classList.add('text-slate-500', 'hover:text-slate-700');
+                }
+            }
+        });
 
-        const btnW = document.getElementById('btnTabWealth');
-        btnW.classList.replace('text-purple-700', 'text-slate-500');
-        btnW.classList.remove('border-b-2', 'border-purple-700');
-        btnW.classList.add('hover:text-slate-700');
-    });
+        ['panelMonthly', 'panelWealth', 'panelDebt'].forEach(panelId => {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                if (panelId === activePanelId) {
+                    panel.classList.replace('hidden', 'block');
+                } else {
+                    panel.classList.replace('block', 'hidden');
+                }
+            }
+        });
+    }
 
-    document.getElementById('btnTabWealth')?.addEventListener('click', (e) => {
-        document.getElementById('panelWealth').classList.replace('hidden', 'block');
-        document.getElementById('panelMonthly').classList.replace('block', 'hidden');
-        e.target.classList.replace('text-slate-500', 'text-purple-700');
-        e.target.classList.replace('hover:text-slate-700', 'border-b-2');
-        e.target.classList.add('border-purple-700');
+    document.getElementById('btnTabMonthly')?.addEventListener('click', () => switchTab('btnTabMonthly', 'panelMonthly'));
+    document.getElementById('btnTabWealth')?.addEventListener('click', () => switchTab('btnTabWealth', 'panelWealth'));
+    document.getElementById('btnTabDebt')?.addEventListener('click', () => switchTab('btnTabDebt', 'panelDebt'));
 
-        const btnM = document.getElementById('btnTabMonthly');
-        btnM.classList.replace('text-purple-700', 'text-slate-500');
-        btnM.classList.remove('border-b-2', 'border-purple-700');
-        btnM.classList.add('hover:text-slate-700');
-    });
 
     function checkSocialCreditEligibility(netMonthly, childrenStr, rigInput, isUnder35, peb) {
         const children = parseInt(childrenStr) || 0;
@@ -1832,7 +1871,7 @@
         // Sub-calculations
         updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment, extraPayment);
         runCrisisSimulation();
-        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd);
+        runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd, income, globalCharges);
     }
 
     function runCrisisSimulation() {
@@ -1872,7 +1911,7 @@
         setHTML('crisisResultBlock', html);
     }
 
-    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd) {
+    function runRentVsBuySimulation(housePrice, loanAmount, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd, income, globalCharges) {
         const initialRent = getValue('inRentNum');
         const inflationRate = getValue('inInflation') / 100;
         const yieldRate = getValue('inYield') / 100;
@@ -1884,6 +1923,7 @@
         let mortgageMonthlyData = [];
         let renterWealthData = [];
         let buyerWealthData = [];
+        let debtRatioData = []; // NEW: Array for debt ratio over time
 
         let currentRent = initialRent;
         let renterCapital = savings;
@@ -1891,6 +1931,7 @@
         let currentHouseValue = housePrice;
         let buyerRemainingLoan = loanAmount;
         let buyerLiquidCapital = 0;
+        let currentIncome = income;
 
         let breakEvenYear = -1;
 
@@ -1903,6 +1944,11 @@
             let currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0;
 
             mortgageMonthlyData.push(currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12));
+
+            // CALCUL DU TAUX D'ENDETTEMENT SUR BASE DU SALAIRE INDEXÉ
+            let monthlyDebt = currentMortgagePayment + currentAsrdPayment + globalCharges;
+            let currentDebtRatio = (currentIncome > 0) ? (monthlyDebt / currentIncome) * 100 : 0;
+            debtRatioData.push(currentDebtRatio);
 
             for (let month = 1; month <= 12; month++) {
                 currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
@@ -1938,8 +1984,10 @@
                 buyerLiquidCapital = buyerLiquidCapital * Math.pow(1 + yieldRate, 1 / 12);
             }
 
+            // Indexation pour l'année suivante
             currentRent = currentRent * (1 + inflationRate);
             currentHouseValue = currentHouseValue * (1 + houseAppreciationRate);
+            currentIncome = currentIncome * (1 + inflationRate);
 
             let renterNetWorth = renterCapital;
             let buyerNetWorth = (currentHouseValue - buyerRemainingLoan) + buyerLiquidCapital;
@@ -1955,21 +2003,27 @@
         setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
         setText('rvbFinalMortgage', fmtMoney.format(mortgageMonthlyData[years - 1]));
 
+        if (debtRatioData.length > 0) {
+            setText('rvbInitialDebt', debtRatioData[0].toFixed(1) + '%');
+            setText('rvbFinalDebt', debtRatioData[years - 1].toFixed(1) + '%');
+        }
+
         const beText = document.getElementById('rvbBreakEvenText');
         const beYear = document.getElementById('rvbBreakEvenYear');
 
         if (breakEvenYear > 0) {
             setText('rvbBreakEvenYear', `Année ${breakEvenYear}`);
-            beYear.className = "text-3xl font-bold text-purple-900 my-1";
+            beYear.className = "text-2xl font-bold text-purple-900 my-1";
             beText.innerHTML = `À partir de la <strong>${breakEvenYear}e année</strong>, acheter vous aura enrichi davantage que louer.`;
         } else {
             setText('rvbBreakEvenYear', `> ${years} ans`);
-            beYear.className = "text-3xl font-bold text-amber-600 my-1";
-            beText.innerHTML = `Rester locataire et investir votre apport reste plus rentable sur ${years} ans (frais de notaire perdus importants).`;
+            beYear.className = "text-2xl font-bold text-amber-600 my-1";
+            beText.innerHTML = `Rester locataire et investir votre apport reste plus rentable sur ${years} ans (frais de notaire importants).`;
         }
 
         updateRentMonthlyChart(labels, rentMonthlyData, mortgageMonthlyData);
         updateRentWealthChart(labels, renterWealthData, buyerWealthData);
+        updateRentDebtChart(labels, debtRatioData); // Update new chart
     }
 
     function updateRentMonthlyChart(labels, rentData, mortgageData) {
@@ -2070,6 +2124,53 @@
         }
     }
 
+    function updateRentDebtChart(labels, debtData) {
+        const ctx = document.getElementById('rentDebtChart');
+        if (!ctx) return;
+        if (rentDebtChart) {
+            rentDebtChart.data.labels = labels;
+            rentDebtChart.data.datasets[0].data = debtData;
+            rentDebtChart.update();
+        } else {
+            rentDebtChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Taux d'endettement (%)",
+                            data: debtData,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {mode: 'index', intersect: false},
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: Math.max(...debtData) > 50 ? undefined : 50
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (c) {
+                                    return c.dataset.label + ': ' + c.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     // --- DONNEES DES BANQUES (INCLUANT CREDIT SOCIAL & COURTIERS) ---
     const banksData = [
         {
@@ -2078,7 +2179,7 @@
             category: "Top Choix / Challenger",
             badgeColor: "bg-sky-100 text-sky-800",
             description: "Banque 100% en ligne filiale du groupe Crédit Mutuel Arkéa. Idéale pour fixer une base de négociation.",
-            pros: ["Taux fixe souvent le plus bas du marché", "ZÉRO frais de dossier (économie de ~500€)", "Simulation en ligne donnant droit à une offre ferme", "Pas d'obligation de prendre leurs assurances (incendie/décès)", "Pas d'obligation de domicilier les salaires"],
+            pros: ["Taux fixe souvent le plus bas du marché", "ZÉRO frais de dossier (économie de ~350€)", "Simulation en ligne donnant droit à une offre ferme", "Pas d'obligation de prendre leurs assurances (incendie/décès)", "Pas d'obligation de domicilier les salaires"],
             cons: ["Aucun conseiller physique (tout se fait par mail/téléphone)", "Dossier doit être très standard (les cas complexes sont souvent refusés automatiquement)"],
             address: "100% Digital (Siège: Bruxelles)",
             url: "https://www.keytradebank.be"
