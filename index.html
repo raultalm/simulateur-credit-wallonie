@@ -1791,7 +1791,7 @@
         let fixedUpfrontAsrd100 = isAsrdUnique ? fixedAsrd100 : 0;
         let fixedSwcsSolidarityTax = isSwcsMode ? (price * 0.002) : 0;
 
-        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100 + bankDossierFees + fixedSwcsSolidarityTax);
+        const fixedMinimumLegal = Math.round(registrationCosts) + Math.round(notaryPurchaseCosts) + Math.round(fixedCreditActCosts) + Math.round(fixedUpfrontAsrd100) + bankDossierFees + Math.round(fixedSwcsSolidarityTax);
         window.currentMinimumLegal = fixedMinimumLegal; // Store for the "Ajuster au minimum" button
 
         // PASSAGE 2: Recalcul des frais réels de crédit basés sur l'emprunt final réel (avec l'apport mis à jour)
@@ -1822,9 +1822,9 @@
             Math.round(creditActCosts) + Math.round(upfrontAsrd) + bankDossierFees + Math.round(swcsSolidarityTax);
         let totalCost = Math.round(price) + globalExactMandatoryFees;
 
-        let actualLoan = totalCost - savings;
-        if (actualLoan < 0) actualLoan = 0;
+        let actualLoan = Math.round(totalCost - savings);
         if (actualLoan > price) actualLoan = price;
+        if (actualLoan < 0) actualLoan = 0;
 
         // 3. UI Receipts
         setText('fPrix', fmtMoney.format(price));
@@ -1853,7 +1853,7 @@
 
         setText('fTotal', fmtMoney.format(totalCost));
         setText('fMinimumLegal', fmtMoney.format(fixedMinimumLegal));
-        setText('fCreditDemande', fmtMoney.format(actualLoan));
+        setText('fCreditDemande', fmtMoney.format(Math.round(actualLoan)));
 
         const alertApport = document.getElementById('alertApport');
         if (alertApport) {
