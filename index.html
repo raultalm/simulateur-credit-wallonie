@@ -475,23 +475,31 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="text-sm font-bold text-indigo-900">Zone à forte pression immobilière ?</h4>
-                                <p class="text-[10px] text-indigo-700 mt-0.5">Modifie le plafond SWCS (Max 391.500 € au lieu de 290.000 €)</p>
+                                <p class="text-[10px] text-indigo-700 mt-0.5">Modifie le plafond SWCS (Max 391.500 € au
+                                    lieu de 290.000 €)</p>
                             </div>
                             <div class="relative w-10 h-5 select-none shrink-0">
                                 <input type="checkbox" id="inHighPressure" class="toggle-checkbox"/>
-                                <label for="inHighPressure" class="toggle-label cursor-pointer" style="width: 2.5rem; height: 1.25rem;"></label>
-                                <div class="toggle-circle pointer-events-none" style="width: 1rem; height: 1rem; top: 2px; left: 2px;"></div>
+                                <label for="inHighPressure" class="toggle-label cursor-pointer"
+                                       style="width: 2.5rem; height: 1.25rem;"></label>
+                                <div class="toggle-circle pointer-events-none"
+                                     style="width: 1rem; height: 1rem; top: 2px; left: 2px;"></div>
                             </div>
                         </div>
 
                         <!-- Accordéon discret pour la liste officielle des communes -->
                         <details class="group mt-2 text-[10px] text-indigo-800">
-                            <summary class="flex justify-between items-center cursor-pointer hover:text-indigo-600 font-medium transition-colors list-none [&::-webkit-details-marker]:hidden">
+                            <summary
+                                    class="flex justify-between items-center cursor-pointer hover:text-indigo-600 font-medium transition-colors list-none [&::-webkit-details-marker]:hidden">
                                 <span class="flex items-center gap-1">Voir la liste des 33 communes concernées</span>
                                 <span class="inline-block transform transition-transform duration-300 group-open:rotate-180">▼</span>
                             </summary>
                             <div class="mt-1.5 pt-1.5 border-t border-indigo-200/50 leading-relaxed">
-                                Arlon, Attert, Beauvechain, Braine-l'Alleud, Braine-le-Château, Chastre, Chaumont-Gistoux, Court-Saint-Etienne, Dalhem, Eghezée, Genappe, Grez-Doiceau, Incourt, Ittre, Jalhay, Jodoigne, La Bruyère, La Hulpe, Lasne, Messancy, Mont-Saint-Guibert, Nandrin, Neupré, Nivelles, Ottignies-Louvain-la-Neuve, Perwez, Ramillies, Rixensart, Verlaine, Villers-la-Ville, Walhain, Waterloo, Wavre.
+                                Arlon, Attert, Beauvechain, Braine-l'Alleud, Braine-le-Château, Chastre,
+                                Chaumont-Gistoux, Court-Saint-Etienne, Dalhem, Eghezée, Genappe, Grez-Doiceau, Incourt,
+                                Ittre, Jalhay, Jodoigne, La Bruyère, La Hulpe, Lasne, Messancy, Mont-Saint-Guibert,
+                                Nandrin, Neupré, Nivelles, Ottignies-Louvain-la-Neuve, Perwez, Ramillies, Rixensart,
+                                Verlaine, Villers-la-Ville, Walhain, Waterloo, Wavre.
                             </div>
                         </details>
                     </div>
@@ -590,9 +598,10 @@
                                     avez un fort potentiel salarial), vous pouvez négocier un prêt "à 100%". Dans ce
                                     cas, la banque finance toute la maison, et votre apport ne sert qu'à payer les frais
                                     de notaire.</p>
-                                <p><strong>🏛️ Compatible SWCS ?</strong> <strong>OUI.</strong> C'est le grand avantage
-                                    du crédit social : la SWCS prête d'office à 100% (voire plus si travaux). L'apport
-                                    exigé est donc réduit au strict minimum légal.</p>
+                                <p><strong>🏛️ Compatible SWCS ?</strong> <strong>OUI.</strong> Le crédit social peut
+                                    financer jusqu'à 100% de la maison (voire les travaux) si vous manquez de fonds.
+                                    Attention toutefois : la SWCS n'est pas un chèque en blanc. Si vous possédez une
+                                    belle épargne, elle vous obligera à l'injecter dans le projet.</p>
                             </div>
                         </details>
                     </div>
@@ -1526,7 +1535,11 @@
         // Le plafond SWCS est de 290.000€, sauf en zone de forte pression où il est de 391.500€
         const isHighPressure = document.getElementById('inHighPressure')?.checked || false;
         const maxPropertyPriceSWCS = isHighPressure ? 391500 : 290000;
-        let isSwcsEligible = (finalRig <= limitSWCS) && (price <= maxPropertyPriceSWCS);
+
+        // La SWCS est interdite aux familles de 3 enfants ou plus (Orientation vers FLW)
+        const maxChildrenSWCS = parseInt(childrenCount) <= 2;
+        let isSwcsEligible = (finalRig <= limitSWCS) && (price <= maxPropertyPriceSWCS) && maxChildrenSWCS;
+
 
         let finalSwcsRate = 0;
         if (isSwcsEligible) {
@@ -1557,6 +1570,8 @@
             // Message d'erreur dynamique selon la cause du refus
             if (price > maxPropertyPriceSWCS) {
                 errorSwcs.textContent = `Refusé (Prix > ${fmtMoney.format(maxPropertyPriceSWCS)} max)`;
+            } else if (!maxChildrenSWCS) {
+                errorSwcs.textContent = `Refusé (3 enfants ou + ➡️ FLW)`;
             } else {
                 errorSwcs.textContent = `Refusé (RIG estimé > ${fmtMoney.format(limitSWCS)})`;
             }
