@@ -387,7 +387,7 @@
                             <label class="cursor-pointer">
                                 <input type="radio" name="inEtatBien" value="neuf" class="peer sr-only">
                                 <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
-                                    <span class="block text-sm font-bold text-slate-800">🏗️ Neuf</span>
+                                    <span class="block text-sm font-bold text-slate-800">🏗️ Neuf (HTVA)</span>
                                     <span class="block text-[10px] text-slate-500">Soumis à la TVA (21%)</span>
                                 </div>
                             </label>
@@ -496,10 +496,41 @@
                     <span class="step-badge">03</span>
                 </div>
 
+                <!-- TYPE DE PRETEUR (NOUVEAU TOGGLE SWCS vs BANQUE) -->
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg mb-5">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Type de Prêteur</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="inLenderType" value="bank" class="peer sr-only" checked>
+                            <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all flex flex-col justify-center h-full">
+                                <span class="block text-sm font-bold text-slate-800">🏦 Banque Classique</span>
+                                <span class="block text-[10px] text-slate-500 mt-0.5">Taux libre</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer" id="lblLenderSwcs">
+                            <input type="radio" name="inLenderType" value="swcs" class="peer sr-only" id="inLenderSwcs">
+                            <div class="text-center p-2 rounded-md border-2 border-slate-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 transition-all opacity-50 flex flex-col justify-center h-full"
+                                 id="boxLenderSwcs">
+                                <span class="block text-sm font-bold text-slate-800">🤝 Crédit Social (SWCS)</span>
+                                <span class="block text-[10px] text-rose-500 font-bold mt-0.5"
+                                      id="swcsEligibilityError">Vérification...</span>
+                                <span class="block text-[10px] text-emerald-600 font-bold mt-0.5 hidden"
+                                      id="swcsEligibilitySuccess">Éligible !</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Votre Apport Personnel (Épargne
-                            totale dispo)</label>
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="block text-sm font-semibold text-slate-700">Votre Apport Personnel (Épargne
+                                totale dispo)</label>
+                            <button id="btnMinSavings"
+                                    class="text-[10px] bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded border border-sky-200 transition-colors shadow-sm">
+                                🪄 Ajuster au minimum légal
+                            </button>
+                        </div>
                         <div class="flex items-center gap-4">
                             <input type="range" id="inSavingsSlider" min="0" max="500000" step="5000" value="50000"
                                    class="flex-grow">
@@ -545,6 +576,7 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Taux estimé (%)</label>
                             <input type="number" id="inRateNum" value="3.5" step="0.01"
                                    class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 text-right font-bold text-sky-700 transition-colors">
+                            <span id="rateLockIcon" class="absolute left-3 top-[34px] text-slate-400 hidden">🔒</span>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Durée (Années)</label>
@@ -636,9 +668,9 @@
                                     <strong>sur les 2/3 de la durée</strong> (ex: pendant 16 ans pour un prêt de 25
                                     ans). Pourquoi ? Pour vous libérer de cette charge quand vous serez plus âgé et que
                                     la prime serait trop chère.</p>
-                                <p>💡 <em>Astuce :</em> Vous n'êtes <strong>pas obligé</strong> de la prendre dans la
-                                    banque qui vous fait le crédit ! Le <strong>Code de Droit Économique</strong> vous autorise à
-                                    comparer les prix, et la <strong>Loi de 2024</strong> vous permet même d'en changer après quelques
+                                <p>💡 <strong>Astuce :</strong> Vous n'êtes <strong>pas obligé</strong> de la prendre
+                                    dans la banque qui vous fait le crédit ! Le Code de Droit Économique vous autorise à
+                                    comparer les prix, et la Loi de 2024 vous permet même d'en changer après quelques
                                     années !
                                 </p>
                             </div>
@@ -802,14 +834,6 @@
                 <div id="accelerationContent"></div>
             </div>
 
-            <!-- Crédit Social Check -->
-            <div id="cardSocial"
-                 class="bg-indigo-50 p-5 rounded-xl border border-indigo-200 flex flex-col justify-center card-shadow">
-                <h4 class="text-xs text-indigo-800 uppercase tracking-wider font-semibold mb-2">Crédit Social
-                    (SWCS)</h4>
-                <div id="socialStatusContent"></div>
-            </div>
-
             <!-- LE TICKET DE CAISSE -->
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden card-shadow">
                 <div class="bg-slate-100 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
@@ -817,6 +841,8 @@
                         <span class="text-xl">🧾</span>
                         <h3 class="font-bold text-slate-800">Le Coût Total du Projet</h3>
                     </div>
+                    <span class="text-[11px] text-slate-600 font-medium bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">
+                        💡 Argent total à financer chez le notaire (Jour 1)</span>
                 </div>
 
                 <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -839,10 +865,17 @@
                             <span id="fAsrdLabel">2d. Assurance Solde Restant Dû</span><span id="fAsrd">~4 500 €</span>
                         </div>
                         <div class="receipt-line">
-                            <span>2e. Frais de dossier (Banque/SWCS)</span><span id="fDossier">350 €</span>
+                            <span>2e. Frais de dossier / Expertise</span><span id="fDossier">350 €</span>
                         </div>
-                        <div class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed">
-                            <span>COÛT TOTAL</span><span id="fTotal">461 870 €</span>
+                        <div class="receipt-line text-emerald-700 hidden" id="fSolidariteRow">
+                            <span>2f. Taxe Solidarité SWCS (0,20%)</span><span id="fSolidarite">-- €</span>
+                        </div>
+                        <div class="receipt-line font-bold text-lg text-slate-900 mt-4 border-t border-slate-400 pt-2 border-dashed items-end">
+                            <div class="flex flex-col">
+                                <span>COÛT TOTAL</span>
+                                <span class="text-[10px] text-slate-500 font-normal italic leading-tight">Besoin en capital au Jour J</span>
+                            </div>
+                            <span id="fTotal">461 870 €</span>
                         </div>
 
                         <!-- ACCORDION: FRAIS ANNEXES -->
@@ -872,10 +905,9 @@
                                     une "vraie" hypothèque que sur la moitié du prêt, ce qui réduit considérablement la
                                     facture finale du notaire).</p>
                                 <p><strong>🏛️ Compatible SWCS ?</strong> <strong>OUI.</strong> La SWCS n'échappe pas aux
-                                    taxes ni au notaire. Cependant, la SWCS ne demande que 40€ de frais de dossier et
-                                    260€ de frais d'expertise, et optimise parfois la forme de la garantie pour réduire
-                                    votre facture. De plus, si votre demande de crédit hypothécaire est refusée, les 40
-                                    € de frais de dossier vous seront remboursés.</p>
+                                    taxes ni au notaire. Cependant, la SWCS est transparente : 40€ de dossier + 260€
+                                    d'expertise obligatoire + 0,20% de taxe de solidarité (la banque classique n'a pas
+                                    ces deux derniers).</p>
                             </div>
                         </details>
                     </div>
@@ -898,9 +930,18 @@
                             <div class="pr-14">
                                 <span class="font-bold text-emerald-900 text-base block mb-1">Apport minimum obligatoire :</span>
                                 <span class="font-bold text-emerald-700 text-2xl" id="fMinimumLegal">-- €</span>
-                                <p class="text-[11px] text-emerald-800 mt-1">Minimum <strong>légal à sortir de votre
+                                <p class="text-[11px] text-emerald-800 mt-1">
+                                    Minimum <strong>légal à sortir de votre
                                     poche</strong> avant de recevoir les clés (Frais + Taxes + ASRD unique si
-                                    applicable). Cet argent part chez le notaire et l'État.</p>
+                                    applicable). Cet argent part chez le notaire et l'État.<br>
+                                    <em><strong>Note</strong> : Ce simulateur plafonne l'emprunt à <strong>100% du prix
+                                        d'achat</strong>. Dans des cas
+                                        très rares et sous conditions strictes, certains prêteurs spécialisés acceptent
+                                        des crédits à <strong>105%</strong> (finançant une partie des frais), ce qui
+                                        réduirait encore
+                                        cet apport.
+                                    </em>
+                                </p>
                             </div>
                         </div>
                         <div id="alertApport"
@@ -995,16 +1036,16 @@
                         <div class="relative pl-6">
                             <div class="absolute -left-[9px] top-1 w-4 h-4 bg-sky-400 rounded-full ring-4 ring-white"></div>
                             <h4 class="font-bold text-slate-800 text-base">Jour 15 à 30 : Contrat de crédit</h4>
-                            <p class="text-sm text-slate-600 mt-1 mb-2">Votre banque valide définitivement le prêt. Elle
-                                vous prélève les frais de gestion du dossier bancaire.</p>
+                            <p class="text-sm text-slate-600 mt-1 mb-2">Votre banque/organisme valide définitivement le
+                                prêt. Prélèvement des frais de gestion du dossier bancaire et/ou expertise.</p>
                             <div class="bg-sky-50 p-3 rounded-lg border border-sky-200 inline-block w-full sm:w-auto">
                                 <div class="flex justify-between items-end gap-6">
                                     <div>
-                                        <span class="text-xs text-sky-800 font-bold uppercase tracking-wider block mb-1">2. À payer : Frais de banque</span>
-                                        <p class="text-xs text-sky-700 italic">Frais de dossier légaux. Parfois
-                                            gratuits.</p>
+                                        <span class="text-xs text-sky-800 font-bold uppercase tracking-wider block mb-1">2. À payer : Frais de prêteur</span>
+                                        <p class="text-xs text-sky-700 italic">Plafonnés légalement à 350€ en
+                                            banque.<br>300€ à la SWCS (40€ dossier + 260€ expertise).</p>
                                     </div>
-                                    <span class="text-xl font-bold text-sky-900">~ 350 €</span>
+                                    <span class="text-xl font-bold text-sky-900" id="tlDossierFees">~ 350 €</span>
                                 </div>
                             </div>
                         </div>
@@ -1021,9 +1062,9 @@
                                 <div class="flex items-center gap-3">
                                     <div class="text-xl">🏦</div>
                                     <div class="text-sm">
-                                        <strong class="text-slate-800">La banque verse le crédit directement au
+                                        <strong class="text-slate-800">Le prêteur verse le crédit directement au
                                             notaire</strong>
-                                        <span class="block text-slate-500">Montant versé par la banque : <strong
+                                        <span class="block text-slate-500">Montant versé par le prêteur : <strong
                                                 id="tlCredit">-- €</strong></span>
                                     </div>
                                 </div>
@@ -1035,8 +1076,9 @@
                                             <div>
                                                 <span class="text-xs text-emerald-800 font-bold uppercase tracking-wider block mb-1">3. À payer : Le Solde Restant</span>
                                                 <p class="text-xs text-emerald-700">Vous devez virer au notaire : Tous
-                                                    les frais (enregistrements, actes) + le reste de la maison non
-                                                    couvert par la banque, <strong>moins l'acompte (étape 1)</strong>.
+                                                    les frais (enregistrements, actes, taxe de solidarité si SWCS) + le
+                                                    reste de la maison non
+                                                    couvert par le prêt, <strong>moins l'acompte (étape 1)</strong>.
                                                 </p>
                                             </div>
                                             <span class="text-2xl font-bold text-emerald-900 whitespace-nowrap"
@@ -1281,75 +1323,82 @@
         }
     }
 
-    // Barèmes légaux exacts (A.R. 1950 indexé) pour un Acte de Vente (Achat Maison)
-    function calculateExactNotarySaleHonorarium(amount) {
-        let honorarium = 0;
+    // Barèmes légaux exacts (Consolidation février 2026) pour Acte de Vente
+    function calculateExactNotarySaleHonorarium(amount, isFirstHome) {
+        let honorarium = isFirstHome ? 257 : 285; // Partie fixe légale
         let remaining = amount;
 
-        if (remaining > 250095) {
-            honorarium += (remaining - 250095) * 0.00057;
-            remaining = 250095;
+        // Tranches cumulatives exactes 2026 : surplus, 249905, 186005, 18595, 15495, 12500, 10000, 7500
+        if (remaining > 249905) {
+            honorarium += (remaining - 249905) * 0.0020;
+            remaining = 249905;
         }
-        if (remaining > 64095) {
-            honorarium += (remaining - 64095) * 0.0057;
-            remaining = 64095;
+        if (remaining > 186005) {
+            honorarium += (remaining - 186005) * (isFirstHome ? 0.0030 : 0.0020);
+            remaining = 186005;
         }
-        if (remaining > 45495) {
-            honorarium += (remaining - 45495) * 0.0114;
-            remaining = 45495;
+        if (remaining > 18595) {
+            honorarium += (remaining - 18595) * (isFirstHome ? 0.00485 : 0.0057);
+            remaining = 18595;
         }
-        if (remaining > 30000) {
-            honorarium += (remaining - 30000) * 0.0171;
-            remaining = 30000;
+        if (remaining > 15495) {
+            honorarium += (remaining - 15495) * (isFirstHome ? 0.0050 : 0.0114);
+            remaining = 15495;
         }
-        if (remaining > 17500) {
-            honorarium += (remaining - 17500) * 0.0228;
-            remaining = 17500;
+        if (remaining > 12500) {
+            honorarium += (remaining - 12500) * (isFirstHome ? 0.0150 : 0.0171);
+            remaining = 12500;
+        }
+        if (remaining > 10000) {
+            honorarium += (remaining - 10000) * (isFirstHome ? 0.0200 : 0.0175);
+            remaining = 10000;
         }
         if (remaining > 7500) {
-            honorarium += (remaining - 7500) * 0.0285;
+            honorarium += (remaining - 7500) * 0.0250;
             remaining = 7500;
         }
         if (remaining > 0) {
-            honorarium += remaining * 0.0456;
+            honorarium += remaining * 0.0250;
         }
-
         return honorarium;
     }
 
-    // Barèmes légaux exacts pour un Acte de Crédit (Ouverture de crédit hypothécaire)
-    function calculateExactNotaryCreditHonorarium(amount) {
-        let honorarium = 0;
+    // Barèmes légaux exacts (Consolidation février 2026) pour Acte de Crédit
+    function calculateExactNotaryCreditHonorarium(amount, isFirstHome) {
+        let honorarium = isFirstHome ? 257 : 285; // Partie fixe légale
         let remaining = amount;
 
-        if (remaining > 250095) {
-            honorarium += (remaining - 250095) * 0.00057;
-            remaining = 250095;
+        if (remaining > 249905) {
+            honorarium += (remaining - 249905) * (isFirstHome ? 0.00036 : 0.00046);
+            remaining = 249905;
         }
-        if (remaining > 64095) {
-            honorarium += (remaining - 64095) * 0.00285;
-            remaining = 64095;
+        if (remaining > 186005) {
+            honorarium += (remaining - 186005) * (isFirstHome ? 0.00036 : 0.00046);
+            remaining = 186005;
         }
-        if (remaining > 45495) {
-            honorarium += (remaining - 45495) * 0.0057;
-            remaining = 45495;
+        if (remaining > 18595) {
+            honorarium += (remaining - 18595) * (isFirstHome ? 0.00182 : 0.00228);
+            remaining = 18595;
         }
-        if (remaining > 30000) {
-            honorarium += (remaining - 30000) * 0.00684;
-            remaining = 30000;
+        if (remaining > 15495) {
+            honorarium += (remaining - 15495) * (isFirstHome ? 0.00365 : 0.0040);
+            remaining = 15495;
         }
-        if (remaining > 17500) {
-            honorarium += (remaining - 17500) * 0.00855;
-            remaining = 17500;
+        if (remaining > 12500) {
+            honorarium += (remaining - 12500) * (isFirstHome ? 0.00547 : 0.0040);
+            remaining = 12500;
+        }
+        if (remaining > 10000) {
+            honorarium += (remaining - 10000) * (isFirstHome ? 0.0073 : 0.0050);
+            remaining = 10000;
         }
         if (remaining > 7500) {
-            honorarium += (remaining - 7500) * 0.0114;
+            honorarium += (remaining - 7500) * (isFirstHome ? 0.01094 : 0.0065);
             remaining = 7500;
         }
         if (remaining > 0) {
-            honorarium += remaining * 0.01425;
+            honorarium += remaining * (isFirstHome ? 0.01368 : 0.0075);
         }
-
         return honorarium;
     }
 
@@ -1361,29 +1410,12 @@
     let globalMonthlyPayment = 0;
     let globalCharges = 0;
     let globalExactMandatoryFees = 0;
-    let is100PercentMode = false; // Mode collant pour l'apport dynamique
+
+    // Globals for Dynamic Interactions
+    window.currentMinimumLegal = 0;
     const fmtMoney = new Intl.NumberFormat('fr-BE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
 
-    // --- APPLY SWCS RATE & 100% LOAN LOGIC ---
-    window.applySWCSRate = function (rate, is100Mode = false) {
-        is100PercentMode = is100Mode;
-        const rateInput = document.getElementById('inRateNum');
-        if (rateInput) {
-            rateInput.value = rate.toFixed(2);
-            rateInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-            setTimeout(() => {
-                rateInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-            }, 800);
-            calculateAll();
-        }
-    }
-
-    window.applySWCS100 = function (rate) {
-        // Enclenche le mode dynamique 100% et applique le taux
-        applySWCSRate(rate, true);
-    }
-
-    // --- TABS LOGIC (Updated for 3 tabs) ---
+    // --- TABS LOGIC ---
     function switchTab(activeBtnId, activePanelId) {
         ['btnTabMonthly', 'btnTabWealth', 'btnTabDebt'].forEach(btnId => {
             const btn = document.getElementById(btnId);
@@ -1414,96 +1446,17 @@
     document.getElementById('btnTabWealth')?.addEventListener('click', () => switchTab('btnTabWealth', 'panelWealth'));
     document.getElementById('btnTabDebt')?.addEventListener('click', () => switchTab('btnTabDebt', 'panelDebt'));
 
-
-    function checkSocialCreditEligibility(netMonthly, childrenStr, rigInput, isUnder35, peb) {
-        const children = parseInt(childrenStr) || 0;
-        const limitSWCS = 81700; // Updated 2026 Ceiling for Wallonia SWCS
-
-        // Belgian Heuristic: Net Monthly x 16 roughly equals the annual RIG
-        let estimatedRig = netMonthly * 16;
-
-        let isEstimated = false;
-        let baseRig = parseFloat(rigInput);
-
-        // Fallback to estimation if input is empty or invalid
-        if (isNaN(baseRig) || baseRig <= 0) {
-            baseRig = estimatedRig;
-            isEstimated = true;
-        }
-
-        // SWCS rule: deduct 5000€ per dependent child
-        let finalRig = baseRig - (children * 5000);
-
-        if (finalRig <= limitSWCS) {
-            // Determine exact SWCS Rate based on RIG brackets
-            let swcsBaseRate = 0;
-            if (finalRig <= 20600) swcsBaseRate = 3.30;
-            else if (finalRig <= 24800) swcsBaseRate = 3.50;
-            else if (finalRig <= 28900) swcsBaseRate = 3.60;
-            else if (finalRig <= 34900) swcsBaseRate = 3.70;
-            else if (finalRig <= 41100) swcsBaseRate = 4.00;
-            else if (finalRig <= 54300) swcsBaseRate = 4.20;
-            else if (finalRig <= 67700) swcsBaseRate = 4.40;
-            else swcsBaseRate = 4.40;
-
-            // Apply Youth discount (-0.40%)
-            let finalSwcsRate = isUnder35 ? Math.max(0, swcsBaseRate - 0.40) : swcsBaseRate;
-
-            // NEW: Strict SWCS condition for bad PEB
-            let swcsWarningHtml = '';
-            if (peb === 'D' || peb === 'E' || peb === 'F' || peb === 'G' || peb === 'unknown') {
-                swcsWarningHtml = `
-                <div class="mt-3 text-[11px] text-amber-800 font-medium bg-amber-50 p-3 rounded border border-amber-200 text-left">
-                    ⚠️ <strong>Condition stricte SWCS :</strong> La SWCS exige une toiture isolée (R ≥ 5m²K/W). Avec ce score PEB, des travaux d'isolation seront très probablement obligatoires pour obtenir le prêt. Ces travaux devront être intégrés à votre demande (ex: Rénopack à 0%).
-                </div>`;
-            }
-
-            return `<div>
-                        <div class="flex items-center gap-3">
-                            <p class="text-xl font-bold text-emerald-600">✅ Éligible</p>
-                            ${isUnder35 ? `<span class="text-[10px] text-indigo-700 font-bold bg-indigo-100 px-2 py-0.5 rounded-full">🎉 -0,40% (Avantage -35 ans appliqué)</span>` : ''}
-                        </div>
-                        <p class="text-[12px] text-slate-600 mt-1">
-                            RIG évalué à <strong>${fmtMoney.format(finalRig)}</strong> ${isEstimated ? `(Estimé)` : `(Exact)`}.
-                        </p>
-                    </div>
-
-                    ${swcsWarningHtml}
-
-                    <div class="mt-4 p-4 bg-white rounded-lg border border-emerald-200 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4">
-                        <div class="text-center xl:text-left w-full xl:w-auto">
-                            <span class="block text-xs text-slate-500 mb-0.5">Taux officiel SWCS</span>
-                            <strong class="text-emerald-700 text-2xl">${finalSwcsRate.toFixed(2)}%</strong>
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
-                            <button onclick="applySWCS100(${finalSwcsRate})" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[12px] font-bold py-2.5 px-4 rounded transition-colors shadow-sm whitespace-nowrap">
-                                👉 Prêt 100% & Taux SWCS
-                            </button>
-                            <button onclick="applySWCSRate(${finalSwcsRate})" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold py-2.5 px-4 rounded transition-colors border border-slate-300 whitespace-nowrap">
-                                Appliquer taux seul
-                            </button>
-                        </div>
-                    </div>`;
-        } else {
-            return `<p class="text-xl font-bold text-rose-500">❌ Non Éligible</p>
-                    <p class="text-xs text-slate-600 mt-1">
-                        Votre RIG calculé est de <strong>${fmtMoney.format(finalRig)}</strong>
-                        ${isEstimated ? ` <em>(Estimation)</em>` : ` <em>(Valeur exacte encodée)</em>`}. <br>
-                        Cela dépasse le plafond légal SWCS de ${fmtMoney.format(limitSWCS)}€.
-                    </p>`;
-        }
-    }
-
+    // --- MAIN CALCULATION FUNCTION ---
     function calculateAll() {
         const price = getValue('inPriceNum');
-        let savings = getValue('inSavingsNum'); // Rendu modifiable pour le mode sticky
+        let savings = getValue('inSavingsNum');
         const isFirstHome = document.getElementById('inFirstHome')?.checked || false;
-        const rate = getValue('inRateNum');
         const income = getValue('inIncomeNum');
         const childrenCount = document.getElementById('inChildren')?.value || "0";
-        const rigInput = document.getElementById('inRigNum')?.value;
+        const rigInput = parseFloat(document.getElementById('inRigNum')?.value);
         const isUnder35 = document.getElementById('inUnder35')?.checked || false;
         const extraPayment = getValue('inExtraPaymentNum');
+        const peb = document.getElementById('inPeb')?.value;
 
         // ETAT BIEN (Neuf vs Existant)
         const etatBien = document.querySelector('input[name="inEtatBien"]:checked').value;
@@ -1516,16 +1469,14 @@
             divFirstHome.classList.remove('opacity-30', 'pointer-events-none');
         }
 
-        // PEB Logic Update
-        const peb = document.getElementById('inPeb')?.value;
+        // PEB Logic & 30 years option
         const pebAdvice = document.getElementById('pebAdvice');
         const renoCommitContainer = document.getElementById('divRenovationCommit');
         const isRenoCommitted = document.getElementById('inRenoCommit')?.checked || false;
         const yearsSelect = document.getElementById('inYears');
 
-        // Dynamically add/remove the 30 years option based on PEB A/B
         let has30Option = Array.from(yearsSelect.options).some(opt => opt.value === '30');
-        if (peb === 'A' || peb === 'B' || isNeuf) { // Le neuf est d'office PEB A
+        if (peb === 'A' || peb === 'B' || isNeuf) {
             if (!has30Option) {
                 const opt30 = document.createElement('option');
                 opt30.value = '30';
@@ -1534,18 +1485,76 @@
             }
         } else {
             if (has30Option) {
-                if (yearsSelect.value === '30') yearsSelect.value = '25'; // Force back to 25 if it was 30
+                if (yearsSelect.value === '30') yearsSelect.value = '25';
                 Array.from(yearsSelect.options).find(opt => opt.value === '30').remove();
             }
         }
-
-        // Now safely read the current selected year
         const years = getValue('inYears', true) || 25;
 
-        // Check SWCS Eligibility (passing PEB state)
-        setHTML('socialStatusContent', checkSocialCreditEligibility(income, childrenCount, rigInput, isUnder35, isNeuf ? 'A' : peb));
+        // SWCS ELIGIBILITY LOGIC
+        let estimatedRig = income * 16;
+        let baseRig = isNaN(rigInput) || rigInput <= 0 ? estimatedRig : rigInput;
+        let finalRig = baseRig - (parseInt(childrenCount) * 5000);
+        let limitSWCS = 81700;
+        let isSwcsEligible = finalRig <= limitSWCS;
 
-        // Update PEB Advice Box & Renovation Toggle
+        let finalSwcsRate = 0;
+        if (isSwcsEligible) {
+            let swcsBaseRate = 4.40;
+            if (finalRig <= 20600) swcsBaseRate = 3.30;
+            else if (finalRig <= 24800) swcsBaseRate = 3.50;
+            else if (finalRig <= 28900) swcsBaseRate = 3.60;
+            else if (finalRig <= 34900) swcsBaseRate = 3.70;
+            else if (finalRig <= 41100) swcsBaseRate = 4.00;
+            else if (finalRig <= 54300) swcsBaseRate = 4.20;
+            else if (finalRig <= 67700) swcsBaseRate = 4.40;
+            finalSwcsRate = isUnder35 ? Math.max(0, swcsBaseRate - 0.40) : swcsBaseRate;
+        }
+
+        // UPDATE LENDER TYPE TOGGLE UI
+        const radioSwcs = document.getElementById('inLenderSwcs');
+        const boxSwcs = document.getElementById('boxLenderSwcs');
+        const errorSwcs = document.getElementById('swcsEligibilityError');
+        const successSwcs = document.getElementById('swcsEligibilitySuccess');
+        const rateInput = document.getElementById('inRateNum');
+        const rateLockIcon = document.getElementById('rateLockIcon');
+
+        if (!isSwcsEligible) {
+            radioSwcs.disabled = true;
+            boxSwcs.classList.add('opacity-50', 'cursor-not-allowed');
+            errorSwcs.textContent = `Refusé (RIG estimé > ${fmtMoney.format(limitSWCS)})`;
+            errorSwcs.classList.remove('hidden');
+            successSwcs.classList.add('hidden');
+
+            // Force Bank mode if SWCS was checked
+            if (radioSwcs.checked) {
+                document.querySelector('input[name="inLenderType"][value="bank"]').checked = true;
+            }
+        } else {
+            radioSwcs.disabled = false;
+            boxSwcs.classList.remove('opacity-50', 'cursor-not-allowed');
+            errorSwcs.classList.add('hidden');
+            successSwcs.textContent = `Éligible ! Taux: ${finalSwcsRate.toFixed(2)}%`;
+            successSwcs.classList.remove('hidden');
+        }
+
+        const isSwcsMode = document.querySelector('input[name="inLenderType"]:checked').value === 'swcs';
+
+        // LOCK RATE IF SWCS
+        if (isSwcsMode) {
+            rateInput.value = finalSwcsRate.toFixed(2);
+            rateInput.disabled = true;
+            rateInput.classList.add('bg-slate-100', 'text-slate-500');
+            rateLockIcon.classList.remove('hidden');
+        } else {
+            rateInput.disabled = false;
+            rateInput.classList.remove('bg-slate-100', 'text-slate-500');
+            rateLockIcon.classList.add('hidden');
+        }
+
+        const rate = getValue('inRateNum');
+
+        // PEB Advice text
         if (peb === 'A' || peb === 'B' || isNeuf) {
             renoCommitContainer.classList.add('hidden');
             if (pebAdvice) {
@@ -1558,13 +1567,13 @@
                 pebAdvice.className = 'mt-2 text-[11px] font-medium p-2 rounded border transition-colors duration-300 block';
                 if (isRenoCommitted) {
                     pebAdvice.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
-                    pebAdvice.innerHTML = "💡 <strong>Réduction différée validée :</strong> En vous engageant à rénover, vous débloquez le taux <strong>Éco-crédit</strong> dès l'achat !<br><br>🔨 <strong>Financement des travaux :</strong> Ne les intégrez pas forcément au prêt principal. Pensez au <strong>Prêt Rénovation Énergie</strong> bancaire (~2.95%) ou au <strong>Rénopack à 0%</strong> (si vous êtes éligible SWCS).";
+                    pebAdvice.innerHTML = "💡 <strong>Réduction différée validée :</strong> En vous engageant à rénover, vous débloquez le taux <strong>Éco-crédit</strong> dès l'achat !<br><br>🔨 <strong>Financement des travaux :</strong> Pensez au <strong>Prêt Rénovation Énergie</strong> bancaire (~2.95%) ou au <strong>Rénopack à 0%</strong> (si SWCS).";
                 } else {
                     pebAdvice.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
                     if (peb === 'F' || peb === 'G') {
                         pebAdvice.innerHTML = "⚠️ <strong>Passoire énergétique :</strong> Les banques vous pénaliseront avec un taux majoré, et certaines refuseront le prêt sans engagement de rénovation. Activez le bouton ci-dessus pour simuler un engagement de rénovation.";
                     } else {
-                        pebAdvice.innerHTML = "ℹ️ <strong>PEB Moyen :</strong> Pas de pénalité stricte de la part des banques, mais aucun avantage de taux. Rénover vous permettrait d'obtenir un meilleur taux d'emprunt global.";
+                        pebAdvice.innerHTML = "ℹ️ <strong>PEB Moyen :</strong> Pas de pénalité stricte de la part des banques, mais aucun avantage de taux. Rénover vous permettrait d'obtenir un meilleur taux.";
                     }
                 }
             }
@@ -1582,87 +1591,97 @@
         let registrationCosts = 0;
 
         if (isNeuf) {
-            registrationCosts = price * 0.21; // TVA au lieu des droits d'enregistrement
+            registrationCosts = price * 0.21;
             setText('fTauxEnreg', '21% - TVA');
         } else {
             registrationCosts = price * regTaxRate;
             setText('fTauxEnreg', isFirstHome ? '3%' : '12.5%');
         }
 
-        // Honoraires notaire pour la vente (Honoraires exacts + 21% TVA + Frais administratifs ~1100€)
-        const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(price) * 1.21) + 1100;
+        // Honoraires notaire pour la vente
+        // Si Neuf, la loi dicte de calculer l'honoraire sur une estimation (ex: Terrain + 50% construction).
+        // Approximation légale standard : 70% du prix HTVA global.
+        const basePriceForHonorarium = isNeuf ? (price * 0.70) : price;
+        const notaryPurchaseCosts = (calculateExactNotarySaleHonorarium(basePriceForHonorarium, isFirstHome) * 1.21) + 1100;
 
-        // Calcul du minimum légal FIXE (en supposant un emprunt maximal à 100% du prix)
-        const fixedCreditRegistrationTax = (price * 1.10) * 0.013; // Droits d'inscription sur hypothèque à 110%
-        const fixedCreditActCosts = (calculateExactNotaryCreditHonorarium(price) * 1.21) + fixedCreditRegistrationTax + 800;
+        // Frais de dossier & Expertise
+        const bankDossierFees = isSwcsMode ? 300 : 350; // SWCS: 40€ dossier + 260€ expertise
 
-        // CALCUL ASRD DYNAMIQUE ET TYPE DE PAIEMENT
+        // ASRD
         const asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
         const isAsrdUnique = asrdType === 'unique';
 
-        // PASSAGE 1: Déterminer le montant d'emprunt temporaire pour estimer l'ASRD
-        let estimatedTotalCostBase = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts;
-        let tempLoanAmount = is100PercentMode ? price : estimatedTotalCostBase - savings;
+        // Estimation base
+        const fixedCreditRegistrationTax = (price * 1.10) * 0.013;
+        const baseCreditHonorarium = calculateExactNotaryCreditHonorarium(price, isFirstHome);
+        const fixedHonorariumPart = isFirstHome ? 257 : 285;
+        const finalCreditHonorarium = isSwcsMode ? fixedHonorariumPart + ((baseCreditHonorarium - fixedHonorariumPart) / 2) : baseCreditHonorarium;
+
+        /*
+         * L'ajout manuel de + 800 € correspond aux frais administratifs et débours du notaire pour l'acte de crédit.
+         * 1. Forfait légal : La loi fixe les frais administratifs d'un 2ème acte lié (le crédit) à 627 € HTVA, soit 758,67 € TTC.
+         * 2. Marge de sécurité : Les ~41 € restants couvrent les frais administratifs variables (recherches hypothécaires, timbres, copies d'actes).
+         */
+        const fixedCreditActCosts = (finalCreditHonorarium * 1.21) + fixedCreditRegistrationTax + 800;
+
+        let estimatedTotalCostBase = price + registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + bankDossierFees;
+        let tempLoanAmount = estimatedTotalCostBase - savings;
         if (tempLoanAmount < 0) tempLoanAmount = 0;
-        if (tempLoanAmount > price) tempLoanAmount = price;
+        if (tempLoanAmount > price) tempLoanAmount = price; // Max 100% de la valeur d'achat
 
         let asrdInput = parseFloat(document.getElementById('inAsrdNum').value);
         let baseAsrd = 0;
         if (isNaN(asrdInput) || asrdInput <= 0) {
-            // Estimation : Environ 1.2% du capital pour un jeune couple à 100% de couverture
             baseAsrd = tempLoanAmount * 0.012;
             document.getElementById('inAsrdNum').placeholder = fmtMoney.format(baseAsrd) + " (Estimé total)";
         } else {
             baseAsrd = asrdInput;
         }
 
-        // Si paiement mensuel, le coût total est majoré (environ +15% de frais de fractionnement en Belgique)
         let totalAsrd = isAsrdUnique ? baseAsrd : baseAsrd * 1.15;
         let upfrontAsrd = isAsrdUnique ? totalAsrd : 0;
-        let monthlyAsrd = isAsrdUnique ? 0 : totalAsrd / (years * 12);
 
-        // LE VRAI COUT TOTAL MANDATOIRE (Taxes + Notaire + Credit + ASRD) calculé sur un prêt 100%
+        // Règle belge : la prime mensuelle se paie sur les 2/3 de la durée du crédit
+        let asrdPaymentYears = Math.floor(years * (2 / 3));
+        let asrdPaymentMonths = asrdPaymentYears * 12;
+        let monthlyAsrd = isAsrdUnique ? 0 : totalAsrd / asrdPaymentMonths;
+
+        // LE VRAI COUT TOTAL MANDATOIRE (Taxes + Notaire + Credit + ASRD) calculé sur un prêt de 100% (Prix)
         let fixedAsrd100 = isNaN(asrdInput) || asrdInput <= 0 ? (price * 0.012) : asrdInput;
         let fixedUpfrontAsrd100 = isAsrdUnique ? fixedAsrd100 : 0;
+        let fixedSwcsSolidarityTax = isSwcsMode ? (price * 0.002) : 0;
 
-        // NOUVEAU : Déterminer les frais de dossier (40€ si mode SWCS, sinon 350€)
-        const bankDossierFees = is100PercentMode ? 40 : 350;
-
-        // MODIFIÉ : On ajoute + bankDossierFees à la fin du calcul
-        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100 + bankDossierFees);
-
-        // --- STICKY 100% MODE LOGIC ---
-        if (is100PercentMode) {
-            savings = fixedMinimumLegal;
-            const savingsInput = document.getElementById('inSavingsNum');
-            const savingsSlider = document.getElementById('inSavingsSlider');
-            if (savingsInput && parseFloat(savingsInput.value) !== fixedMinimumLegal) {
-                savingsInput.value = fixedMinimumLegal;
-                savingsSlider.value = fixedMinimumLegal;
-
-                // Petit effet visuel pour montrer que la valeur s'est auto-ajustée
-                savingsInput.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-                setTimeout(() => {
-                    savingsInput.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-                }, 800);
-            }
-        }
+        const fixedMinimumLegal = Math.ceil(registrationCosts + notaryPurchaseCosts + fixedCreditActCosts + fixedUpfrontAsrd100 + bankDossierFees + fixedSwcsSolidarityTax);
+        window.currentMinimumLegal = fixedMinimumLegal; // Store for the "Ajuster au minimum" button
 
         // PASSAGE 2: Recalcul des frais réels de crédit basés sur l'emprunt final réel (avec l'apport mis à jour)
-        let loanAmount = estimatedTotalCostBase + upfrontAsrd - savings;
+        let loanAmount = (estimatedTotalCostBase + upfrontAsrd + fixedSwcsSolidarityTax) - savings;
         if (loanAmount < 0) loanAmount = 0;
-        if (loanAmount > price) loanAmount = price;
+        // La SWCS autorise à prêter 100% voire plus avec les frais de notaire dans certains cas rares,
+        // mais pour l'achat classique, on plafonne souvent l'emprunt au prix de la maison (LTV 100%).
+        if (loanAmount > price && !isSwcsMode) loanAmount = price;
+        if (loanAmount > price && isSwcsMode) loanAmount = price;
 
         let realCreditRegistrationTax = 0;
         let creditActCosts = 0;
+        let swcsSolidarityTax = 0;
+
         if (loanAmount > 0) {
             realCreditRegistrationTax = (loanAmount * 1.10) * 0.013;
-            creditActCosts = (calculateExactNotaryCreditHonorarium(loanAmount) * 1.21) + realCreditRegistrationTax + 800;
+            const realBaseHonorarium = calculateExactNotaryCreditHonorarium(loanAmount, isFirstHome);
+            const realFixedHonorariumPart = isFirstHome ? 257 : 285;
+            const realFinalHonorarium = isSwcsMode ? realFixedHonorariumPart + ((realBaseHonorarium - realFixedHonorariumPart) / 2) : realBaseHonorarium;
+            creditActCosts = (realFinalHonorarium * 1.21) + realCreditRegistrationTax + 800;
+            if (isSwcsMode) {
+                // The 0.20% SWCS tax strictly excludes the ASRD life insurance premium
+                swcsSolidarityTax = (loanAmount - upfrontAsrd) * 0.002;
+            }
         }
 
-        // MODIFIÉ : On ajoute + bankDossierFees à la fin du calcul
-        globalExactMandatoryFees = registrationCosts + notaryPurchaseCosts + creditActCosts + upfrontAsrd + bankDossierFees;
-        let totalCost = price + globalExactMandatoryFees;
+        globalExactMandatoryFees = Math.round(registrationCosts) + Math.round(notaryPurchaseCosts) +
+            Math.round(creditActCosts) + Math.round(upfrontAsrd) + bankDossierFees + Math.round(swcsSolidarityTax);
+        let totalCost = Math.round(price) + globalExactMandatoryFees;
+
         let actualLoan = totalCost - savings;
         if (actualLoan < 0) actualLoan = 0;
         if (actualLoan > price) actualLoan = price;
@@ -1673,22 +1692,28 @@
         setText('fNotaire', fmtMoney.format(notaryPurchaseCosts));
         setText('fCredit', fmtMoney.format(creditActCosts));
 
-        // ASRD affichage conditionnel
         const fAsrdLabel = document.getElementById('fAsrdLabel');
         if (fAsrdLabel) {
-            fAsrdLabel.textContent = isAsrdUnique ? "2d. Assurance Solde Restant Dû (1x)" : "2d. Assurance Solde Restant Dû (Mensuel)";
+            fAsrdLabel.textContent = isAsrdUnique
+                ? "2d. Assurance Solde Restant Dû (1x)"
+                : `2d. Assurance Solde Restant Dû (Total final: ${fmtMoney.format(totalAsrd)})`;
         }
-        setText('fAsrd', isAsrdUnique ? fmtMoney.format(upfrontAsrd) : `${fmtMoney.format(monthlyAsrd)} /mois`);
+        // On affiche "0 €" dans la colonne de droite si c'est mensuel, pour que l'addition visuelle soit logique
+        setText('fAsrd', isAsrdUnique ? fmtMoney.format(upfrontAsrd) : "0 €");
 
-        // NOUVELLE LIGNE : Affichage des frais de dossier dans le ticket
         setText('fDossier', fmtMoney.format(bankDossierFees));
+
+        const fSolidariteRow = document.getElementById('fSolidariteRow');
+        if (isSwcsMode && swcsSolidarityTax > 0) {
+            fSolidariteRow.classList.remove('hidden');
+            setText('fSolidarite', fmtMoney.format(swcsSolidarityTax));
+        } else {
+            fSolidariteRow.classList.add('hidden');
+        }
 
         setText('fTotal', fmtMoney.format(totalCost));
         setText('fMinimumLegal', fmtMoney.format(fixedMinimumLegal));
         setText('fCreditDemande', fmtMoney.format(actualLoan));
-
-        let ltv = price > 0 ? (actualLoan / price) * 100 : 0;
-        setText('fLtvText', `Financement à ${ltv.toFixed(0)}% du prix.`);
 
         const alertApport = document.getElementById('alertApport');
         if (alertApport) {
@@ -1711,7 +1736,6 @@
         }
 
         // 4. Monthly Payment (EXACT BELGIAN BANK COMPOUNDING)
-        // La loi belge oblige les banques à utiliser le taux mensuel équivalent, et non pas le nominal / 12
         const annualRate = rate / 100;
         const equivalentMonthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
         const numPayments = years * 12;
@@ -1727,7 +1751,7 @@
         setText('outPayment', fmtMoney.format(totalMonthlyCost));
         setText('outYearsText', years);
         if (document.getElementById('outAsrdIncludedNote')) {
-            document.getElementById('outAsrdIncludedNote').textContent = isAsrdUnique ? "" : "(ASRD incluse)";
+            document.getElementById('outAsrdIncludedNote').textContent = isAsrdUnique ? "" : `(ASRD incluse pdt ${asrdPaymentYears} ans)`;
         }
         document.querySelectorAll('.rvb-year').forEach(el => el.textContent = years);
 
@@ -1772,17 +1796,12 @@
         if (actualLoan > 0 && equivalentMonthlyRate > 0) {
             for (let m = 1; m <= numPayments; m++) {
                 if (accBalance <= 0) break;
-
                 let interest = accBalance * equivalentMonthlyRate;
                 let principal = globalMonthlyPayment - interest;
-
                 if (principal > accBalance) principal = accBalance;
-
                 accBalance -= principal;
                 accTotalInterest += interest;
                 accMonths++;
-
-                // Apply extra payment at the end of every 12th month
                 if (m % 12 === 0 && extraPayment > 0 && accBalance > 0) {
                     let actualExtra = Math.min(extraPayment, accBalance);
                     accBalance -= actualExtra;
@@ -1797,7 +1816,6 @@
             let yearsSaved = Math.floor(monthsSaved / 12);
             let remainingMonths = monthsSaved % 12;
             let interestSaved = standardTotalInterest - accTotalInterest;
-
             let timeStr = yearsSaved > 0 ? `${yearsSaved} an(s) et ${remainingMonths} mois` : `${remainingMonths} mois`;
 
             setHTML('accelerationContent', `
@@ -1817,18 +1835,14 @@
             cardAcceleration.classList.add('hidden');
         }
 
-
         // 6. TIMELINE DATA
         const acompte = price * acompteRate;
         setText('tlAcompte', fmtMoney.format(acompte));
 
         const tlAcompteAlert = document.getElementById('tlAcompteAlert');
         if (tlAcompteAlert) {
-            if (savings < acompte) {
-                tlAcompteAlert.classList.remove('hidden');
-            } else {
-                tlAcompteAlert.classList.add('hidden');
-            }
+            if (savings < acompte) tlAcompteAlert.classList.remove('hidden');
+            else tlAcompteAlert.classList.add('hidden');
         }
 
         setText('tlCredit', fmtMoney.format(actualLoan));
@@ -1837,6 +1851,7 @@
         if (soldeNotaire < 0) soldeNotaire = 0;
         setText('tlSoldeNotaire', fmtMoney.format(soldeNotaire));
         setText('tlMensualite', fmtMoney.format(totalMonthlyCost));
+        setText('tlDossierFees', `~ ${bankDossierFees} €`);
 
         // Analysis First Month
         const barInterets = document.getElementById('barInterets');
@@ -1845,15 +1860,11 @@
         if (actualLoan > 0 && equivalentMonthlyRate > 0) {
             const interestMonth1 = actualLoan * equivalentMonthlyRate;
             const capitalMonth1 = globalMonthlyPayment - interestMonth1;
-
             const pctInterest = (interestMonth1 / globalMonthlyPayment) * 100;
             const pctCapital = (capitalMonth1 / globalMonthlyPayment) * 100;
 
-            if (isAsrdUnique) {
-                setText('mMensualite', fmtMoney.format(globalMonthlyPayment));
-            } else {
-                setText('mMensualite', `${fmtMoney.format(totalMonthlyCost)} (dont ${fmtMoney.format(monthlyAsrd)} d'ASRD)`);
-            }
+            const asrdDetailedText = `${fmtMoney.format(totalMonthlyCost)} (dont ${fmtMoney.format(monthlyAsrd)} d'ASRD pdt ${asrdPaymentYears} ans, soit ${fmtMoney.format(totalAsrd)} au total)`;
+            setText('mMensualite', isAsrdUnique ? fmtMoney.format(globalMonthlyPayment) : asrdDetailedText);
 
             if (barInterets) {
                 barInterets.style.width = `${pctInterest}%`;
@@ -1882,19 +1893,18 @@
 
         // Sub-calculations
         updateAmortizationChart(actualLoan, equivalentMonthlyRate, numPayments, globalMonthlyPayment, extraPayment);
-        runCrisisSimulation();
+        runCrisisSimulation(globalMonthlyPayment);
         runRentVsBuySimulation(price, actualLoan, savings, years, equivalentMonthlyRate, extraPayment, monthlyAsrd, income, globalCharges);
     }
 
-    function runCrisisSimulation() {
+    function runCrisisSimulation(globalMonthlyPayment) {
         const crisisIncome = getValue('inCrisisNum');
-        // Retrieve values, calculate total cost to get the correct global totalMonthlyCost
         let asrdInput = parseFloat(document.getElementById('inAsrdNum').value);
         let asrdType = document.querySelector('input[name="inAsrdType"]:checked').value;
         let monthlyAsrd = 0;
         if (asrdType === 'mensuel') {
             let tmpBaseAsrd = isNaN(asrdInput) || asrdInput <= 0 ? 0 : asrdInput;
-            monthlyAsrd = (tmpBaseAsrd * 1.15) / (25 * 12); // Fallback estimate
+            monthlyAsrd = (tmpBaseAsrd * 1.15) / (25 * 12);
         }
 
         let totalCostWithAsrd = globalMonthlyPayment;
@@ -1910,15 +1920,10 @@
                             <span class="text-2xl font-bold ${resteAvivre < 1300 ? 'text-rose-600' : 'text-emerald-600'}">${fmtMoney.format(resteAvivre)}</span>
                         </div>`;
 
-        if (resteAvivre < 0) {
-            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Faillite budgétaire.</div>`;
-        } else if (resteAvivre < 1300) {
-            html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Zone de danger (sous ~1300€).</div>`;
-        } else if (resteAvivre < 1800) {
-            html += `<div class="p-2 bg-amber-100 text-amber-800 rounded text-xs font-bold">Tension budgétaire. Attention aux imprévus.</div>`;
-        } else {
-            html += `<div class="p-2 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">Résilience Ok. Vous conservez un bon niveau de vie.</div>`;
-        }
+        if (resteAvivre < 0) html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Faillite budgétaire.</div>`;
+        else if (resteAvivre < 1300) html += `<div class="p-2 bg-rose-100 text-rose-800 rounded text-xs font-bold">Zone de danger (sous ~1300€).</div>`;
+        else if (resteAvivre < 1800) html += `<div class="p-2 bg-amber-100 text-amber-800 rounded text-xs font-bold">Tension budgétaire. Attention aux imprévus.</div>`;
+        else html += `<div class="p-2 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">Résilience Ok. Vous conservez un bon niveau de vie.</div>`;
 
         setHTML('crisisResultBlock', html);
     }
@@ -1930,12 +1935,15 @@
         const houseAppreciationRate = 0.02;
         const propertyTaxAndMaint = housePrice * 0.01;
 
+        // Règle belge : la prime mensuelle se paie sur les 2/3 de la durée du crédit
+        let asrdPaymentYears = Math.floor(years * (2 / 3));
+
         let labels = [];
         let rentMonthlyData = [];
         let mortgageMonthlyData = [];
         let renterWealthData = [];
         let buyerWealthData = [];
-        let debtRatioData = []; // NEW: Array for debt ratio over time
+        let debtRatioData = [];
 
         let currentRent = initialRent;
         let renterCapital = savings;
@@ -1947,13 +1955,24 @@
 
         let breakEvenYear = -1;
 
+        // Fetch precise monthly payment
+        const rate = getValue('inRateNum');
+        const annualRate = rate / 100;
+        const actualEquivalentMonthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
+        const numPayments = years * 12;
+        let exactMonthlyPayment = 0;
+        if (loanAmount > 0 && actualEquivalentMonthlyRate > 0) {
+            exactMonthlyPayment = loanAmount * (actualEquivalentMonthlyRate * Math.pow(1 + actualEquivalentMonthlyRate, numPayments)) / (Math.pow(1 + actualEquivalentMonthlyRate, numPayments) - 1);
+        } else {
+            exactMonthlyPayment = loanAmount > 0 ? loanAmount / numPayments : 0;
+        }
+
         for (let year = 1; year <= years; year++) {
             labels.push('An ' + year);
             rentMonthlyData.push(currentRent);
 
-            // Si le crédit est fini plus tôt, l'acheteur ne paye plus la mensualité du prêt !
-            let currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
-            let currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0;
+            let currentMortgagePayment = (buyerRemainingLoan > 0) ? exactMonthlyPayment : 0;
+            let currentAsrdPayment = (buyerRemainingLoan > 0 && year <= asrdPaymentYears) ? monthlyAsrd : 0; // Règle des 2/3 appliquée au graphique
 
             mortgageMonthlyData.push(currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12));
 
@@ -1963,12 +1982,12 @@
             debtRatioData.push(currentDebtRatio);
 
             for (let month = 1; month <= 12; month++) {
-                currentMortgagePayment = (buyerRemainingLoan > 0) ? globalMonthlyPayment : 0;
-                currentAsrdPayment = (buyerRemainingLoan > 0) ? monthlyAsrd : 0;
+                currentMortgagePayment = (buyerRemainingLoan > 0) ? exactMonthlyPayment : 0;
+                currentAsrdPayment = (buyerRemainingLoan > 0 && year <= asrdPaymentYears) ? monthlyAsrd : 0;
                 let currentExtraPaymentForMonth = 0;
 
                 if (buyerRemainingLoan > 0) {
-                    let interestForMonth = buyerRemainingLoan * equivalentMonthlyRate;
+                    let interestForMonth = buyerRemainingLoan * actualEquivalentMonthlyRate;
                     let principalForMonth = currentMortgagePayment - interestForMonth;
                     if (principalForMonth > buyerRemainingLoan) {
                         principalForMonth = buyerRemainingLoan;
@@ -1986,17 +2005,14 @@
                 let monthlyOwningCost = currentMortgagePayment + currentAsrdPayment + (propertyTaxAndMaint / 12) + currentExtraPaymentForMonth;
                 let diff = monthlyOwningCost - currentRent;
 
-                if (diff > 0) {
-                    renterCapital += diff;
-                } else if (diff < 0) {
-                    buyerLiquidCapital += Math.abs(diff);
-                }
+                if (diff > 0) renterCapital += diff;
+                else if (diff < 0) buyerLiquidCapital += Math.abs(diff);
 
                 renterCapital = renterCapital * Math.pow(1 + yieldRate, 1 / 12);
                 buyerLiquidCapital = buyerLiquidCapital * Math.pow(1 + yieldRate, 1 / 12);
             }
 
-            // Indexation pour l'année suivante
+            // Indexation
             currentRent = currentRent * (1 + inflationRate);
             currentHouseValue = currentHouseValue * (1 + houseAppreciationRate);
             currentIncome = currentIncome * (1 + inflationRate);
@@ -2007,9 +2023,7 @@
             renterWealthData.push(renterNetWorth);
             buyerWealthData.push(buyerNetWorth);
 
-            if (breakEvenYear === -1 && buyerNetWorth > renterNetWorth) {
-                breakEvenYear = year;
-            }
+            if (breakEvenYear === -1 && buyerNetWorth > renterNetWorth) breakEvenYear = year;
         }
 
         setText('rvbFinalRent', fmtMoney.format(rentMonthlyData[years - 1]));
@@ -2030,12 +2044,12 @@
         } else {
             setText('rvbBreakEvenYear', `> ${years} ans`);
             beYear.className = "text-2xl font-bold text-amber-600 my-1";
-            beText.innerHTML = `Rester locataire et investir votre apport reste plus rentable sur ${years} ans (frais de notaire importants).`;
+            beText.innerHTML = `Rester locataire et investir votre apport reste plus rentable sur ${years} ans.`;
         }
 
         updateRentMonthlyChart(labels, rentMonthlyData, mortgageMonthlyData);
         updateRentWealthChart(labels, renterWealthData, buyerWealthData);
-        updateRentDebtChart(labels, debtRatioData); // Update new chart
+        updateRentDebtChart(labels, debtRatioData);
     }
 
     function updateRentMonthlyChart(labels, rentData, mortgageData) {
@@ -2071,9 +2085,7 @@
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {mode: 'index', intersect: false},
+                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
                     plugins: {
                         tooltip: {
                             callbacks: {
@@ -2119,9 +2131,7 @@
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {mode: 'index', intersect: false},
+                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
                     plugins: {
                         tooltip: {
                             callbacks: {
@@ -2160,15 +2170,8 @@
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {mode: 'index', intersect: false},
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: Math.max(...debtData) > 50 ? undefined : 50
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
+                    scales: {y: {beginAtZero: true, max: Math.max(...debtData) > 50 ? undefined : 50}},
                     plugins: {
                         tooltip: {
                             callbacks: {
@@ -2183,7 +2186,83 @@
         }
     }
 
-    // --- DONNEES DES BANQUES (INCLUANT CREDIT SOCIAL & COURTIERS) ---
+    function updateAmortizationChart(principal, equivalentMonthlyRate, numPayments, monthlyPayment, extraPayment) {
+        let balance = principal;
+        let labels = [];
+        let interestData = [];
+        let principalData = [];
+
+        if (principal > 0 && numPayments > 0) {
+            for (let year = 1; year <= numPayments / 12; year++) {
+                if (balance <= 0) break;
+
+                labels.push('An ' + year);
+                let yearlyInterest = 0;
+                let yearlyPrincipal = 0;
+
+                for (let month = 1; month <= 12; month++) {
+                    if (balance <= 0) break;
+
+                    let interestForMonth = balance * equivalentMonthlyRate;
+                    let principalForMonth = monthlyPayment - interestForMonth;
+
+                    if (principalForMonth > balance) {
+                        principalForMonth = balance;
+                    }
+
+                    yearlyInterest += interestForMonth;
+                    yearlyPrincipal += principalForMonth;
+                    balance -= principalForMonth;
+
+                    // Application du versement supplémentaire annuel
+                    if (month === 12 && extraPayment > 0 && balance > 0) {
+                        let actualExtra = Math.min(extraPayment, balance);
+                        balance -= actualExtra;
+                        yearlyPrincipal += actualExtra;
+                    }
+                }
+                interestData.push(yearlyInterest);
+                principalData.push(yearlyPrincipal);
+            }
+        }
+
+        const canvas = document.getElementById('loanChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (loanChart) {
+            loanChart.data.labels = labels;
+            loanChart.data.datasets[0].data = principalData;
+            loanChart.data.datasets[1].data = interestData;
+            loanChart.update();
+        } else {
+            loanChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {label: 'Capital remboursé', data: principalData, backgroundColor: '#10b981', stack: 'Stack 0'},
+                        {label: 'Intérêts payés', data: interestData, backgroundColor: '#fb7185', stack: 'Stack 0'}
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
+                    scales: {x: {stacked: true, grid: {display: false}}, y: {stacked: true, border: {display: false}}},
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (c) {
+                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // --- DONNEES DES BANQUES ---
     const banksData = [
         {
             name: "Keytrade Bank",
@@ -2352,68 +2431,30 @@
         }
     ];
 
-    // --- RENDER BANKS LOGIC ---
     function renderBanks(filterText = "") {
         const bankListContainer = document.getElementById('bankListContainer');
         const noBankResult = document.getElementById('noBankResult');
-
         if (!bankListContainer || !noBankResult) return;
 
         bankListContainer.innerHTML = '';
-
         const normalizedFilter = filterText.toLowerCase().trim();
         const filteredBanks = banksData.filter(bank =>
-            bank.name.toLowerCase().includes(normalizedFilter) ||
-            bank.category.toLowerCase().includes(normalizedFilter) ||
-            bank.description.toLowerCase().includes(normalizedFilter)
+            bank.name.toLowerCase().includes(normalizedFilter) || bank.category.toLowerCase().includes(normalizedFilter)
         );
 
-        if (filteredBanks.length === 0) {
-            noBankResult.classList.remove('hidden');
-        } else {
+        if (filteredBanks.length === 0) noBankResult.classList.remove('hidden');
+        else {
             noBankResult.classList.add('hidden');
-
             filteredBanks.forEach(bank => {
                 const item = document.createElement('div');
                 item.className = 'border border-slate-200 rounded-lg bg-white overflow-hidden';
-
                 const header = document.createElement('button');
                 header.className = 'w-full px-5 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors';
-                header.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 border border-slate-200 shadow-sm">${bank.rank}</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-base leading-tight">${bank.name}</h4>
-                                <span class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${bank.badgeColor} font-medium">${bank.category}</span>
-                            </div>
-                        </div>
-                        <span class="chevron text-slate-400 text-xl transform transition-transform">▼</span>
-                    `;
-
+                header.innerHTML = `<div class="flex items-center gap-4"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 border border-slate-200">${bank.rank}</div><div><h4 class="font-bold text-slate-800">${bank.name}</h4><span class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${bank.badgeColor}">${bank.category}</span></div></div><span class="chevron text-slate-400 text-xl transform transition-transform">▼</span>`;
                 const content = document.createElement('div');
                 content.className = 'accordion-content bg-slate-50 border-t border-slate-100';
-
-                let prosHtml = bank.pros.map(p => `<li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> <span>${p}</span></li>`).join('');
-                let consHtml = bank.cons.map(c => `<li class="flex items-start gap-2"><span class="text-rose-500">✗</span> <span>${c}</span></li>`).join('');
-
-                content.innerHTML = `
-                        <div class="p-5 space-y-4">
-                            <p class="text-sm text-slate-700 italic border-l-4 border-slate-300 pl-3">${bank.description}</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div><h5 class="font-bold text-emerald-800 mb-2">Pour</h5><ul class="space-y-1 text-slate-600">${prosHtml}</ul></div>
-                                <div><h5 class="font-bold text-rose-800 mb-2">Contre / Attention</h5><ul class="space-y-1 text-slate-600">${consHtml}</ul></div>
-                            </div>
-                            <div class="pt-3 mt-3 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm">
-                                <span class="text-slate-500">📍 ${bank.address}</span>
-                                <a href="${bank.url}" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 font-bold bg-sky-100 px-3 py-1.5 rounded-md transition-colors">Visiter le site ↗</a>
-                            </div>
-                        </div>
-                    `;
-
-                header.addEventListener('click', () => {
-                    item.classList.toggle('item-open');
-                });
-
+                content.innerHTML = `<div class="p-5 space-y-4"><p class="text-sm text-slate-700 italic border-l-4 border-slate-300 pl-3">${bank.description}</p><div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div><h5 class="font-bold text-emerald-800 mb-2">Pour</h5><ul class="space-y-1 text-slate-600">${bank.pros.map(p => `<li>✓ ${p}</li>`).join('')}</ul></div><div><h5 class="font-bold text-rose-800 mb-2">Contre</h5><ul class="space-y-1 text-slate-600">${bank.cons.map(c => `<li>✗ ${c}</li>`).join('')}</ul></div></div></div>`;
+                header.addEventListener('click', () => item.classList.toggle('item-open'));
                 item.appendChild(header);
                 item.appendChild(content);
                 bankListContainer.appendChild(item);
@@ -2421,93 +2462,11 @@
         }
     }
 
-    function updateAmortizationChart(principal, equivalentMonthlyRate, numPayments, monthlyPayment, extraPayment) {
-        let balance = principal;
-        let labels = [];
-        let interestData = [];
-        let principalData = [];
-
-        if (principal > 0 && numPayments > 0) {
-            for (let year = 1; year <= numPayments / 12; year++) {
-                if (balance <= 0) break; // Arrêter d'afficher des années si le prêt est remboursé
-
-                labels.push('An ' + year);
-                let yearlyInterest = 0;
-                let yearlyPrincipal = 0;
-
-                for (let month = 1; month <= 12; month++) {
-                    if (balance <= 0) break;
-
-                    let interestForMonth = balance * equivalentMonthlyRate;
-                    let principalForMonth = monthlyPayment - interestForMonth;
-
-                    if (principalForMonth > balance) {
-                        principalForMonth = balance;
-                    }
-
-                    yearlyInterest += interestForMonth;
-                    yearlyPrincipal += principalForMonth;
-                    balance -= principalForMonth;
-
-                    // Application du versement supplémentaire annuel
-                    if (month === 12 && extraPayment > 0 && balance > 0) {
-                        let actualExtra = Math.min(extraPayment, balance);
-                        balance -= actualExtra;
-                        yearlyPrincipal += actualExtra; // Ajouté au capital remboursé cette année-là
-                    }
-                }
-                interestData.push(yearlyInterest);
-                principalData.push(yearlyPrincipal);
-            }
-        }
-
-        const canvas = document.getElementById('loanChart');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (loanChart) {
-            loanChart.data.labels = labels;
-            loanChart.data.datasets[0].data = principalData;
-            loanChart.data.datasets[1].data = interestData;
-            loanChart.update();
-        } else {
-            loanChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {label: 'Capital remboursé', data: principalData, backgroundColor: '#10b981', stack: 'Stack 0'},
-                        {label: 'Intérêts payés', data: interestData, backgroundColor: '#fb7185', stack: 'Stack 0'}
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
-                    scales: {x: {stacked: true, grid: {display: false}}, y: {stacked: true, border: {display: false}}},
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (c) {
-                                    return c.dataset.label + ': ' + fmtMoney.format(c.parsed.y);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-
     // INIT & LISTENERS
     document.addEventListener('DOMContentLoaded', () => {
         renderBanks();
+        document.getElementById('bankSearch')?.addEventListener('input', (e) => renderBanks(e.target.value));
 
-        const bankSearchInput = document.getElementById('bankSearch');
-        if (bankSearchInput) {
-            bankSearchInput.addEventListener('input', (e) => {
-                renderBanks(e.target.value);
-            });
-        }
         syncInputsSafe('inIncomeSlider', 'inIncomeNum', () => {
             const slider = document.getElementById('inCrisisSlider');
             const num = document.getElementById('inCrisisNum');
@@ -2521,49 +2480,37 @@
 
         syncInputsSafe('inChargesSlider', 'inChargesNum', calculateAll);
         syncInputsSafe('inPriceSlider', 'inPriceNum', calculateAll);
-
-        // C'est ici que l'on désactive le mode dynamique 100% si l'utilisateur change l'apport manuellement
-        syncInputsSafe('inSavingsSlider', 'inSavingsNum', () => {
-            is100PercentMode = false;
+        syncInputsSafe('inSavingsSlider', 'inSavingsNum', calculateAll);
+        syncInputsSafe('inCrisisSlider', 'inCrisisNum', () => {
             calculateAll();
         });
-
-        syncInputsSafe('inCrisisSlider', 'inCrisisNum', runCrisisSimulation);
         syncInputsSafe('inRentSlider', 'inRentNum', calculateAll);
-
         syncInputsSafe('inExtraPaymentSlider', 'inExtraPaymentNum', calculateAll);
+
+        document.getElementById('btnMinSavings')?.addEventListener('click', () => {
+            if (window.currentMinimumLegal) {
+                document.getElementById('inSavingsNum').value = window.currentMinimumLegal;
+                document.getElementById('inSavingsSlider').value = window.currentMinimumLegal;
+                calculateAll();
+            }
+        });
+
+        document.querySelectorAll('input[name="inLenderType"]').forEach(radio => radio.addEventListener('change', calculateAll));
+        document.querySelectorAll('input[name="inEtatBien"]').forEach(radio => radio.addEventListener('change', calculateAll));
+        document.querySelectorAll('input[name="inAsrdType"]').forEach(radio => radio.addEventListener('change', calculateAll));
 
         document.getElementById('inRigNum')?.addEventListener('input', calculateAll);
         document.getElementById('inAsrdNum')?.addEventListener('input', calculateAll);
-
         document.getElementById('inChildren')?.addEventListener('change', calculateAll);
         document.getElementById('inUnder35')?.addEventListener('change', calculateAll);
         document.getElementById('inFirstHome')?.addEventListener('change', calculateAll);
-
-        // Listener pour Neuf vs Existant et Type ASRD
-        document.querySelectorAll('input[name="inEtatBien"]').forEach(radio => {
-            radio.addEventListener('change', calculateAll);
-        });
-        document.querySelectorAll('input[name="inAsrdType"]').forEach(radio => {
-            radio.addEventListener('change', calculateAll);
-        });
-
         document.getElementById('inRateNum')?.addEventListener('input', calculateAll);
         document.getElementById('inYears')?.addEventListener('change', calculateAll);
         document.getElementById('inInflation')?.addEventListener('input', calculateAll);
         document.getElementById('inYield')?.addEventListener('input', calculateAll);
         document.getElementById('inAcompteRate')?.addEventListener('change', calculateAll);
-
         document.getElementById('inPeb')?.addEventListener('change', calculateAll);
         document.getElementById('inRenoCommit')?.addEventListener('change', calculateAll);
-
-        const slider = document.getElementById('inCrisisSlider');
-        const num = document.getElementById('inCrisisNum');
-        const incomeNum = document.getElementById('inIncomeNum');
-        if (slider && num && incomeNum) {
-            slider.value = incomeNum.value;
-            num.value = incomeNum.value;
-        }
 
         calculateAll();
     });
