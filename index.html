@@ -1496,7 +1496,8 @@
         let baseRig = isNaN(rigInput) || rigInput <= 0 ? estimatedRig : rigInput;
         let finalRig = baseRig - (parseInt(childrenCount) * 5000);
         let limitSWCS = 81700;
-        let isSwcsEligible = finalRig <= limitSWCS;
+        const maxPropertyPriceSWCS = 391500;
+        let isSwcsEligible = (finalRig <= limitSWCS) && (price <= maxPropertyPriceSWCS);
 
         let finalSwcsRate = 0;
         if (isSwcsEligible) {
@@ -1508,6 +1509,7 @@
             else if (finalRig <= 41100) swcsBaseRate = 4.00;
             else if (finalRig <= 54300) swcsBaseRate = 4.20;
             else if (finalRig <= 67700) swcsBaseRate = 4.40;
+
             finalSwcsRate = isUnder35 ? Math.max(0, swcsBaseRate - 0.40) : swcsBaseRate;
         }
 
@@ -1522,7 +1524,14 @@
         if (!isSwcsEligible) {
             radioSwcs.disabled = true;
             boxSwcs.classList.add('opacity-50', 'cursor-not-allowed');
-            errorSwcs.textContent = `Refusé (RIG estimé > ${fmtMoney.format(limitSWCS)})`;
+
+            // Message d'erreur dynamique selon la cause du refus
+            if (price > maxPropertyPriceSWCS) {
+                errorSwcs.textContent = `Refusé (Prix > 391.500€ max légal)`;
+            } else {
+                errorSwcs.textContent = `Refusé (RIG estimé > ${fmtMoney.format(limitSWCS)})`;
+            }
+
             errorSwcs.classList.remove('hidden');
             successSwcs.classList.add('hidden');
 
